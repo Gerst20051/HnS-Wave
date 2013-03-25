@@ -1,0 +1,212 @@
+/* Begin Styles */
+
+body {
+background-color:#272521;
+cursor:default;
+font-family:arial,verdana;
+user-select:none;
+-khtml-user-select:none;
+-moz-user-select:none;
+-webkit-user-select:none;
+}
+
+#hns-login-button,
+#hns-logout-button {
+display:none;
+left:10px;
+position:absolute;
+top:12px;
+}
+
+#main {
+margin:0 auto;
+width:650px;
+}
+
+#main > header {
+font-size:20pt;
+font-weight:bold;
+margin:20px;
+}
+
+#main > header > span {
+cursor:pointer;
+}
+
+#main > header .leftheading {
+color:#a39c82;
+}
+
+#main > header .rightheading {
+color:#fffbef;
+}
+
+article > header {
+background-color:#665f46;
+padding:20px;
+}
+
+article > header aside {
+cursor:pointer;
+float:right;
+font-size:18pt;
+font-weight:bold;
+margin-top:3px;
+}
+
+article > header aside .leftlogo {
+color:#a39c82;
+}
+
+article > header aside .rightlogo {
+color:#fffbef;
+}
+
+article > header aside:hover .leftlogo {
+color:#8f886c;
+}
+
+article > header label {
+color:#faf9ee;
+font-size:18pt;
+margin-right:6px;
+position:relative;
+top:4px;
+}
+
+article > header #search {
+background-color:#877c5a;
+border:1px solid #8f886c;
+color:#fffdf6;
+font-size:14pt;
+outline:0;
+padding:4px 6px;
+}
+
+article > header #search:focus,
+article > header #search:hover {
+border:1px solid #a39c82;
+}
+
+ul#quotes {
+background-color:#363432;
+margin:0;
+padding:10px;
+}
+
+ul#quotes li {
+background-color:#252521;
+cursor:default;
+list-style:none;
+margin:10px;
+}
+
+ul#quotes li:not(:first-child) {
+margin-top:20px;
+}
+
+ul#quotes li.new {
+display:none;
+}
+
+ul#quotes li.empty {
+color:#a39c82;
+font-size:14pt;
+padding:15px;
+text-align:center;
+}
+
+ul#quotes li > header {
+cursor:pointer;
+}
+
+ul#quotes li .name {
+color:#fbfbf7;
+padding:15px;
+}
+
+ul#quotes li .links {
+color:#fffefa;
+cursor:default;
+float:right;
+padding:15px;
+}
+
+ul#quotes li .links a {
+color:#a09986;
+}
+
+ul#quotes li .less {
+display:none;
+}
+
+ul#quotes li .savespan {
+display:none;
+}
+
+ul#quotes li .details {
+display:none;
+padding:0 15px 15px;
+}
+
+ul#quotes li .details div:not(:first-child) {
+margin-top:2px;
+}
+
+ul#quotes li label {
+color:#9d9a86;
+display:block;
+float:left;
+margin-right:6px;
+padding-top:4px;
+text-align:right;
+width:50px;
+}
+
+ul#quotes li label:after {
+content:": ";
+}
+
+ul#quotes li input,
+ul#quotes li textarea {
+background-color:transparent;
+border:solid 1px transparent;
+color:#faf9f4;
+outline:0;
+padding:4px;
+-webkit-transition:border-color .2s;
+width:400px;
+}
+
+ul#quotes li input:hover,
+ul#quotes li input:focus,
+ul#quotes li textarea:hover,
+ul#quotes li textarea:focus {
+border:solid 1px #faf9f4;
+}
+
+ul#quotes li textarea {
+height:180px;
+resize:none;
+}
+
+ul#quotes li .quotelist {
+color:white;
+padding:5px 20px 20px;
+word-wrap:break-word;
+}
+
+ul#quotes li .quotename {
+color:#a39c82;
+}
+
+ul#quotes li .quotequote {
+text-align:justify;
+text-justify:inter-word;
+}
+
+footer {
+color:#b2adaa;
+font-size:10pt;
+margin:20px;
+}
