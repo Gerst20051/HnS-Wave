@@ -33,13 +33,60 @@ color:#a39c82;
 color:#fffbef;
 }
 
+#nav {
+background-color:#665f46;
+display:none;
+text-align:center;
+}
+
+#nav .link {
+color:#fff;
+display:inline-block;
+font-size:18pt;
+font-weight:bold;
+padding:14px 24px;
+text-align:center;
+text-decoration:none;
+}
+
+#nav .link.selected,
+#nav .link:hover {
+background-color:#6d664a;
+}
+
+#nav .link:active {
+background-color:#7c7455;
+}
+
+.out #nav .home-link {
+display:none;
+}
+
+.out #nav .myquotes-link {
+display:none;
+}
+
+.out #nav .logout-link {
+display:none;
+}
+
+.in #nav .login-link {
+display:none;
+}
+
+.in #logoaction {
+display:block;
+}
+
 article > header {
 background-color:#665f46;
+border-top:1px solid #fff;
 padding:20px;
 }
 
 article > header aside {
 cursor:pointer;
+display:none;
 float:right;
 font-size:18pt;
 font-weight:bold;

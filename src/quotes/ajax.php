@@ -186,7 +186,7 @@ if ($ACTION == 'logged') {
 } elseif ($ACTION == 'userdata') {
 	try {
 		$db = new MySQL();
-		$db->sfquery(array('SELECT * FROM `%s` WHERE uid = %s LIMIT 1',MYSQL_TABLE_USERS,$UID));
+		$db->sfquery(array('SELECT %s FROM `%s` WHERE uid = %s LIMIT 1',MYSQL_ALL_USERS,MYSQL_TABLE_USERS,$UID));
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRow();
 			print_json(array('user'=>$data));
@@ -215,7 +215,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 		exit();
 	}
 } elseif (!empty($TYPE)) {
-	if ($TYPE == 'all') {
+	if ($TYPE == 'global') {
 		try {
 			$db = new MySQL();
 			//$rows = $db->fetchParsedAll(MYSQL_TABLE);

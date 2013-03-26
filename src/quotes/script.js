@@ -53,6 +53,7 @@ loggedIn: function(){
 			$("#logout-button").show();
 			$("#login-button").hide();
 			$("body").addClass("in").removeClass("out");
+			$("#nav").slideDown();
 			//alert("Hello "+HNS.user.fullname+" welcome to our website!");
 			if (getHash() === "") setHash("home");
 			self.handleHash();
@@ -64,6 +65,7 @@ loggedOut: function(){
 	$("#login-button").show();
 	$("#logout-button").hide();
 	$("body").addClass("out").removeClass("in");
+	$("#nav").slideDown();
 	clearHash();
 	this.handleHash();
 },
@@ -174,13 +176,15 @@ onKeyDown: function(e){
 			e.preventDefault();
 			if (this.loginFocus) this.login();
 			else if (this.registerFocus) this.register();
+		} else if (keyCode == keys.ESCAPE) {
+			$("#authpanel").parent().css('visibility','hidden');
 		}
 	}
 },
 handleHash: function(){
 	var self = this;
-	if (getHash() == "all") {
-		$.getJSON(this.ajaxurl, {type:"all"}, function(response){
+	if (getHash() == "global") {
+		$.getJSON(this.ajaxurl, {type:"global"}, function(response){
 			if ($.isArray(response)) {
 				self.quotes = response;
 				var quotes = "";
@@ -278,14 +282,29 @@ dom: function(){
 		$("#login").show();
 		$("#register").hide();
 	});
-	$(".in").on('click','.logout-link',function(){
+	$("#nav").on('click','.home-link',function(){
+		setHash("home");
+		self.handleHash();
+	});
+	$("#nav").on('click','.myquotes-link',function(){
+		setHash("?id="+1);
+		self.handleHash();
+	});
+	$("#nav").on('click','.globalfeed-link',function(){
+		setHash("global");
+		self.handleHash();
+	});
+	$("#nav").on('click','.logout-link',function(){
 		self.logout();
+	});
+	$("#nav").on('click','.login-link',function(){
+		$("#authpanel").center().parent().hide().css('visibility','visible').fadeIn('slow');
 	});
 	$("footer").on('click','.backtotop-link',function(){
 		$.scrollTo(0, 1000);
 	});
 	$("#showall > span").on('click',function(){
-		setHash("all");
+		setHash("global");
 		self.handleHash();
 	});
 	$("article > header").on('keyup','#search',function(){
@@ -300,15 +319,17 @@ dom: function(){
 		}
 	});
 	$("article > header").on('click','#logoaction',function(){
-		var name = $.trim($("article > header #search").val());
-		if (name.length == 0) name = "New Quote";
-		else $("article > header #search").val('');
-		var quote = {"name":name,"quote":"The quote goes here."};
-		$.post(self.ajaxurl, {quote:quote,timestamp:getTime(),type:3}, function(response){
-			if (stringToBoolean(response)) {
-				self.quotes.unshift(response);
-				quotes.prepend(self.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
-			} else alert("Error: Couldn't create a new quote.");
+		$(".home-link").click(function(){
+			var name = $.trim($("article > header #search").val());
+			if (name.length == 0) name = "New Quote";
+			else $("article > header #search").val('');
+			var quote = {"name":name,"quote":"The quote goes here."};
+			$.post(self.ajaxurl, {quote:quote,timestamp:getTime(),type:3}, function(response){
+				if (stringToBoolean(response)) {
+					self.quotes.unshift(response);
+					quotes.prepend(self.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
+				} else alert("Error: Couldn't create a new quote.");
+			});
 		});
 	});
 	quotes.on('click','li > header',function(){
