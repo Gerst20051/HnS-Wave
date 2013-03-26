@@ -178,14 +178,15 @@ onKeyDown: function(e){
 	}
 },
 handleHash: function(){
+	var self = this;
 	if (getHash() == "all") {
-		$.getJSON("ajax.php", {type:"all"}, function(response){
+		$.getJSON(this.ajaxurl, {type:"all"}, function(response){
 			if ($.isArray(response)) {
-				aC.quotes = response;
+				self.quotes = response;
 				var quotes = "";
 				$.each(response, function(i,v){
 					var quote = v.quote;
-					quotes += aC.listQuote(v.id,quote.name,quote.quote);
+					quotes += self.listQuote(v.id,quote.name,quote.quote);
 				});
 				$("#quotes").html(quotes);
 			} else {
@@ -193,13 +194,13 @@ handleHash: function(){
 			}
 		});
 	} else if (getHash() == "user") {
-		$.getJSON("ajax.php", {type:"user"}, function(response){
+		$.getJSON(this.ajaxurl, {type:"user"}, function(response){
 			if ($.isArray(response)) {
-				aC.quotes = response;
+				self.quotes = response;
 				var quotes = "";
 				$.each(response, function(i,v){
 					var quote = v.quote;
-					quotes += aC.listQuote(v.id,quote.name,quote.quote);
+					quotes += self.listQuote(v.id,quote.name,quote.quote);
 				});
 				$("#quotes").html(quotes);
 			} else {
@@ -207,13 +208,13 @@ handleHash: function(){
 			}
 		});
 	} else if (getHash() == "home") {
-		$.getJSON("ajax.php", {type:"user"}, function(response){
+		$.getJSON(this.ajaxurl, {type:"user"}, function(response){
 			if ($.isArray(response)) {
-				aC.quotes = response;
+				self.quotes = response;
 				var quotes = "";
 				$.each(response, function(i,v){
 					var quote = v.quote;
-					quotes += aC.addQuote(v.id,quote.name,quote.quote);
+					quotes += self.addQuote(v.id,quote.name,quote.quote);
 				});
 				$("#quotes").html(quotes);
 			} else {
@@ -221,13 +222,13 @@ handleHash: function(){
 			}
 		});
 	} else if (parseHash().id) {
-		$.getJSON("ajax.php", {id:parseHash().id}, function(response){
+		$.getJSON(this.ajaxurl, {id:parseHash().id}, function(response){
 			if ($.isArray(response)) {
-				aC.quotes = response;
+				self.quotes = response;
 				var quotes = "";
 				$.each(response, function(i,v){
 					var quote = v.quote;
-					quotes += aC.listQuote(v.id,quote.name,quote.quote);
+					quotes += self.listQuote(v.id,quote.name,quote.quote);
 				});
 				$("#quotes").html(quotes);
 			} else {
@@ -285,15 +286,15 @@ dom: function(){
 	});
 	$("#showall > span").on('click',function(){
 		setHash("all");
-		aC.handleHash();
+		self.handleHash();
 	});
 	$("article > header").on('keyup','#search',function(){
-		aC.search.splice(0,this.length);
-		if (0 < aC.quotes.length){
-			$.each(aC.quotes, function(i,v){
-				if (-1 < v.name.indexOf($(this).val())) aC.search.push(i);
+		self.search.splice(0,this.length);
+		if (0 < self.quotes.length){
+			$.each(self.quotes, function(i,v){
+				if (-1 < v.name.indexOf($(this).val())) self.search.push(i);
 			});
-			$.each(aC.search, function(i,v){
+			$.each(self.search, function(i,v){
 				alert(v);
 			});
 		}
@@ -303,10 +304,10 @@ dom: function(){
 		if (name.length == 0) name = "New Quote";
 		else $("article > header #search").val('');
 		var quote = {"name":name,"quote":"The quote goes here."};
-		$.post("ajax.php", {quote:quote,timestamp:getTime(),type:3}, function(response){
-			if (response) {
-				aC.quotes.unshift(response);
-				quotes.prepend(aC.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
+		$.post(self.ajaxurl, {quote:quote,timestamp:getTime(),type:3}, function(response){
+			if (stringToBoolean(response)) {
+				self.quotes.unshift(response);
+				quotes.prepend(self.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
 			} else alert("Error: Couldn't create a new quote.");
 		});
 	});
@@ -324,13 +325,13 @@ dom: function(){
 	quotes.on('click','.save',function(){
 		var target = $(this).parents('li');
 		var index = target.index();
-		var item = aC.quotes[index];
+		var item = self.quotes[index];
 		var quote = item.quote;
 		var newname = target.find('#name').val();
 		var newquote = target.find('#quote').val();
 		item.quote = {"name":newname,"quote":newquote};
-		$.post("ajax.php", {id:item.id,quote:item.quote,timestamp:getTime(),type:1}, function(response){
-			if (response) {
+		$.post(self.ajaxurl, {id:item.id,quote:item.quote,timestamp:getTime(),type:1}, function(response){
+			if (stringToBoolean(response)) {
 				target.find('.savespan').hide();
 			} else alert("Error: Couldn't save this quote.");
 		});
@@ -338,7 +339,7 @@ dom: function(){
 	});
 	quotes.on('click','.undo',function(){
 		var target = $(this).parents('li');
-		var item = aC.quotes[target.index()];
+		var item = self.quotes[target.index()];
 		var quote = item.quote;
 		target.find('.name').html(quote.name);
 		target.find('#name').val(quote.name);
@@ -350,14 +351,14 @@ dom: function(){
 		console.log(quotes.children());
 		var target = $(this).parents('li');
 		var index = target.index();
-		var item = aC.quotes[index];
+		var item = self.quotes[index];
 		var quote = item.quote;
 		if (confirm("Are you sure you want to delete "+quote.name+"?")) {
-			$.post("ajax.php", {id:item.id,type:2}, function(response){
-				if (response) {
+			$.post(self.ajaxurl, {id:item.id,type:2}, function(response){
+				if (stringToBoolean(response)) {
 					$("#quotes li:eq("+index+")").remove();
-					aC.quotes.splice(index-1,1);
-					if (aC.quotes.length == 0) $("#quotes").html('<li class="empty">No Quotes</li>');
+					self.quotes.splice(index-1,1);
+					if (self.quotes.length == 0) $("#quotes").html('<li class="empty">No Quotes</li>');
 				} else alert("Error: Couldn't delete this quote.")
 			});
 		}
@@ -380,7 +381,7 @@ dom: function(){
 	});
 },
 addQuote: function(id,name,quote){
-	if (aC.quotes.length < 2) $("#quotes").find('.empty').remove();
+	if (this.quotes.length < 2) $("#quotes").find('.empty').remove();
 	var html = '<li id="quote-'+id+'">';
 	if (arguments.length == 2){ html = '<li id="quote-'+id+'" class="new">'; if ($.trim(name) == "") name="New Quote"; quote=""; }
 	html += '<header><aside class="links"><span class="savespan"><a href="#" class="save">save</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="undo">undo</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span><a href="#" class="more">more</a><a href="#" class="less">less</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="delete">delete</a></aside><aside class="name">'+name+'</aside></header>';
@@ -391,7 +392,7 @@ addQuote: function(id,name,quote){
 	return html;
 },
 listQuote: function(id,name,quote){
-	if (aC.quotes.length < 2) $("#quotes").find('.empty').remove();
+	if (this.quotes.length < 2) $("#quotes").find('.empty').remove();
 	var html = '<li id="quote-'+id+'"><div class="quotelist">';
 	html += '<div class="quotename"><h2>'+name+'</h2></div>';
 	html += '<div class="quotequote">"'+quote+'"</div>';
