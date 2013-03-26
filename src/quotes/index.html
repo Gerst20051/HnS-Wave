@@ -26,8 +26,46 @@
 <script src="init.js"></script>
 </head>
 <body>
-<div id="hns-login-button">HnS Login</div>
-<div id="hns-logout-button">HnS Logout</div>
+<div id="login-button" class="button"><button type="submit">Login</button></div>
+<div id="logout-button" class="button"><button type="submit">Logout</button></div>
+<div class="authpanel lightbox">
+<div id="authpanel" class="modal">
+<div id="login">
+<header>Login</header>
+<form id="f_login" class="coolform" onsubmit="return false" autocomplete="off">
+<div class="formcontainer">
+<input type="hidden" name="formname" value="login"/>
+<div><label for="lemail">Email:</label><input id="lemail" name="email" type="email" spellcheck="false" value=""/></div>
+<div><label for="lpassword">Password:</label><input id="lpassword" name="password" type="password" spellcheck="false" value=""/></div>
+</div>
+<div class="buttonTools">
+<ul class="toolList rfloat">
+<li class="listItem"><label class="loginButton" for="b_login_splash"><input id="b_login_splash" value="Login" type="submit"/></label></li>
+<li class="listItem"><label class="registerButton" for="b_register_splash"><input id="b_register_splash" value="Create Your Account" type="button"/></label></li>
+</ul>
+</div>
+</form>
+</div>
+<div id="register">
+<header>Register</header>
+<form id="f_register" class="coolform" onsubmit="return false" autocomplete="off">
+<div class="formcontainer">
+<input type="hidden" name="formname" value="register"/>
+<div><label for="reg_name">First and Last Name:</label><input id="reg_name" name="name" type="text" spellcheck="false" value=""/></div>
+<div><label for="reg_email">Email:</label><input id="reg_email" name="email" type="email" spellcheck="false" value=""/></div>
+<div><label for="reg_password">Password:</label><input id="reg_password" name="password" type="password" spellcheck="false" value=""/></div>
+<div><label for="reg_username">Vanity URL (username):</label><input id="reg_username" name="username" type="text" spellcheck="false" value=""/></div>
+</div>
+<div class="buttonTools">
+<ul class="toolList lfloat">
+<li class="listItem"><label class="loginButton" for="b_login"><input id="b_login" value="Login" type="submit"/></label></li>
+<li class="listItem"><label class="registerButton" for="b_register"><input id="b_register" value="Create Your Account" type="submit"/></label></li>
+</ul>
+</div>
+</form>
+</div>
+</div>
+</div>
 <div id="main">
 <header id="showall"><span class="leftheading">awesome</span><span class="rightheading">quotes</span></header>
 <article>
@@ -39,7 +77,10 @@
 </header>
 <div id="content"><ul id="quotes"></ul></div>
 </article>
-<footer>Homenet Spaces</footer>
+<footer>
+Homenet Spaces
+<span class="backtotop-link link">back to top</span>
+</footer>
 </div>
 </body>
 </html>

@@ -27,6 +27,7 @@ loaded: false,
 logged: false,
 loginFocus: false,
 registerFocus: false,
+user: {},
 quotes: [],
 search: [],
 init: function(){
@@ -41,6 +42,23 @@ init: function(){
 		self.handleHash();
 	});
 	this.dom();
+	/*
+	HNS.init({"apikey":"hnsapi","logoutaction":true});
+	HNS.loggedIn = function(){
+		$("#hns-logout-button").show();
+		$("#hns-login-button").hide();
+		//alert("Hello "+HNS.user.fullname+" welcome to our website!");
+		if (getHash() === "") setHash("home");
+		aC.handleHash();
+	};
+	HNS.loggedOut = function(){
+		$("#hns-login-button").show();
+		$("#hns-logout-button").hide();
+		clearHash();
+		aC.handleHash();
+	};
+	aC.dom();
+	*/
 },
 loggedIn: function(){
 	if (this.logged !== true) return;
@@ -49,19 +67,14 @@ loggedIn: function(){
 		if (response.user !== false) {
 			self.user = response.user;
 			self.user.fullname = self.user.firstname+' '+self.user.lastname;
-			if (self.user.pages.length) self.user.pages = JSON.parse(response.user.pages);
-			$("#loggedin").show();
-			$("#loggedout").hide();
 			$("body").addClass("in").removeClass("out");
 			self.handleHash();
-			// .displayMe();
+			// self.displayMe();
 		} else self.logout();
 	});
 },
 loggedOut: function(){
 	if (this.logged !== false) return;
-	$("#loggedout").show();
-	$("#loggedin").hide();
 	$("body").addClass("out").removeClass("in");
 },
 login: function(){
@@ -175,23 +188,6 @@ onKeyDown: function(e){
 		}
 	}
 },
-init: function(){
-	HNS.init({"apikey":"hnsapi","logoutaction":true});
-	HNS.loggedIn = function(){
-		$("#hns-logout-button").show();
-		$("#hns-login-button").hide();
-		//alert("Hello "+HNS.user.fullname+" welcome to our website!");
-		if (getHash() === "") setHash("home");
-		aC.handleHash();
-	};
-	HNS.loggedOut = function(){
-		$("#hns-login-button").show();
-		$("#hns-logout-button").hide();
-		clearHash();
-		aC.handleHash();
-	};
-	aC.dom();
-},
 handleHash: function(){
 	if (getHash() == "all") {
 		$.getJSON("ajax.php", {type:"all",apikey:"hnsapi"}, function(response){
@@ -254,7 +250,44 @@ handleHash: function(){
 	}
 },
 dom: function(){
-	var quotes = $("#quotes");
+	var self = this, quotes = $("#quotes");
+	$("#authpanel").on({
+		focus: function(){
+			self.loginFocus = true;
+		},
+		blur: function(){
+			self.loginFocus = false;
+		}
+	},'#lemail, #lpassword');
+	$("#authpanel").on({
+		focus: function(){
+			self.registerFocus = true;
+		},
+		blur: function(){
+			self.registerFocus = false;
+			self.regValidate();
+		}
+	},'#reg_name, #reg_email, #reg_password, #reg_pageurl');
+	$("#authpanel").on('click','#b_login_splash',function(){
+		self.login();
+	});
+	$("#authpanel").on('click','#b_register_splash',function(){
+		$("#register").show();
+		$("#login").hide();
+	});
+	$("#authpanel").on('click','#b_register',function(){
+		self.register();
+	});
+	$("#authpanel").on('click','#b_login',function(){
+		$("#login").show();
+		$("#register").hide();
+	});
+	$(".in").on('click','.logout-link',function(){
+		self.logout();
+	});
+	$("footer").on('click','.backtotop-link',function(){
+		$.scrollTo(0, 1000);
+	});
 	$("#showall > span").on('click',function(){
 		setHash("all");
 		aC.handleHash();
