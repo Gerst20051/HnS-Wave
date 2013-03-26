@@ -39,26 +39,8 @@ init: function(){
 			self.logged = true;
 			self.loggedIn();
 		} else self.loggedOut();
-		self.handleHash();
 	});
 	this.dom();
-	/*
-	HNS.init({"apikey":"hnsapi","logoutaction":true});
-	HNS.loggedIn = function(){
-		$("#hns-logout-button").show();
-		$("#hns-login-button").hide();
-		//alert("Hello "+HNS.user.fullname+" welcome to our website!");
-		if (getHash() === "") setHash("home");
-		aC.handleHash();
-	};
-	HNS.loggedOut = function(){
-		$("#hns-login-button").show();
-		$("#hns-logout-button").hide();
-		clearHash();
-		aC.handleHash();
-	};
-	aC.dom();
-	*/
 },
 loggedIn: function(){
 	if (this.logged !== true) return;
@@ -67,15 +49,23 @@ loggedIn: function(){
 		if (response.user !== false) {
 			self.user = response.user;
 			self.user.fullname = self.user.firstname+' '+self.user.lastname;
+			$("#authpanel").parent().css('visibility','hidden');
+			$("#logout-button").show();
+			$("#login-button").hide();
 			$("body").addClass("in").removeClass("out");
+			//alert("Hello "+HNS.user.fullname+" welcome to our website!");
+			if (getHash() === "") setHash("home");
 			self.handleHash();
-			// self.displayMe();
 		} else self.logout();
 	});
 },
 loggedOut: function(){
 	if (this.logged !== false) return;
+	$("#login-button").show();
+	$("#logout-button").hide();
 	$("body").addClass("out").removeClass("in");
+	clearHash();
+	this.handleHash();
 },
 login: function(){
 	var self = this, e = false, $login = $("#f_login"), $email = $login.find("#lemail"), $password = $login.find("#lpassword");
@@ -108,7 +98,6 @@ logout: function(){
 		if (!stringToBoolean(response.logged)) {
 			self.logged = false;
 			self.user = {};
-			self.page = {};
 			self.loggedOut();
 			Hash.clear();
 		}
@@ -120,10 +109,10 @@ regValidate: function(){
 	$name = $reg.find("#reg_name"), name_trim = $.trim($name.val()),
 	$email = $reg.find("#reg_email"), email_trim = $.trim($email.val()),
 	$password = $reg.find("#reg_password"), password_trim = $.trim($password.val()),
-	$pageurl = $reg.find("#reg_pageurl"), pageurl_trim = $.trim($pageurl.val()),
+	$username = $reg.find("#reg_username"), username_trim = $.trim($username.val()),
 	nameReg = /[A-Za-z'-]/,
 	emailReg = /^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}?$/i,
-	pageurlReg = /[A-Za-z0-9-_]/;
+	usernameReg = /[A-Za-z0-9-_]/;
 
 	if (!name_trim.length || !nameReg.test(name_trim) || name_trim.split(' ').length < 2) {
 		$name.addClass('error');
@@ -140,10 +129,10 @@ regValidate: function(){
 		e = true;
 	} else $password.removeClass('error');
 
-	if (!pageurl_trim.length || !pageurlReg.test(pageurl_trim)) {
-		$pageurl.addClass('error');
+	if (!username_trim.length || !usernameReg.test(username_trim)) {
+		$username.addClass('error');
 		e = true;
-	} else $pageurl.removeClass('error');
+	} else $username.removeClass('error');
 	
 	return !e;
 },
@@ -190,7 +179,7 @@ onKeyDown: function(e){
 },
 handleHash: function(){
 	if (getHash() == "all") {
-		$.getJSON("ajax.php", {type:"all",apikey:"hnsapi"}, function(response){
+		$.getJSON("ajax.php", {type:"all"}, function(response){
 			if ($.isArray(response)) {
 				aC.quotes = response;
 				var quotes = "";
@@ -204,7 +193,7 @@ handleHash: function(){
 			}
 		});
 	} else if (getHash() == "user") {
-		$.getJSON("ajax.php", {type:"user",apikey:"hnsapi"}, function(response){
+		$.getJSON("ajax.php", {type:"user"}, function(response){
 			if ($.isArray(response)) {
 				aC.quotes = response;
 				var quotes = "";
@@ -218,7 +207,7 @@ handleHash: function(){
 			}
 		});
 	} else if (getHash() == "home") {
-		$.getJSON("ajax.php", {type:"user",apikey:"hnsapi"}, function(response){
+		$.getJSON("ajax.php", {type:"user"}, function(response){
 			if ($.isArray(response)) {
 				aC.quotes = response;
 				var quotes = "";
@@ -232,7 +221,7 @@ handleHash: function(){
 			}
 		});
 	} else if (parseHash().id) {
-		$.getJSON("ajax.php", {id:parseHash().id,apikey:"hnsapi"}, function(response){
+		$.getJSON("ajax.php", {id:parseHash().id}, function(response){
 			if ($.isArray(response)) {
 				aC.quotes = response;
 				var quotes = "";
@@ -251,6 +240,12 @@ handleHash: function(){
 },
 dom: function(){
 	var self = this, quotes = $("#quotes");
+	$("#login-button").on('click',function(){
+		$("#authpanel").center().parent().hide().css('visibility','visible').fadeIn('slow');
+	});
+	$("#logout-button").on('click',function(){
+		self.logout();
+	});
 	$("#authpanel").on({
 		focus: function(){
 			self.loginFocus = true;
@@ -267,7 +262,7 @@ dom: function(){
 			self.registerFocus = false;
 			self.regValidate();
 		}
-	},'#reg_name, #reg_email, #reg_password, #reg_pageurl');
+	},'#reg_name, #reg_email, #reg_password, #reg_username');
 	$("#authpanel").on('click','#b_login_splash',function(){
 		self.login();
 	});
@@ -308,7 +303,7 @@ dom: function(){
 		if (name.length == 0) name = "New Quote";
 		else $("article > header #search").val('');
 		var quote = {"name":name,"quote":"The quote goes here."};
-		$.post("ajax.php", {quote:quote,timestamp:getTime(),type:3,apikey:"hnsapi"}, function(response){
+		$.post("ajax.php", {quote:quote,timestamp:getTime(),type:3}, function(response){
 			if (response) {
 				aC.quotes.unshift(response);
 				quotes.prepend(aC.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
@@ -334,7 +329,7 @@ dom: function(){
 		var newname = target.find('#name').val();
 		var newquote = target.find('#quote').val();
 		item.quote = {"name":newname,"quote":newquote};
-		$.post("ajax.php", {id:item.id,quote:item.quote,timestamp:getTime(),type:1,apikey:"hnsapi"}, function(response){
+		$.post("ajax.php", {id:item.id,quote:item.quote,timestamp:getTime(),type:1}, function(response){
 			if (response) {
 				target.find('.savespan').hide();
 			} else alert("Error: Couldn't save this quote.");
@@ -358,7 +353,7 @@ dom: function(){
 		var item = aC.quotes[index];
 		var quote = item.quote;
 		if (confirm("Are you sure you want to delete "+quote.name+"?")) {
-			$.post("ajax.php", {id:item.id,type:2,apikey:"hnsapi"}, function(response){
+			$.post("ajax.php", {id:item.id,type:2}, function(response){
 				if (response) {
 					$("#quotes li:eq("+index+")").remove();
 					aC.quotes.splice(index-1,1);

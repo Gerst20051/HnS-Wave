@@ -160,6 +160,19 @@ Array.prototype.remove = function(from, to){
 };
 
 function jQueryPlugins(){
+	$.fn.pixels = function(property){
+		return parseInt(this.css(property), 10);
+	};
+
+	$.fn.center = function(){
+		var w = $(window);
+		return this.each(function(){
+			$(this).css("position","absolute");
+			$(this).css("top",((w.height() - $(this).height()) / 2) - (($(this).pixels('padding-top') + $(this).pixels('padding-bottom')) / 2) + w.scrollTop() + "px");
+			$(this).css("left",((w.width() - $(this).width()) / 2) - (($(this).pixels('padding-left') + $(this).pixels('padding-right')) / 2) + w.scrollLeft() + "px");
+		});
+	};
+	
 	$.fn.clearForm = function(){
 		return this.each(function(){
 			$(this).find("input, select, textarea").not(':input[type=radio], :input[type=button], :input[type=submit], :input[type=reset], :input[type=hidden]').val('');

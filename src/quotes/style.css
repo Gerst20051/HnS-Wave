@@ -266,7 +266,7 @@ margin:10px;
 
 #authpanel label {
 display:inline-block;
-width:7em;
+width:11em;
 }
 
 #authpanel input[type="text"],#authpanel input[type="password"],#authpanel input[type="email"] {
