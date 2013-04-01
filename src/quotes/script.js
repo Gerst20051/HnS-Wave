@@ -66,7 +66,6 @@ loggedOut: function(){
 	$("#logout-button").hide();
 	$("body").addClass("out").removeClass("in");
 	$("#nav").slideDown();
-	clearHash();
 	this.handleHash();
 },
 login: function(){
@@ -100,8 +99,9 @@ logout: function(){
 		if (!stringToBoolean(response.logged)) {
 			self.logged = false;
 			self.user = {};
+			clearHash();
+			// Hash.clear();
 			self.loggedOut();
-			Hash.clear();
 		}
 	});
 },
@@ -182,8 +182,8 @@ onKeyDown: function(e){
 	}
 },
 handleHash: function(){
-	var self = this;
-	if (getHash() == "global") {
+	var self = this, hash = getHash();
+	if (hash == "" || hash == "global") {
 		$.getJSON(this.ajaxurl, {type:"global"}, function(response){
 			if ($.isArray(response)) {
 				self.quotes = response;
@@ -197,7 +197,7 @@ handleHash: function(){
 				$("#quotes").html('<li class="empty">No Quotes</li>');
 			}
 		});
-	} else if (getHash() == "user") {
+	} else if (hash == "user") {
 		$.getJSON(this.ajaxurl, {type:"user"}, function(response){
 			if ($.isArray(response)) {
 				self.quotes = response;
@@ -211,7 +211,7 @@ handleHash: function(){
 				$("#quotes").html('<li class="empty">No Quotes</li>');
 			}
 		});
-	} else if (getHash() == "home") {
+	} else if (hash == "home") {
 		$.getJSON(this.ajaxurl, {type:"user"}, function(response){
 			if ($.isArray(response)) {
 				self.quotes = response;
@@ -283,14 +283,17 @@ dom: function(){
 		$("#register").hide();
 	});
 	$("#nav").on('click','.home-link',function(){
+		$(this).parent().find(".selected").removeClass("selected").end().end().addClass("selected");
 		setHash("home");
 		self.handleHash();
 	});
 	$("#nav").on('click','.myquotes-link',function(){
-		setHash("?id="+1);
+		$(this).parent().find(".selected").removeClass("selected").end().end().addClass("selected");
+		setHash("?id="+self.user.uid);
 		self.handleHash();
 	});
 	$("#nav").on('click','.globalfeed-link',function(){
+		$(this).parent().find(".selected").removeClass("selected").end().end().addClass("selected");
 		setHash("global");
 		self.handleHash();
 	});
@@ -303,13 +306,9 @@ dom: function(){
 	$("footer").on('click','.backtotop-link',function(){
 		$.scrollTo(0, 1000);
 	});
-	$("#showall > span").on('click',function(){
-		setHash("global");
-		self.handleHash();
-	});
 	$("article > header").on('keyup','#search',function(){
 		self.search.splice(0,this.length);
-		if (0 < self.quotes.length){
+		if (self.quotes.length){
 			$.each(self.quotes, function(i,v){
 				if (-1 < v.name.indexOf($(this).val())) self.search.push(i);
 			});
@@ -319,17 +318,15 @@ dom: function(){
 		}
 	});
 	$("article > header").on('click','#logoaction',function(){
-		$(".home-link").click(function(){
-			var name = $.trim($("article > header #search").val());
-			if (name.length == 0) name = "New Quote";
-			else $("article > header #search").val('');
-			var quote = {"name":name,"quote":"The quote goes here."};
-			$.post(self.ajaxurl, {quote:quote,timestamp:getTime(),type:3}, function(response){
-				if (stringToBoolean(response)) {
-					self.quotes.unshift(response);
-					quotes.prepend(self.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
-				} else alert("Error: Couldn't create a new quote.");
-			});
+		var name = $.trim($("article > header #search").val());
+		if (name.length == 0) name = "New Quote";
+		else $("article > header #search").val('');
+		var quote = {"name":name,"quote":"The quote goes here."};
+		$.post(self.ajaxurl, {quote:quote,timestamp:getTime(),type:3}, function(response){
+			if (!empty(response)) {
+				self.quotes.unshift(response);
+				quotes.prepend(self.addQuote(response.id,response.quote.name,response.quote.quote)).find("li:first").fadeIn().find("header").click();
+			} else alert("Error: Couldn't create a new quote.");
 		});
 	});
 	quotes.on('click','li > header',function(){
@@ -351,7 +348,7 @@ dom: function(){
 		var newname = target.find('#name').val();
 		var newquote = target.find('#quote').val();
 		item.quote = {"name":newname,"quote":newquote};
-		$.post(self.ajaxurl, {id:item.id,quote:item.quote,timestamp:getTime(),type:1}, function(response){
+		$.post(self.ajaxurl, {pid:item.id,quote:item.quote,timestamp:getTime(),type:1}, function(response){
 			if (stringToBoolean(response)) {
 				target.find('.savespan').hide();
 			} else alert("Error: Couldn't save this quote.");
@@ -374,8 +371,8 @@ dom: function(){
 		var index = target.index();
 		var item = self.quotes[index];
 		var quote = item.quote;
-		if (confirm("Are you sure you want to delete "+quote.name+"?")) {
-			$.post(self.ajaxurl, {id:item.id,type:2}, function(response){
+		if (confirm("Are you sure you want to delete "+html_decode_entities(quote.name)+"?")) {
+			$.post(self.ajaxurl, {pid:item.id,type:2}, function(response){
 				if (stringToBoolean(response)) {
 					$("#quotes li:eq("+index+")").remove();
 					self.quotes.splice(index-1,1);
@@ -388,11 +385,15 @@ dom: function(){
 	quotes.on('change','li input',function(){
 		$(this).parents('li').find('.savespan').show();
 	}).on('click','input',function(){
+		if (this.selected === true) return;
+		else this.selected = true;
 		$(this).select();
 	});
 	quotes.on('change','textarea',function(){
 		$(this).parents('li').find('.savespan').show();
 	}).on('click','textarea',function(){
+		if (this.selected === true) return;
+		else this.selected = true;
 		$(this).select();
 	});
 	quotes.on('keyup','input#name',function(){

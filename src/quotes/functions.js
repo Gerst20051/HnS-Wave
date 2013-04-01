@@ -204,6 +204,7 @@ function yesterday(datetime){
 }
 
 function stringToBoolean(string){
+	string = $.trim(string);
 	if (typeof string == "undefined") {
 		log("stringToBoolean Undefined Error");
 		return false;
@@ -241,6 +242,14 @@ function stripSlashes(str){
 	});
 }
 
+function htmlentities(str){
+	return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function html_decode_entities(str){
+	return (str + '').replace(/(&amp;)/g, '&').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"');
+}
+
 function isDefined(variable){
 	return (typeof window[variable] === "undefined") ? false : true;
 }
@@ -264,7 +273,7 @@ function hasModifier(){
 function bind(fnThis, fn){
 	var args = Array.prototype.slice.call(arguments, 2);
 	return function(){
-		if (0 < args.length) arguments = args;
+		if (args.length) arguments = args;
 		return fn.apply(fnThis, arguments);
 	};
 }
