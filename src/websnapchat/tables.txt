@@ -1,0 +1,26 @@
+snaps
+-----------------
+id
+oid (owner)
+type (video = 2 or image = 1)
+data (mediumtext, len = 16,777,215 bytes,
+	max size = 10 frames per second * 10 seconds = 100 * sizeof(frame) ~ 20000 bytes, 
+	len = 2,000,000 bytes)
+timestamp
+
+
+
+
+messages
+-----------------
+id
+sid (sender)
+rid (receiver)
+timelimit (seconds to show snap)
+type (video = 2 or image = 1)
+framerate (if video 0.2-10 frames per second?)
+data (base64 of image / blob of video?)
+opened (0 no or 1 yes) - shows receiver has opened snap
+sclear (sender cleared?)
+rclear (receiver cleared?)
+timestamp
