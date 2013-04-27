@@ -1,14 +1,16 @@
 <?php
+require 'mysql.config.php';
+
 if (LOCAL) {
-	define('MYSQL_HOST','localhost');
+	define('MYSQL_HOST','');
 	define('MYSQL_USER','');
 	define('MYSQL_PASSWORD','');
-	define('MYSQL_DATABASE','websnapchat');
+	define('MYSQL_DATABASE','');
 } else {
-	define('MYSQL_HOST','mysql16.000webhost.com');
+	define('MYSQL_HOST','');
 	define('MYSQL_USER','');
 	define('MYSQL_PASSWORD','');
-	define('MYSQL_DATABASE','a4253500_hnswave');
+	define('MYSQL_DATABASE','');
 }
 
 define('MYSQL_TABLE_USERS','users_snapchat');

@@ -1,5 +1,5 @@
 <?php
-define('LOCAL',false);
+define('LOCAL',true);
 define('ROOT',dirname(__FILE__));
 define('DIR',(LOCAL)?dirname(ROOT):ROOT);
 define('DISPLAY_ERRORS',false);

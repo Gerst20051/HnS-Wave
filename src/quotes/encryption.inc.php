@@ -21,7 +21,7 @@ function pbkdf2_real($algorithm, $password, $salt, $count, $key_length){
 	$output = "";
 
 	for ($i = 1; $i <= $numBlocks; $i++)
-			$output .= pbkdf2_f($password, $salt, $count, $i, $algorithm, $hLen);
+		$output .= pbkdf2_f($password, $salt, $count, $i, $algorithm, $hLen);
 
 	return substr($output, 0, $key_length);
 }
