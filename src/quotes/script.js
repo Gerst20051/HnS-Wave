@@ -190,7 +190,7 @@ handleHash: function(){
 				var quotes = "";
 				$.each(response, function(i,v){
 					var quote = v.quote;
-					quotes += self.listQuote(v.id,quote.name,quote.quote);
+					quotes += self.listQuote(v.id,quote.name,quote.quote,v.owner_name);
 				});
 				$("#quotes").html(quotes);
 			} else {
@@ -237,6 +237,18 @@ handleHash: function(){
 				$("#quotes").html(quotes);
 			} else {
 				$("#quotes").html('<li class="empty">No Quotes</li>');
+			}
+		});
+	} else if (parseHash().q) {
+		$.getJSON(this.ajaxurl, {q:parseHash().q}, function(response){
+			if ($.isArray(response)) {
+				self.quotes = response;
+				var quotes = response[0];
+				var quote = quotes.quote;
+				quotes = self.listQuote(quotes.id,quote.name,quote.quote,quotes.owner_name);
+				$("#quotes").html(quotes);
+			} else {
+				$("#quotes").html('<li class="empty">Invalid Quote ID</li>');
 			}
 		});
 	} else {
@@ -382,6 +394,22 @@ dom: function(){
 		}
 		return false;
 	});
+	quotes.on('click','.quotename',function(){
+		var target = $(this).parents('li');
+		var index = target.index();
+		var item = self.quotes[index];
+		setHash("?q="+item.id);
+		self.handleHash();
+		return false;
+	});
+	quotes.on('click','.quoteowner',function(){
+		var target = $(this).parents('li');
+		var index = target.index();
+		var item = self.quotes[index];
+		setHash("?id="+item.owner_id);
+		self.handleHash();
+		return false;
+	});
 	quotes.on('change','li input',function(){
 		$(this).parents('li').find('.savespan').show();
 	}).on('click','input',function(){
@@ -408,16 +436,20 @@ addQuote: function(id,name,quote){
 	if (arguments.length == 2){ html = '<li id="quote-'+id+'" class="new">'; if ($.trim(name) == "") name="New Quote"; quote=""; }
 	html += '<header><aside class="links"><span class="savespan"><a href="#" class="save">save</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="undo">undo</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span><a href="#" class="more">more</a><a href="#" class="less">less</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="delete">delete</a></aside><aside class="name">'+name+'</aside></header>';
 	html += '<div class="details">';
-	html += '<div><label for="name">name</label><input id="name" type="text" value="'+name+'"/></div>';
-	html += '<div><label for="quote">quote</label><textarea id="quote">'+quote+'</textarea></div>';
+	html += '<div><label for="name">name</label><input id="name" type="text" value="'+stripSlashes(name)+'"/></div>';
+	html += '<div><label for="quote">quote</label><textarea id="quote">'+stripSlashes(quote)+'</textarea></div>';
 	html += '</div></li>';
 	return html;
 },
-listQuote: function(id,name,quote){
+listQuote: function(id,name,quote,owner_name){
 	if (this.quotes.length < 2) $("#quotes").find('.empty').remove();
 	var html = '<li id="quote-'+id+'"><div class="quotelist">';
-	html += '<div class="quotename"><h2>'+name+'</h2></div>';
-	html += '<div class="quotequote">"'+quote+'"</div>';
+	if (owner_name) {
+		html += '<div class="quotename"><h2>'+stripSlashes(name)+'</h2><div class="quoteuser"><div class="quoteowner">'+owner_name+'</div><img class="blankprofile" src="blank_profile.gif"/></div></div>';
+	} else {
+		html += '<div class="quotename"><h2>'+stripSlashes(name)+'</h2></div>';
+	}
+	html += '<div class="quotequote">"'+stripSlashes(quote)+'"</div>';
 	html += '</div></li>';
 	return html;
 }

@@ -43,7 +43,7 @@ if ($ACTION == 'login') {
 				$_SESSION['lastname'] = $row['lastname'];
 				$_SESSION['access_level'] = $row['access_level'];
 				$_SESSION['last_login'] = $row['last_login'];
-				$db->sfquery(array('UPDATE `%s` SET last_login = %s, logins = logins+1 WHERE uid = %s',MYSQL_TABLE_USERS,time(),$_SESSION['uid']));
+				$db->sfquery(array('UPDATE `%s` SET last_login = "%s", logins = logins+1 WHERE uid = "%s"',MYSQL_TABLE_USERS,time(),$_SESSION['uid']));
 				print_json(array('logged'=>true));
 			} else print_json(array('logged'=>false));
 		} else print_json(array('logged'=>false));
@@ -108,12 +108,12 @@ if (!empty($UID) && !empty($PID) && !empty($TYPE)) {
 	$type = (int)$TYPE;
 	try {
 		$db = new MySQL();
-		$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE id = '.$PID);
+		$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE id = "'.$PID.'"');
 		if ($type === 1) {
 			if (!empty($QUOTE) && !empty($TIMESTAMP)) {
 				$quote = json_encode($QUOTE);
 				if ($db->numRows()) {
-					$db->sfquery(array('UPDATE `%s` SET quote = "%s" WHERE id = %s',MYSQL_TABLE,$quote,$PID));
+					$db->sfquery(array('UPDATE `%s` SET quote = "%s" WHERE id = "%s"',MYSQL_TABLE,$quote,$PID));
 				} else {
 					$db->insert(MYSQL_TABLE, array(
 						'owner_id'=>$UID,
@@ -128,7 +128,7 @@ if (!empty($UID) && !empty($PID) && !empty($TYPE)) {
 		} elseif ($type === 2) {
 			if ($db->numRows()) {
 				// check to make sure the current user UID is the owner of the post to be deleted PID
-				$db->query('DELETE FROM `'.MYSQL_TABLE.'` WHERE id = '.$PID);
+				$db->query('DELETE FROM `'.MYSQL_TABLE.'` WHERE id = "'.$PID.'"');
 				if ($db->affectedRows()) {
 					die('1');
 				} else die('0');
@@ -160,9 +160,7 @@ if (!empty($UID) && !empty($PID) && !empty($TYPE)) {
 						$row["quote"] = json_decode($row["quote"]);
 						$row["quote"]->name = htmlentities($row["quote"]->name, ENT_QUOTES, "UTF-8");
 						$row["quote"]->quote = htmlentities($row["quote"]->quote, ENT_QUOTES, "UTF-8");
-						if ($db->numRows()) {
-							print_json($row);
-						}
+						print_json($row);
 					} else die('0');
 				} else die('0');
 			}
@@ -192,7 +190,7 @@ if ($ACTION == 'logged') {
 } elseif ($ACTION == 'userdata') {
 	try {
 		$db = new MySQL();
-		$db->sfquery(array('SELECT %s FROM `%s` WHERE uid = %s LIMIT 1',MYSQL_ALL_USERS,MYSQL_TABLE_USERS,$UID));
+		$db->sfquery(array('SELECT %s FROM `%s` WHERE uid = "%s" LIMIT 1',MYSQL_ALL_USERS,MYSQL_TABLE_USERS,$UID));
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRow();
 			print_json(array('user'=>$data));
@@ -212,7 +210,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 	$ID = (int)$_GET['id'];
 	try {
 		$db = new MySQL();
-		$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE owner_id = '.$ID);
+		$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE owner_id = "'.$ID.'"');
 		$rows = $db->fetchParsedRows();
 		for ($i=0;$i<count($rows);$i++) {
 			$rows[$i]["quote"] = json_decode($rows[$i]["quote"]);
@@ -224,17 +222,39 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 		echo $e->getMessage();
 		exit();
 	}
-} elseif (!empty($TYPE)) {
+} elseif (isset($_GET['q']) && !empty($_GET['q'])) {
+	$ID = (int)$_GET['q'];
+	try {
+		$db = new MySQL();
+		$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE id = '.$ID);
+		$row = $db->fetchParsedRow();
+		if ($db->numRows()) {
+			$row["quote"] = json_decode($row["quote"]);
+			$owner_id = $row["owner_id"];
+			$db->sfquery(array('SELECT firstname, lastname FROM `%s` WHERE uid = "%s" LIMIT 1',MYSQL_TABLE_USERS,$owner_id));
+			$userrow = $db->fetchParsedRow();
+			$row["owner_name"] = $userrow["firstname"] . " " . $userrow["lastname"];
+			print_json(array($row));
+		} else die('0');
+	} catch(Exception $e) {
+		echo $e->getMessage();
+		exit();
+	}
+}  elseif (!empty($TYPE)) {
 	if ($TYPE == 'global') {
 		try {
 			$db = new MySQL();
 			//$rows = $db->fetchParsedAll(MYSQL_TABLE);
 			$db->query('SELECT * FROM '.MYSQL_TABLE);
 			$rows = $db->fetchParsedRows();
-			for ($i=0;$i<count($rows);$i++) {
-				$rows[$i]["quote"] = json_decode($rows[$i]["quote"]);
-			}
 			if ($db->numRows()) {
+				for ($i=0;$i<count($rows);$i++) {
+					$rows[$i]["quote"] = json_decode($rows[$i]["quote"]);
+					$owner_id = $rows[$i]["owner_id"];
+					$db->sfquery(array('SELECT firstname, lastname FROM `%s` WHERE uid = "%s" LIMIT 1',MYSQL_TABLE_USERS,$owner_id));
+					$row = $db->fetchParsedRow();
+					$rows[$i]["owner_name"] = $row["firstname"] . " " . $row["lastname"];
+				}
 				print_json(array_reverse($rows));
 			} else die('0');
 		} catch(Exception $e) {
@@ -244,7 +264,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 	} elseif ($TYPE == 'user') {
 		try {
 			$db = new MySQL();
-			$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE owner_id = '.$UID);
+			$db->query('SELECT * FROM `'.MYSQL_TABLE.'` WHERE owner_id = "'.$UID.'"');
 			$rows = $db->fetchParsedRows();
 			for ($i=0;$i<count($rows);$i++) {
 				$rows[$i]["quote"] = json_decode($rows[$i]["quote"]);

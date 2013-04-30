@@ -4,10 +4,10 @@ body {
 background-color:#272521;
 cursor:default;
 font-family:arial,verdana;
-user-select:none;
+user-select:text;
 -khtml-user-select:none;
 -moz-user-select:none;
--webkit-user-select:none;
+-webkit-user-select:text;
 }
 
 #main {
@@ -19,10 +19,6 @@ width:650px;
 font-size:20pt;
 font-weight:bold;
 margin:20px;
-}
-
-#main > header > span {
-cursor:pointer;
 }
 
 #main > header .leftheading {
@@ -76,6 +72,10 @@ display:none;
 
 .in #logoaction {
 display:block;
+}
+
+.out article > header {
+text-align:center;
 }
 
 article > header {
@@ -237,11 +237,36 @@ word-wrap:break-word;
 
 #quotes li .quotename {
 color:#a39c82;
+cursor:pointer;
+position:relative;
+}
+
+#quotes li .quotename:hover {
+color:#8f886c;
 }
 
 #quotes li .quotequote {
 text-align:justify;
 text-justify:inter-word;
+}
+
+#quotes li .quoteuser {
+position:absolute;
+right:0;
+top:0;
+}
+
+#quotes li .quoteuser .quoteowner {
+line-height:1.5;
+margin-right:30px;
+}
+
+#quotes li .quoteuser .blankprofile {
+height:20px;
+position:absolute;
+right:0;
+top:0;
+width:20px;
 }
 
 footer {
