@@ -14,5 +14,6 @@ if (LOCAL) {
 }
 
 define('MYSQL_TABLE','quotes');
+define('MYSQL_TABLE_USERS','users');
 define('MYSQL_ALL_USERS','uid, email, username, firstname, lastname, access_level, last_login, date_joined, logins');
 ?>
