@@ -1,9 +1,5 @@
 <?php
-define('PASSWORD_PEPPER','T4XYRpmUnWMcEHHoEUDeqpPdzb9pIDWh5xfpNUdh9XgX6qo81nNliW4iwJOGeAYK1q0mgi1Ua1U4nKuQsZHqUMP'
-	. 'DkaNkJOaBb5l7PMtSpvgVvB4FoZSqNQlEeiFT84GOI7PToZkO7hLx7cClTmw044Tt2Xl2z1ky9K6mjPrRvDGe5N3DKm1wAWa2lUluVMINN'
-	. '7k34ptsB3VyiY8WvOtfh7nrTCBmOHI79zoMA4mjTfZy5KPqMphoKgJqUu9MQ04yuHFOYSUv35XSqS3EbU2nn3oFz4rxNhi4ILdJ9rmgYEy'
-	. 'oel33y2b4Oos513RrLF9WigOSB7TP6uSlSGgOgo30fLx5kZspjpinu4j6XreR9QA4IbUeE1LIhno5L3bbCikmW1J7sT3TUfkb3sE3iXLxb'
-	. 'ClY7KjBWxsnq3vTFh62tXXGsrMZcB0tylPkHPGDIZ6CR9izANzADLdQJ8sy56w2LQoO4ZpSkfn6ooXKmns4AY5yqGdzDonqD1C5C150ZeL');
+require_once 'config.php';
 
 function pbkdf2($password, $salt){
 	$goodSalt = PASSWORD_PEPPER . $salt . PASSWORD_PEPPER;
