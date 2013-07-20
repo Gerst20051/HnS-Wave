@@ -164,28 +164,5 @@ class RestRequest {
 		return $this->request_vars;
 	}
 }
-
-/******************
- ** Example Code **
- ******************
-
-$data = RestUtils::processRequest();
-
-switch ($data->getMethod) {
-	case 'get':
-		$user_list = getUserList(); // assume this returns an array
-		if ($data->getHttpAccept == 'json') {
-			RestUtils::sendResponse(200, $this->json($user_list), 'application/json');
-		} else if ($data->getHttpAccept == 'xml') {
-			RestUtils::sendResponse(200, $this->xml($user_list), 'application/xml');
-		}
-		break;
-	case 'post': // new user create
-		$user = new User();
-		$user->setFirstName($data->getData()->first_name); // just for example, this should be done cleaner
-		$user->save();
-		RestUtils::sendResponse(201, $user->getId()); // just send the new ID as the body
-		break;
-}
-*/
 ?>
+

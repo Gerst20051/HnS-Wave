@@ -183,3 +183,4 @@ App.addArtist = function(name){
 	});
 	artist.get('tracks').pushObject(track);
 };
+

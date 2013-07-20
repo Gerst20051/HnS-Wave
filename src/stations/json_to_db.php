@@ -45,3 +45,5 @@ if ($updatedatabase === true) {
 
 	echo "database updated";
 }
+?>
+

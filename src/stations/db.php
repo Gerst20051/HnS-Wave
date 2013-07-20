@@ -64,3 +64,4 @@ public function artist(){ // load tracks for specified artist
 $router = new Router;
 $router->processRoute();
 ?>
+
