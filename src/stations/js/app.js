@@ -1,4 +1,16 @@
-var App = Ember.Application.create();
+window.App = Ember.Application.create({
+	LOG_TRANSITIONS: true
+});
+window.aC = {
+	isLocal: true,
+	getNamespace: function(){
+		return (this.isLocal) ? 'git/hns-wave/src/stations/rest' : 'stations/rest';
+	}
+};
+
+Ember.onerror = function(error){
+	console.log(error);
+};
 
 // Routes
 
@@ -35,10 +47,6 @@ App.ArtistsTracksRoute = Ember.Route.extend({
 App.ArtistsTracksPlayingRoute = Ember.Route.extend({
 	setupController: function(controller, model){
 		controller.set('content', model);
-		setTimeout(function(){
-			widget = SC.Widget(document.getElementById('sc-widget'));
-			widget.play();
-		}, 1000);
 	}
 });
 
@@ -82,10 +90,16 @@ App.SearchView = Ember.TextField.extend({
 });
 
 App.Store = DS.Store.extend({
-	revision: 11,
-	adapter: 'DS.FixtureAdapter'
+	revision: 12,
+	adapter: DS.RESTAdapter.create({
+		namespace: window.aC.getNamespace()
+	})
 });
-
+/*
+DS.RESTAdapter.configure("plurals", {
+	tracks: "tracks"
+});
+*/
 App.Artist = DS.Model.extend({
 	name: DS.attr('string'),
 	tracks: DS.hasMany('App.Tracks')
@@ -99,76 +113,6 @@ App.Tracks = DS.Model.extend({
 	img: DS.attr('string'),
 	duration: DS.attr('number')
 });
-
-App.Artist.FIXTURES = [
-	{
-		id: 1,
-		name: 'Carl Craig',
-		tracks: [100,101,102]
-	},
-	{
-		id: 2,
-		name: 'Stacey Pullen',
-		tracks: [200,201,202]
-	}
-];
-
-App.Tracks.FIXTURES = [
-	{
-		id: 100,
-		artistid: 1,
-		videoid: "vid",
-		title: '20 Years Of Planet E Essential Mix',
-		url: 'https://api.soundcloud.com/r_co/carl-craig-20-years-of-planet',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	},
-	{
-		id: 101,
-		artistid: 1,
-		videoid: "vid",
-		title: 'Live @ Mixmag Live',
-		url: 'https://api.soundcloud.com/planetedetroit/carl-craig-live-mixmag-live-19',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	},
-	{
-		id: 102,
-		artistid: 1,
-		videoid: "vid",
-		title: 'FACT mix 345',
-		url: 'https://api.soundcloud.com/selftitledmag/carl-craig-fact-mix-345',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	},
-	{
-		id: 200,
-		artistid: 2,
-		videoid: "vid",
-		title: 'Stacey Pullen Live',
-		url: 'https://api.soundcloud.com/staceypullen/stacey-pullen-live',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	},
-	{
-		id: 201,
-		artistid: 2,
-		videoid: "vid",
-		title: 'Get Up (Original)',
-		url: 'https://api.soundcloud.com/staceypullen/stacey-pullen-get-up-original',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	},
-	{
-		id: 202,
-		artistid: 2,
-		videoid: "vid",
-		title: 'Circus Act',
-		url: 'https://api.soundcloud.com/staceypullen/sets/bfr007-circus-act-ep',
-		img: 'http://i.ytimg.com/vi/zWktTuB41Ww/default.jpg',
-		duration: 259
-	}
-];
 
 App.addArtist = function(name){
 	var artist = App.Artist.createRecord({ id: 3, name: name });

@@ -14,7 +14,7 @@ public function __construct(){
 }
 
 public function processRoute(){
-	$this->route = explode("/", strtolower(trim($_GET['route'])));
+	$this->route = explode('/', strtolower(trim($_GET['route'])));
 	$func = $this->route[0];
 
 	if (method_exists($this, $func) === true) {
@@ -51,12 +51,44 @@ private function sendAcceptedResponse($status, $array){
 }
 
 public function artists(){ // list all artists
-	$final = array('data'=>array());
+	if (1 === count($this->route)) {
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`',
+			MYSQL_TABLE_ARTISTS
+		));
+		$rows = $this->db->fetchParsedRows();
+		for ($i = 0; $i < count($rows); $i++) {
+			$rows[$i]['tracks'] = json_decode($rows[$i]['tracks']);
+		}
+		$final = array('artists'=>$rows);
+	} elseif (1 < count($this->route)) {
+		$route = $this->route;
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`
+					WHERE artistid = "%s"',
+			MYSQL_TABLE_TRACKS,
+			$route[1]
+		));
+		$rows = $this->db->fetchParsedRows();
+		$final = array('tracks'=>$rows);
+	}
 	$this->sendAcceptedResponse(200, $final);
 }
 
-public function artist(){ // load tracks for specified artist
-	$final = array('data'=>array());
+public function tracks(){ // list all artists
+	$request = $this->request->getRequestVars();
+	$ids = $request['ids'];
+	$this->db->sfquery(array(
+		'SELECT *
+			FROM `%s`
+				WHERE id
+					IN ('.implode(',', $ids).')',
+		MYSQL_TABLE_TRACKS
+	));
+	$rows = $this->db->fetchParsedRows();
+	$final = array('tracks'=>$rows);
 	$this->sendAcceptedResponse(200, $final);
 }
 }

@@ -3,7 +3,7 @@ header("Pragma: no-cache");
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
-$createtables = true;
+$createtables = false;
 $updatetables = false;
 $json = json_decode(file_get_contents('playlist.json'), true);
 $json = $json['data'];
