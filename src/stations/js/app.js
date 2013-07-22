@@ -29,9 +29,9 @@ App.Router.map(function(){
 	*/
 	this.resource('profile');
 	this.resource('artists', { path: '/artists' }, function(){
-		this.resource('artist', { path: '/:artist_id' }, function(){
-			this.resource('tracks', { path: '/tracks' }, function(){
-				this.route('playing', { path: '/:track_id' });
+		this.resource('artists.artist', { path: ':artist_id' }, function(){
+			this.resource('artist.tracks', { path: '/tracks' }, function(){
+				this.route('playing', { path: ':track_id' });
 			});
 		});
 	});
@@ -56,6 +56,15 @@ App.ArtistRoute = Ember.Route.extend({
 });
 */
 App.ArtistTracksIndexRoute = Ember.Route.extend({
+	model: function(params){
+		return App.Artist.find(params.artist_id);
+	},
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
+	}
+});
+
+App.ArtistTracksRoute = Ember.Route.extend({
 	model: function(params){
 		return App.Artist.find(params.artist_id);
 	},
