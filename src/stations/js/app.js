@@ -22,16 +22,36 @@ App.ApplicationController = Ember.Controller.extend({
 // Routes
 
 App.Router.map(function(){
-	/*
-	this.route('artists', { path: '/artists' });
-	this.route('artist', { path: '/artists/:artist_id' });
-	this.route('artists.tracks', { path: '/artists/:artist_id/tracks' });
-	*/
 	this.resource('profile');
-	this.resource('artists', { path: '/artists' }, function(){
+	// URL: /profile
+	// RouteName: profile
+	// Controller: ProfileController
+	// Route: ProfileRoute
+	// Template: profile
+	this.resource('artists', function(){
+		// URL: /artists
+		// RouteName: artists OR artists.index
+		// Controller: ArtistsController OR ArtistsIndexController
+		// Route: ArtistsRoute OR ArtistsIndexRoute
+		// Template: artists OR artists/index
 		this.resource('artists.artist', { path: ':artist_id' }, function(){
-			this.resource('artist.tracks', { path: '/tracks' }, function(){
+			// URL: /artists/:artist_id
+			// RouteName: artists.index OR artist.index
+			// Controller: ArtistsIndexController OR ArtistIndexController
+			// Route: ArtistsIndexRoute OR ArtistIndexRoute
+			// Template: artists/index OR artist/index
+			this.resource('artist.tracks', function(){
+				// URL: /artists/:artist_id/tracks
+				// RouteName: artists.tracks OR artists.artist.tracks OR artist.tracks
+				// Controller: ArtistsTracksController OR ArtistsArtistTracksController OR ArtistTracksController
+				// Route: ArtistsTracksRoute OR ArtistsArtistTracksRoute OR ArtistTracksRoute
+				// Template: artists/tracks OR artists/artist/tracks OR artist/tracks
 				this.route('playing', { path: ':track_id' });
+					// URL: /artists/:artist_id/tracks/:track_id
+					// RouteName: tracks.index
+					// Controller: TracksIndexController
+					// Route: TracksIndexRouteRoute
+					// Template: tracks/index
 			});
 		});
 	});
@@ -44,28 +64,59 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.ArtistsRoute = Ember.Route.extend({
-	model: function(){
+	model: function(params){
+		alert("Artists");
+		console.log(params);
 		return App.Artist.find();
 	}
 });
-/*
-App.ArtistRoute = Ember.Route.extend({
-	redirect: function(){
-		this.transitionTo('tracks');
-	}
-});
-*/
-App.ArtistTracksIndexRoute = Ember.Route.extend({
+
+App.ArtistsIndexRoute = Ember.Route.extend({
 	model: function(params){
+		alert("ArtistsIndex");
+		console.log(params);
 		return App.Artist.find(params.artist_id);
 	},
 	setupController: function(controller, tracks){
 		controller.set('content', tracks);
+	},
+	redirect: function(){
+		//this.transitionTo('tracks');
+	}
+});
+
+App.ArtistsArtistIndexRoute = Ember.Route.extend({
+	model: function(params){
+		alert("ArtistsArtistIndex");
+		console.log(params);
+		return App.Artist.find(params.artist_id);
+	},
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
+	},
+	redirect: function(){
+		this.transitionTo('tracks');
+	}
+});
+
+App.ArtistIndexRoute = Ember.Route.extend({
+	model: function(params){
+		alert("ArtistIndex");
+		console.log(params);
+		return App.Artist.find(params.artist_id);
+	},
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
+	},
+	redirect: function(){
+		this.transitionTo('tracks');
 	}
 });
 
 App.ArtistTracksRoute = Ember.Route.extend({
 	model: function(params){
+		alert("ArtistTracks");
+		console.log(params);
 		return App.Artist.find(params.artist_id);
 	},
 	setupController: function(controller, tracks){
@@ -73,8 +124,11 @@ App.ArtistTracksRoute = Ember.Route.extend({
 	}
 });
 
-App.TracksIndexRoute = Ember.Route.extend({
+
+App.ArtistTracksIndexRoute = Ember.Route.extend({
 	model: function(params){
+		alert("ArtistTracksIndex");
+		console.log(params);
 		return App.Artist.find(params.artist_id);
 	},
 	setupController: function(controller, tracks){
@@ -82,16 +136,7 @@ App.TracksIndexRoute = Ember.Route.extend({
 	}
 });
 
-App.TracksRoute = Ember.Route.extend({
-	model: function(params){
-		return App.Artist.find(params.artist_id);
-	},
-	setupController: function(controller, tracks){
-		controller.set('content', tracks);
-	}
-});
-
-App.ArtistPlayingRoute = Ember.Route.extend({
+App.TracksPlayingRoute = Ember.Route.extend({
 	setupController: function(controller, track){
 		controller.set('content', track);
 	}
