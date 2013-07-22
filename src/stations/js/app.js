@@ -44,8 +44,8 @@ App.ArtistsRoute = Ember.Route.extend({
 		console.log(params);
 		return App.Artist.find();
 	},
-	setupController: function(controller, tracks){
-		controller.set('content', tracks);
+	setupController: function(controller, artists){
+		controller.set('content', artists);
 	}
 });
 
@@ -53,10 +53,9 @@ App.ArtistRoute = Ember.Route.extend({
 	model: function(params){
 		alert("ArtistRoute");
 		console.log(params);
-		return App.Artist.find(params.artist_id);
 	},
-	setupController: function(controller, tracks){
-		controller.set('content', tracks);
+	setupController: function(controller, model){
+		controller.set('content', model);
 	},
 	redirect: function(){
 		// this.transitionTo('tracks');
@@ -67,6 +66,7 @@ App.TracksRoute = Ember.Route.extend({
 	model: function(params){
 		alert("TracksRoute");
 		console.log(params);
+		return App.Artist.find(params.artist_id);
 	},
 	setupController: function(controller, tracks){
 		controller.set('content', tracks);
@@ -78,8 +78,8 @@ App.PlayingRoute = Ember.Route.extend({
 		alert("PlayingRoute");
 		console.log(params);
 	},
-	setupController: function(controller, tracks){
-		controller.set('content', tracks);
+	setupController: function(controller, model){
+		controller.set('content', model);
 	}
 });
 
