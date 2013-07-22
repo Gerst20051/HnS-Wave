@@ -29,10 +29,6 @@ padding:9px 0;
 </script>
 <script type="text/x-handlebars" data-template-name="artists">
 	<div class="row-fluid">
-	<div class="span3">
-	Add a station:
-	{{ render "search" }}
-	</div>
 	</div>
 	<div class="row-fluid">
 	<div class="span4">
@@ -40,7 +36,7 @@ padding:9px 0;
 	<ul class="nav nav-list">
 	<li class="nav-header">Stations</li>
 	 {{#each controller}} 
-		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artists.artist this}}{{this.name}}{{/linkTo}}</li>
+		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artist this}}{{this.name}}{{/linkTo}}</li>
 	 {{else}}
 		<p>
 		Please wait while the artists load.
@@ -78,13 +74,13 @@ padding:9px 0;
 <script type="text/x-handlebars" data-template-name="artists/artist">
 	{{outlet}}
 </script>
-<script type="text/x-handlebars" data-template-name="artist/index">
-	Artist Profile<br/><br/>
+<script type="text/x-handlebars" data-template-name="artist">
+	<h1>{{name}}</h1><br/>
 	Artist Plays<br/>
 	Top Tracks<br/>
-	{{#linkTo artist/tracks this}}Link To Tracks{{/linkTo}}
+	{{#linkTo tracks this}}Link To Tracks{{/linkTo}}
 </script>
-<script type="text/x-handlebars" data-template-name="artist/tracks">
+<script type="text/x-handlebars" data-template-name="tracks">
 	<div class="span4">
 	<div class="well">
 	<ul class="nav nav-list">
