@@ -50,19 +50,28 @@ private function sendAcceptedResponse($status, $array){
 	}
 }
 
-public function artists(){ // list all artists
-	if (1 === count($this->route)) {
+public function artists(){
+	if (1 === count($this->route)) { // list all artists
 		$this->db->sfquery(array(
 			'SELECT *
-				FROM `%s`',
+				FROM `%s` LIMIT 10',
 			MYSQL_TABLE_ARTISTS
 		));
-		$rows = $this->db->fetchParsedRows();
+		$artistrows = $this->db->fetchParsedRows();
 		for ($i = 0; $i < count($rows); $i++) {
-			$rows[$i]['tracks'] = json_decode($rows[$i]['tracks']);
+			$this->db->sfquery(array(
+				'SELECT *
+					FROM `%s`
+						WHERE artistid = "%s"',
+				MYSQL_TABLE_TRACKS,
+				$artistrows[$i]['id']
+			));
+			$trackrows = $this->db->fetchParsedRows();
+			$artistrows[$i]['tracks'] = $trackrows;
+			//$artistrows[$i]['tracks'] = json_decode($artistrows[$i]['tracks']);
 		}
-		$final = array('artists'=>$rows);
-	} elseif (1 < count($this->route)) {
+		$final = array('artists'=>$artistrows);
+	} elseif (1 < count($this->route)) { // list all tracks for artist based on artistid
 		$route = $this->route;
 		$this->db->sfquery(array(
 			'SELECT *
@@ -77,16 +86,27 @@ public function artists(){ // list all artists
 	$this->sendAcceptedResponse(200, $final);
 }
 
-public function tracks(){ // list all artists
+public function tracks(){
 	$request = $this->request->getRequestVars();
 	$ids = $request['ids'];
-	$this->db->sfquery(array(
-		'SELECT *
-			FROM `%s`
-				WHERE id
-					IN ('.implode(',', $ids).')',
-		MYSQL_TABLE_TRACKS
-	));
+	if (!isset($ids)) { // list all tracks for artist based on artistid
+		$route = $this->route;
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`
+					WHERE artistid = "%s"',
+			MYSQL_TABLE_TRACKS,
+			$route[1]
+		));
+	} else { // list all tracks for artist based on track ids
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`
+					WHERE id
+						IN ('.implode(',', $ids).')',
+			MYSQL_TABLE_TRACKS
+		));
+	}
 	$rows = $this->db->fetchParsedRows();
 	$final = array('tracks'=>$rows);
 	$this->sendAcceptedResponse(200, $final);

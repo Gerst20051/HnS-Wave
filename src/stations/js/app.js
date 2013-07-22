@@ -1,26 +1,40 @@
 window.App = Ember.Application.create({
-	LOG_TRANSITIONS: true
-});
-window.aC = {
+	LOG_TRANSITIONS: true,
+	currentPath: '',
 	isLocal: true,
-	getNamespace: function(){
-		return (this.isLocal) ? 'git/hns-wave/src/stations/rest' : 'stations/rest';
+	namespace: function(){
+		return (App.get('isLocal')) ? 'git/hns-wave/src/stations/rest' : 'stations/rest';
 	}
-};
+});
 
 Ember.onerror = function(error){
 	console.log(error);
 };
 
+/*
+App.ApplicationController = Ember.Controller.extend({
+	updateCurrentPath: function() {
+		App.set('currentPath', this.get('currentPath'));
+	}.observes('currentPath')
+});
+*/
+
 // Routes
 
 App.Router.map(function(){
-	this.resource('artists', function(){
-		this.resource('artists.tracks', { path: ':artist_id/tracks' }, function(){
-			this.route('playing', { path: ':tracks_id' });
+	/*
+	this.route('artists', { path: '/artists' });
+	this.route('artist', { path: '/artists/:artist_id' });
+	this.route('artists.tracks', { path: '/artists/:artist_id/tracks' });
+	*/
+	this.resource('profile');
+	this.resource('artists', { path: '/artists' }, function(){
+		this.resource('artist', { path: '/:artist_id' }, function(){
+			this.resource('tracks', { path: '/tracks' }, function(){
+				this.route('playing', { path: '/:track_id' });
+			});
 		});
 	});
-	this.route('profile');
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -34,19 +48,43 @@ App.ArtistsRoute = Ember.Route.extend({
 		return App.Artist.find();
 	}
 });
-
-App.ArtistsTracksRoute = Ember.Route.extend({
-	model: function(param){
-		return App.Artist.find(param['artist_id']);
+/*
+App.ArtistRoute = Ember.Route.extend({
+	redirect: function(){
+		this.transitionTo('tracks');
+	}
+});
+*/
+App.ArtistTracksIndexRoute = Ember.Route.extend({
+	model: function(params){
+		return App.Artist.find(params.artist_id);
 	},
-	setupController: function(controller, model){
-		controller.set('content', model);
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
 	}
 });
 
-App.ArtistsTracksPlayingRoute = Ember.Route.extend({
-	setupController: function(controller, model){
-		controller.set('content', model);
+App.TracksIndexRoute = Ember.Route.extend({
+	model: function(params){
+		return App.Artist.find(params.artist_id);
+	},
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
+	}
+});
+
+App.TracksRoute = Ember.Route.extend({
+	model: function(params){
+		return App.Artist.find(params.artist_id);
+	},
+	setupController: function(controller, tracks){
+		controller.set('content', tracks);
+	}
+});
+
+App.ArtistPlayingRoute = Ember.Route.extend({
+	setupController: function(controller, track){
+		controller.set('content', track);
 	}
 });
 
@@ -58,16 +96,32 @@ App.ArtistsController = Ember.ArrayController.extend({
 	}
 });
 
+App.TrackController = Ember.ObjectController.extend({
+	needs: "artist"
+});
+
+/*
+App.ArtistsTracksController = Ember.Object.create({
+	content: null,
+	populate: function(){
+		var controller = this;
+		$.getJSON(App.get('currentPath'), function(data){
+			controller.set('content', data);
+		});
+	}
+});
+*/
+
 App.SearchController = Ember.Controller.extend({
 	needs: 'artists',
-	search: function(query) {
+	search: function(query){
 		this.get('controllers.artists').addAndSearch(query);
 	}
 });
 
 // Views
 
-App.ArtistsTracksPlayingView = Ember.View.extend({
+App.TracksPlayingView = Ember.View.extend({
 	scBaseUrl: 'https://w.soundcloud.com/player/',
 	scTrackSourceUrlBinding: 'controller.model.url',
 	scIframeSourceUrl: function(){
@@ -90,9 +144,9 @@ App.SearchView = Ember.TextField.extend({
 });
 
 App.Store = DS.Store.extend({
-	revision: 12,
+	revision: 13,
 	adapter: DS.RESTAdapter.create({
-		namespace: window.aC.getNamespace()
+		namespace: App.get('namespace')()
 	})
 });
 /*
@@ -102,23 +156,24 @@ DS.RESTAdapter.configure("plurals", {
 */
 App.Artist = DS.Model.extend({
 	name: DS.attr('string'),
-	tracks: DS.hasMany('App.Tracks')
+	tracks: DS.hasMany('App.Track')
 });
 
-App.Tracks = DS.Model.extend({
-	artistid: DS.belongsTo('App.Artist'),
+App.Track = DS.Model.extend({
+	artistid: DS.attr('number'),
 	videoid: DS.attr('string'),
 	title: DS.attr('string'),
 	url: DS.attr('string'),
 	img: DS.attr('string'),
-	duration: DS.attr('number')
+	duration: DS.attr('number'),
+	tracks: DS.belongsTo('App.Artist')
 });
 
 App.addArtist = function(name){
-	var artist = App.Artist.createRecord({ id: 3, name: name });
-	var track = App.Tracks.createRecord({
-		id: 300,
-		artistid: 3,
+	var artist = App.Artist.createRecord({ id: 33333, name: name });
+	var track = App.Track.createRecord({
+		id: 300333,
+		artistid: 33333,
 		videoid: "vid",
 		title: 'Jungle Mix',
 		url: 'https://api.soundcloud.com/justin-martin-music/justin-martin-jungle-mix',
