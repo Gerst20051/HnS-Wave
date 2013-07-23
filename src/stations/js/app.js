@@ -79,12 +79,12 @@ App.Artist.FIXTURES = [
 	{
 		id: 1,
 		name: 'Carl Craig',
-		tracks: [100,101,102]
+		tracks: [100,101]
 	},
 	{
 		id: 2,
 		name: 'Stacey Pullen',
-		tracks: [200,201,202]
+		tracks: [200]
 	}
 ];
 
