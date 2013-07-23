@@ -57,8 +57,8 @@ App.Store = DS.Store.extend({
 	revision: 13,
 	adapter: DS.RESTAdapter.create({
 		namespace: App.get('namespace')()
-	})//,
-	//adapter: 'DS.FixtureAdapter'
+	}),
+	adapter: 'DS.FixtureAdapter'
 });
 
 App.Artist = DS.Model.extend({
@@ -76,35 +76,41 @@ App.Tracks = DS.Model.extend({
 
 
 App.Artist.FIXTURES = [
-  {
-    id: 1,
-    name: 'Carl Craig',
-    tracks: [100,101,102]
-  },
-  {
-    id: 2,
-    name: 'Stacey Pullen',
-    tracks: [200,201,202]
-  }
+	{
+		id: 1,
+		name: 'Carl Craig',
+		tracks: [100,101,102]
+	},
+	{
+		id: 2,
+		name: 'Stacey Pullen',
+		tracks: [200,201,202]
+	}
 ];
 
 App.Tracks.FIXTURES = [
-  {
-    id: 100,
-    artistid: 1,
-    title: '20 Years Of Planet E Essential Mix',
-    url: 'https://api.soundcloud.com/r_co/carl-craig-20-years-of-planet'
-  },
-  {
-    id: 101,
-    artistid: 1,
-    title: 'Live @ Mixmag Live',
-    url: 'https://api.soundcloud.com/planetedetroit/carl-craig-live-mixmag-live-19'
-  },
-  {
-    id: 200,
-    artistid: 2,
-    title: 'Stacey Pullen Live',
-    url: 'https://api.soundcloud.com/staceypullen/stacey-pullen-live'
-  }
+	{
+		id: 100,
+		artistid: 1,
+		videoid: 'sdfsdf',
+		title: '20 Years Of Planet E Essential Mix',
+		img: 'imageee.jpg',
+		duration: 203
+	},
+	{
+		id: 101,
+		artistid: 1,
+		videoid: 'sdfsdf',
+		title: 'Live @ Mixmag Live',
+		img: 'imageee.jpg',
+		duration: 203
+	},
+	{
+		id: 200,
+		artistid: 2,
+		videoid: 'sdfsdf',
+		title: 'Stacey Pullen Live',
+		img: 'imageee.jpg',
+		duration: 203
+	}
 ];
