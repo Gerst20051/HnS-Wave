@@ -30,6 +30,8 @@ App.IndexRoute = Ember.Route.extend({
 	}
 });
 
+App.ProfileRoute = Ember.Route.extend();
+
 App.ArtistsRoute = Ember.Route.extend({
 	model: function(){
 		return App.Artist.find();
@@ -74,43 +76,22 @@ App.Tracks = DS.Model.extend({
 	duration: DS.attr('number')
 });
 
+App.Artist.FIXTURES = [];
+App.Tracks.FIXTURES = [];
 
-App.Artist.FIXTURES = [
-	{
-		id: 1,
-		name: 'Carl Craig',
-		tracks: [100,101]
-	},
-	{
-		id: 2,
-		name: 'Stacey Pullen',
-		tracks: [200]
-	}
-];
+App.loadFixtures = function(){
+	$.getJSON('/'+App.get('namespace')()+'/artists', function(data){
+		$.each(data.artists, function(i,v){
+			console.log(v);
+			App.Artist.createRecord(v);
+		});
+	});
+	$.getJSON('/'+App.get('namespace')()+'/tracks', function(data){
+		$.each(data.tracks, function(i,v){
+			console.log(v);
+			App.Tracks.createRecord(v);
+		});
+	});
+};
 
-App.Tracks.FIXTURES = [
-	{
-		id: 100,
-		artistid: 1,
-		videoid: 'sdfsdf',
-		title: '20 Years Of Planet E Essential Mix',
-		img: 'imageee.jpg',
-		duration: 203
-	},
-	{
-		id: 101,
-		artistid: 1,
-		videoid: 'sdfsdf',
-		title: 'Live @ Mixmag Live',
-		img: 'imageee.jpg',
-		duration: 203
-	},
-	{
-		id: 200,
-		artistid: 2,
-		videoid: 'sdfsdf',
-		title: 'Stacey Pullen Live',
-		img: 'imageee.jpg',
-		duration: 203
-	}
-];
+App.loadFixtures();

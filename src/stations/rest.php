@@ -60,17 +60,29 @@ public function artists(){
 		$artistrows = $this->db->fetchParsedRows();
 		for ($i = 0; $i < count($artistrows); $i++) {
 			$artistrows[$i]['tracks'] = json_decode($artistrows[$i]['tracks']);
+			// unset($artistrows[$i]['tracks']);
 		}
 		$final = array('artists'=>$artistrows);
 	} elseif (1 < count($this->route)) {
 		$this->db->sfquery(array(
 			'SELECT *
-				FROM `%s` LIMIT 100',
+				FROM `%s` LIMIT 50',
 			MYSQL_TABLE_TRACKS
 		));
 		$trackrows = $this->db->fetchParsedRows();
 		$final = array('tracks'=>$trackrows);
 	}
+	$this->sendAcceptedResponse(200, $final);
+}
+
+public function tracks(){
+	$this->db->sfquery(array(
+		'SELECT *
+			FROM `%s` LIMIT 50',
+		MYSQL_TABLE_TRACKS
+	));
+	$trackrows = $this->db->fetchParsedRows();
+	$final = array('tracks'=>$trackrows);
 	$this->sendAcceptedResponse(200, $final);
 }
 }
