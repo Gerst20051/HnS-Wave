@@ -36,7 +36,7 @@ padding:9px 0;
 	<ul class="nav nav-list">
 	<li class="nav-header">Stations</li>
 	 {{#each controller}} 
-		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artists.tracks this}}{{this.name}}{{/linkTo}}</li>
+		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artist this}}{{this.name}}{{/linkTo}}</li>
 	 {{else}}
 		<p>
 		Please wait while the artists load.
@@ -71,24 +71,38 @@ padding:9px 0;
 <script type="text/x-handlebars" data-template-name="profile">
 	User Profile
 </script>
-<script type="text/x-handlebars" data-template-name="artists/tracks">
+<script type="text/x-handlebars" data-template-name="artist">
+	<h1>{{model.name}}</h1><br/>
+	Artist Plays<br/>
+	Top Tracks<br/>
+	{{#linkTo tracks this}}Link To Tracks{{/linkTo}}
+</script>
+<script type="text/x-handlebars" data-template-name="tracks">
 	<div class="span4">
 	<div class="well">
 	<ul class="nav nav-list">
-	<li class="nav-header">Tracks for {{ name }}</li>
+	<li class="nav-header">Tracks for {{name}}</li>
 	{{#each model.tracks}}
-		<li>{{#linkTo artists.tracks.playing this}}{{this.title}}{{/linkTo}}</li>
+		<li class="">{{#linkTo playing this}}{{this.title}}{{/linkTo}}</li>
 	{{/each}}
 	</ul>
 	</div>
 	</div>
-	<div class="span4">
-	{{ outlet }}
-	</div>
 </script>
-<script type="text/x-handlebars" data-template-name="artists/tracks/playing">
+<script type="text/x-handlebars" data-template-name="tracks2">
+	{{#each post in model}}
+		<div class="well">
+		Title: <b>{{post.content}}</b><br/>
+		Tags: 
+		{{#each tag in post.tags}}
+			<span class="badge badge-success">{{tag.name}}</span>
+		{{/each}}
+		</div>
+	{{/each}}
+</script>
+<script type="text/x-handlebars" data-template-name="tracks/playing">
 	<div class="well">
-	<span class="nav-header">Current Track {{ title }}</span>
+	<span class="nav-header">Current Track</span>
 	Video Div
 	</div>
 </script>

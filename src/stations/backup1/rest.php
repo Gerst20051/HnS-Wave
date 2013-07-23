@@ -51,7 +51,7 @@ private function sendAcceptedResponse($status, $array){
 }
 
 public function artists(){
-	if (1 === count($this->route)) {
+	if (1 === count($this->route)) { // list all artists
 		$this->db->sfquery(array(
 			'SELECT *
 				FROM `%s` LIMIT 10',
@@ -59,18 +59,56 @@ public function artists(){
 		));
 		$artistrows = $this->db->fetchParsedRows();
 		for ($i = 0; $i < count($artistrows); $i++) {
+			$this->db->sfquery(array(
+				'SELECT *
+					FROM `%s`
+						WHERE artistid = "%s"',
+				MYSQL_TABLE_TRACKS,
+				$artistrows[$i]['id']
+			));
+			$trackrows = $this->db->fetchParsedRows();
+			//$artistrows[$i]['tracks'] = $trackrows;
 			$artistrows[$i]['tracks'] = json_decode($artistrows[$i]['tracks']);
 		}
 		$final = array('artists'=>$artistrows);
-	} elseif (1 < count($this->route)) {
+	} elseif (1 < count($this->route)) { // list all tracks for artist based on artistid
+		$route = $this->route;
 		$this->db->sfquery(array(
 			'SELECT *
-				FROM `%s` LIMIT 100',
+				FROM `%s`
+					WHERE artistid = "%s"',
+			MYSQL_TABLE_TRACKS,
+			$route[1]
+		));
+		$rows = $this->db->fetchParsedRows();
+		$final = array('tracks'=>$rows);
+	}
+	$this->sendAcceptedResponse(200, $final);
+}
+
+public function tracks(){
+	$request = $this->request->getRequestVars();
+	$ids = $request['ids'];
+	if (!isset($ids)) { // list all tracks for artist based on artistid
+		$route = $this->route;
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`
+					WHERE artistid = "%s"',
+			MYSQL_TABLE_TRACKS,
+			$route[1]
+		));
+	} else { // list all tracks for artist based on track ids
+		$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`
+					WHERE id
+						IN ('.implode(',', $ids).')',
 			MYSQL_TABLE_TRACKS
 		));
-		$trackrows = $this->db->fetchParsedRows();
-		$final = array('tracks'=>$trackrows);
 	}
+	$rows = $this->db->fetchParsedRows();
+	$final = array('tracks'=>$rows);
 	$this->sendAcceptedResponse(200, $final);
 }
 }
