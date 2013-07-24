@@ -162,6 +162,7 @@ cursor:pointer;
 #quotes li .name {
 color:#fbfbf7;
 padding:15px;
+width:400px;
 }
 
 #quotes li .links {
@@ -245,15 +246,16 @@ position:relative;
 color:#8f886c;
 }
 
-#quotes li .quotequote {
-text-align:justify;
-text-justify:inter-word;
+#quotes li .quotename > h2 {
+width:400px;
 }
 
 #quotes li .quoteuser {
 position:absolute;
 right:0;
+text-align:right;
 top:0;
+width:160px;
 }
 
 #quotes li .quoteuser .quoteowner {
@@ -267,6 +269,11 @@ position:absolute;
 right:0;
 top:0;
 width:20px;
+}
+
+#quotes li .quotequote {
+text-align:justify;
+text-justify:inter-word;
 }
 
 footer {
@@ -287,6 +294,29 @@ display:none;
 left:10px;
 position:absolute;
 top:12px;
+}
+
+@media print {
+	#login-button,
+	#logout-button,
+	nav#nav,
+	article > header {
+		display:none !important;
+	}
+	#main > header {
+		margin:0 !important;
+		padding-bottom:10px !important;
+		padding-top:20px !important;
+	}
+	#quotes {
+		padding:0 !important;
+	}
+	#quotes li {
+		margin:0 !important;
+	}
+	#quotes li .quotelist {
+		padding:0 !important;
+	}
 }
 
 .authpanel.lightbox {
