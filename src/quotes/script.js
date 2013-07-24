@@ -291,7 +291,7 @@ handleHash: function(){
 			}
 		});
 	} else if (Hash.has('qid')) {
-			$.getJSON(this.ajaxurl, {type:"quote",qid:qid}, function(response){
+		$.getJSON(this.ajaxurl, {type:"quote",qid:qid}, function(response){
 			if ($.isArray(response)) {
 				self.quotes = response;
 				var quotes = response[0];
@@ -301,9 +301,7 @@ handleHash: function(){
 			} else {
 				$("#quotes").html('<li class="empty">Invalid Quote ID</li>');
 			}
-			});
-		}  {
-		$("#quotes").html('<li class="empty">No Quotes</li>');
+		});
 	}
 },
 dom: function(){
@@ -485,10 +483,10 @@ addQuote: function(id,name,quote){
 	if (this.quotes.length < 2) $("#quotes").find('.empty').remove();
 	var html = '<li id="quote-'+id+'">';
 	if (arguments.length == 2){ html = '<li id="quote-'+id+'" class="new">'; if ($.trim(name) == "") name="New Quote"; quote=""; }
-	html += '<header><aside class="links"><span class="savespan"><a href="#" class="save">save</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="undo">undo</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span><a href="#" class="more">more</a><a href="#" class="less">less</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="delete">delete</a></aside><aside class="name">'+name+'</aside></header>';
+	html += '<header><aside class="links"><span class="savespan"><a href="#" class="save">save</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="undo">undo</a>&nbsp;&nbsp;|&nbsp;&nbsp;</span><a href="#" class="more">more</a><a href="#" class="less">less</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" class="delete">delete</a></aside><aside class="name">'+stripSlashes(name)+'</aside></header>';
 	html += '<div class="details">';
-	html += '<div><label for="name">name</label><input id="name" type="text" value="'+name+'"/></div>';
-	html += '<div><label for="quote">quote</label><textarea id="quote">'+quote+'</textarea></div>';
+	html += '<div><label for="name">name</label><input id="name" type="text" value="'+stripSlashes(name)+'"/></div>';
+	html += '<div><label for="quote">quote</label><textarea id="quote">'+stripSlashes(quote)+'</textarea></div>';
 	html += '</div></li>';
 	return html;
 },
@@ -496,11 +494,11 @@ listQuote: function(id,name,quote,owner_name){
 	if (this.quotes.length < 2) $("#quotes").find('.empty').remove();
 	var html = '<li id="quote-'+id+'"><div class="quotelist">';
 	if (owner_name) {
-		html += '<div class="quotename"><h2>'+name+'</h2><div class="quoteuser"><div class="quoteowner">'+owner_name+'</div><img class="blankprofile" src="blank_profile.gif"/></div></div>';
+		html += '<div class="quotename"><h2>'+stripSlashes(name)+'</h2><div class="quoteuser"><div class="quoteowner">'+stripSlashes(owner_name)+'</div><img class="blankprofile" src="blank_profile.gif"/></div></div>';
 	} else {
-		html += '<div class="quotename"><h2>'+name+'</h2></div>';
+		html += '<div class="quotename"><h2>'+stripSlashes(name)+'</h2></div>';
 	}
-	html += '<div class="quotequote">"'+quote+'"</div>';
+	html += '<div class="quotequote">"'+stripSlashes(quote)+'"</div>';
 	html += '</div></li>';
 	return html;
 }
