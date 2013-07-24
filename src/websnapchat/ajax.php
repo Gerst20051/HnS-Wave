@@ -229,10 +229,10 @@ if ($ACTION == 'logged') {
 				$user = $db->fetchParsedRow();
 				$user['fullname'] = $user['firstname'] . ' ' . $user['lastname'];
 				$user['friends'] = json_decode($user['friends']);
-				$db->sfquery(array('SELECT * FROM `%s` WHERE oid = "%s"',MYSQL_TABLE_SNAPS,$ID));
+				$db->sfquery(array('SELECT * FROM `%s` WHERE oid = "%s" ORDER BY timestamp DESC LIMIT 20',MYSQL_TABLE_SNAPS,$ID));
 				$snaps = $db->fetchParsedRows();
 				if (!$db->numRows()) $snaps = array();
-				$final = array('user'=>$user,'snaps'=>array_reverse($snaps));
+				$final = array('user'=>$user,'snaps'=>$snaps);
 				print_json($final);
 			} else die('0');
 		} catch(Exception $e) {
@@ -275,10 +275,10 @@ if ($ACTION == 'logged') {
 } elseif ($ACTION == 'feed') {
 	try {
 		$db = new MySQL();
-		$db->sfquery(array('SELECT * FROM `%s`',MYSQL_TABLE_SNAPS));
+		$db->sfquery(array('SELECT * FROM `%s` ORDER BY timestamp DESC LIMIT 10',MYSQL_TABLE_SNAPS));
 		$snaps = $db->fetchParsedRows();
 		if (!$db->numRows()) $snaps = array();
-		print_json(array_reverse($snaps));
+		print_json($snaps);
 	} catch(Exception $e) {
 		echo $e->getMessage();
 		exit();
