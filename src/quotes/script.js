@@ -416,9 +416,9 @@ dom: function(){
 		var target = $(this).parents('li');
 		var item = self.quotes[target.index()];
 		var quote = item.quote;
-		target.find('.name').html(quote.name);
-		target.find('#name').val(quote.name);
-		target.find('#quote').val(quote.quote);
+		target.find('.name').html(stripSlashes(html_decode_entities(quote.name)));
+		target.find('#name').val(stripSlashes(html_decode_entities(quote.name)));
+		target.find('#quote').val(stripSlashes(html_decode_entities(quote.quote)));
 		target.find('.savespan').hide();
 		return false;
 	});

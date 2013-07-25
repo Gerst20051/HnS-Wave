@@ -243,11 +243,11 @@ function stripSlashes(str){
 }
 
 function htmlentities(str){
-	return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/‘/g, '&lsquo;').replace(/’/g, '&rsquo;').replace(/“/g, '&ldquo;').replace(/”/g, '&rdquo;').replace(/—/g, '&mdash;').replace(/'/g, '&#039;');&ldquo;
 }
 
 function html_decode_entities(str){
-	return (str + '').replace(/(&amp;)/g, '&').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"');
+	return (str + '').replace(/(&amp;)/g, '&').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"').replace(/(&lsquo;)/g, '‘').replace(/(&rsquo;)/g, '’').replace(/(&ldquo;)/g, '“').replace(/(&rdquo;)/g, '”').replace(/(&mdash;)/g, '—').split('&#039;').join("'");
 }
 
 function isDefined(variable){
