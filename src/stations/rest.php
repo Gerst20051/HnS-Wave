@@ -53,37 +53,51 @@ private function sendAcceptedResponse($status, $array){
 public function artists(){
 	if (1 === count($this->route)) {
 		$this->db->sfquery(array(
-			'SELECT *
+			'SELECT id, name
 				FROM `%s` LIMIT 10',
 			MYSQL_TABLE_ARTISTS
 		));
 		$artistrows = $this->db->fetchParsedRows();
 		for ($i = 0; $i < count($artistrows); $i++) {
-			$artistrows[$i]['tracks'] = json_decode($artistrows[$i]['tracks']);
-			// unset($artistrows[$i]['tracks']);
+			$artistrows[$i]['track_ids'] = json_decode($artistrows[$i]['tracks']);
+			unset($artistrows[$i]['tracks']);
 		}
 		$final = array('artists'=>$artistrows);
-	} elseif (1 < count($this->route)) {
-		$this->db->sfquery(array(
-			'SELECT *
-				FROM `%s` LIMIT 50',
-			MYSQL_TABLE_TRACKS
-		));
-		$trackrows = $this->db->fetchParsedRows();
-		$final = array('tracks'=>$trackrows);
 	}
 	$this->sendAcceptedResponse(200, $final);
 }
 
 public function tracks(){
 	$this->db->sfquery(array(
-		'SELECT *
+		'SELECT id, videoid, title, duration
 			FROM `%s` LIMIT 50',
 		MYSQL_TABLE_TRACKS
 	));
 	$trackrows = $this->db->fetchParsedRows();
 	$final = array('tracks'=>$trackrows);
 	$this->sendAcceptedResponse(200, $final);
+}
+
+public function loadFixtures(){
+	$this->db->sfquery(array(
+			'SELECT *
+				FROM `%s`',
+			MYSQL_TABLE_ARTISTS
+		));
+		$artistrows = $this->db->fetchParsedRows();
+		for ($i = 0; $i < count($artistrows); $i++) {
+			$this->db->sfquery(array(
+				'SELECT id, videoid, title, duration
+					FROM `%s`
+						WHERE artistid = "%s"',
+				MYSQL_TABLE_TRACKS,
+				$artistrows[$i]['id']
+			));
+			$trackrows = $this->db->fetchParsedRows();
+			$artistrows[$i]['tracks'] = $trackrows;
+		}
+		$final = array('artists'=>$artistrows);
+		$this->sendAcceptedResponse(200, $final);
 }
 }
 

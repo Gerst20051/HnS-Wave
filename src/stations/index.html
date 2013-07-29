@@ -16,6 +16,11 @@ padding-top:60px;
 .sidebar-nav {
 padding:9px 0;
 }
+
+#nowplayingtitle,
+#videoplayer {
+text-align:center;
+}
 </style>
 </head>
 <body>
@@ -36,7 +41,7 @@ padding:9px 0;
 	<ul class="nav nav-list">
 	<li class="nav-header">Stations</li>
 	 {{#each controller}} 
-		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artists.tracks this}}{{this.name}}{{/linkTo}}</li>
+		<li {{ bindAttr class="view.isActive" }}>{{#linkTo artists.tracks this}}{{ this.name }}{{/linkTo}}</li>
 	 {{else}}
 		<p>
 		Please wait while the artists load.
@@ -77,7 +82,7 @@ padding:9px 0;
 	<ul class="nav nav-list">
 	<li class="nav-header">Tracks for {{ name }}</li>
 	{{#each model.tracks}}
-		<li>{{#linkTo artists.tracks.playing this}}{{this.title}}{{/linkTo}}</li>
+		<li>{{#linkTo artists.tracks.playing this}}{{ this.title }}{{/linkTo}}</li>
 	{{/each}}
 	</ul>
 	</div>
@@ -88,8 +93,12 @@ padding:9px 0;
 </script>
 <script type="text/x-handlebars" data-template-name="artists/tracks/playing">
 	<div class="well">
-	<span class="nav-header">Current Track {{ title }}</span>
-	Video Div
+	<div id="nowplayingtitle">
+	<span class="nav-header">{{ title }}</span>
+	</div>
+	<div id="videoplayer">
+	<iframe id="ytplayer" type="text/html" height="240" width="320" src="http://www.youtube.com/embed/_2c5Fh3kfrI" frameborder="0"></iframe>
+  	</div>
 	</div>
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

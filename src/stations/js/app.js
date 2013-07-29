@@ -33,8 +33,11 @@ App.IndexRoute = Ember.Route.extend({
 App.ProfileRoute = Ember.Route.extend();
 
 App.ArtistsRoute = Ember.Route.extend({
-	model: function(){
+	model: function(param){
 		return App.Artist.find();
+	},
+	setupController: function(controller, model){
+		controller.set('content', model);
 	}
 });
 
@@ -50,6 +53,7 @@ App.ArtistsTracksRoute = Ember.Route.extend({
 App.ArtistsTracksPlayingRoute = Ember.Route.extend({
 	setupController: function(controller, model){
 		controller.set('content', model);
+		$("#ytplayer").attr('src','http://www.youtube.com/embed/'+model.get('videoid')+'?autoplay=1');
 	}
 });
 
@@ -69,10 +73,8 @@ App.Artist = DS.Model.extend({
 });
 
 App.Tracks = DS.Model.extend({
-	artistid: DS.attr('number'),
 	videoid: DS.attr('string'),
 	title: DS.attr('string'),
-	img: DS.attr('string'),
 	duration: DS.attr('number')
 });
 
@@ -80,18 +82,32 @@ App.Artist.FIXTURES = [];
 App.Tracks.FIXTURES = [];
 
 App.loadFixtures = function(){
-	$.getJSON('/'+App.get('namespace')()+'/artists', function(data){
+	$.getJSON('/'+App.get('namespace')()+'/loadFixtures', function(data){
 		$.each(data.artists, function(i,v){
-			console.log(v);
-			App.Artist.createRecord(v);
-		});
-	});
-	$.getJSON('/'+App.get('namespace')()+'/tracks', function(data){
-		$.each(data.tracks, function(i,v){
-			console.log(v);
-			App.Tracks.createRecord(v);
+			var artist = App.Artist.createRecord({
+				id: v.id,
+				name: v.name
+			});
+			$.each(v.tracks, function(ii,vv){
+				var track = App.Tracks.createRecord({
+					id: vv.id,
+					videoid: vv.videoid,
+					title: vv.title,
+					duration: vv.duration
+				});
+				artist.get('tracks').pushObject(track);
+			});
 		});
 	});
 };
 
 App.loadFixtures();
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+
