@@ -243,11 +243,11 @@ function stripSlashes(str){
 }
 
 function htmlentities(str){
-	return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/‘/g, '&lsquo;').replace(/’/g, '&rsquo;').replace(/“/g, '&ldquo;').replace(/”/g, '&rdquo;').replace(/—/g, '&mdash;').replace(/'/g, '&#039;');&ldquo;
+	return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/‘/g, '&lsquo;').replace(/’/g, '&rsquo;').replace(/“/g, '&ldquo;').replace(/”/g, '&rdquo;').replace(/—/g, '&mdash;').replace(/–/g, '&ndash;').replace(/™/g, '&trade;').replace(/'/g, '&#039;');
 }
 
 function html_decode_entities(str){
-	return (str + '').replace(/(&amp;)/g, '&').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"').replace(/(&lsquo;)/g, '‘').replace(/(&rsquo;)/g, '’').replace(/(&ldquo;)/g, '“').replace(/(&rdquo;)/g, '”').replace(/(&mdash;)/g, '—').split('&#039;').join("'");
+	return (str + '').replace(/(&amp;)/g, '&').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"').replace(/(&lsquo;)/g, '‘').replace(/(&rsquo;)/g, '’').replace(/(&ldquo;)/g, '“').replace(/(&rdquo;)/g, '”').replace(/(&mdash;)/g, '—').replace(/(&ndash;)/g, '–').replace(/(&trade;)/g, '™').split('&#039;').join("'");
 }
 
 function isDefined(variable){

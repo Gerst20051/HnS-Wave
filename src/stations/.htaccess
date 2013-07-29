@@ -1,4 +1,5 @@
 <IfModule mod_rewrite.c>
+	RewriteBase /
 	RewriteEngine On
 	RewriteRule ^rest/(.*)$ rest.php?route=$1 [L,QSA]
 </IfModule>
