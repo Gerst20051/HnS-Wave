@@ -1,0 +1,625 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>JavaScript Mastery</title>
+<script src="init.js"></script>
+<style>
+h2 {
+margin-top:1.5em;
+}
+
+h2 + pre {
+margin-top:0;
+}
+
+pre {
+margin-top:30px;
+word-break:normal;
+}
+
+pre > div .syntaxhighlighter {
+background-color:transparent !important;
+}
+
+pre > div .syntaxhighlighter .line.alt1,
+pre > div .syntaxhighlighter .line.alt2 {
+background-color:transparent !important;
+}
+
+code {
+background-color:transparent;
+border:0;
+white-space:pre-wrap;
+word-wrap:break-word;
+}
+
+a[name] {
+cursor:default;
+}
+
+a[name]:hover {
+text-decoration:none;
+}
+
+.link {
+color:#0088cc;
+cursor:pointer;
+}
+
+#footer {
+display:block;
+margin-top:20px;
+text-align:center;
+}
+
+.syntaxhighlighter {
+padding-top:20px;
+}
+
+.syntaxhighlighter code,
+.syntaxhighlighter pre {
+padding:0;
+}
+
+.syntaxhighlighter .toolbar {
+background-color:transparent !important;
+display:none;
+visibility:hidden;
+}
+
+.hidden {
+display:none;
+}
+
+.showforprint {
+display:none;
+}
+
+@media print {
+	pre {
+	page-break-inside:auto;
+	}
+
+	@page {
+	margin:1.0cm;
+	}
+
+	p,
+	h2,
+	h3 {
+	orphans:3;
+	widows:3;
+	}
+
+	h2,
+	h3 {
+	page-break-after:avoid;
+	page-break-before:avoid;
+	}
+
+	a,
+	.link {
+	color:#0088cc !important;
+	}
+
+	.hideforprint {
+	display:none;
+	}
+
+	.showforprint {
+	display:block;
+	}
+}
+</style>
+<script>
+var addLink = (function(){
+	window.links = [];
+	return function(text, callback){
+		document.write('<div class="link" onclick="window.links['+window.links.length+']();">'+text+'</div>');
+		window.links.push(callback);
+	}
+})();
+
+function printData(){
+	var name, obj;
+	if (!arguments.length) {
+		return false;
+	} else if (1 == arguments.length) {
+		name = arguments[0].constructor.name;
+		obj = arguments[0];
+	} else if (2 == arguments.length) {
+		name = arguments[0];
+		obj = arguments[1];
+	}
+	document.writeln(name + " -> " + print_r(obj,true).trim() + "\n");
+}
+
+if (!String.prototype.trim) {
+	String.prototype.trim = function(){
+		return this.replace(/^\s+|\s+$/g,'');
+	};
+}
+</script>
+</head>
+<body>
+<div class="container">
+<div class="row">
+<div class="span12">
+<h1>JavaScript Mastery</h1>
+<h4>By: Andrew Gerst</h4>
+<a href="http://about.me/agerst" target="_blank">http://about.me/agerst</a><br/>
+<a class="hideforprint" href="http://cs.unc.edu/~gerst/JavaScript%20Mastery.pdf" target="_blank">JavaScript Mastery (PDF)</a>
+<a class="showforprint" href="http://cs.unc.edu/~gerst/javascript.html" target="_blank">JavaScript Mastery (Source)</a>
+</div>
+</div>
+<h2>Table of Contents</h2>
+<div id="toc"></div>
+<div id="contents">
+<div class="row">
+<div class="span12">
+<h2>Primitive and Reference Types</h2>
+<pre>
+<h3>What are types?</h3>
+Even though JavaScript has no concept of classes, it still makes use of types. Types are the closest that you will get to classes in JavaScript and there are two kinds: primitive and reference. Primitive types are not stored as objects but rather as simple data types. Reference types are stored as objects, which are really just references to locations in memory rather than a simple value. The tricky part is that JavaScript can make primitive types look like reference types. It does this in order to make the language more consistent for the developer even though it involves a little sleight-of-hand. Primitive values and reference values still behave quite differently even when they appear to be the same.
+
+While other programming languages distinguish between primitive and reference types by storing primitives on the stack and references in the heap, JavaScript does away with this concept completely. Instead, there is the concept of a variable object that tracks variables for a particular scope. Primitive values are stored directly on the variable object while reference values place a pointer in the variable object. That pointer is a reference to a location in memory where the object is stored. There are, of course, other differences between the two types.
+
+<h3>Primitive</h3>
+Primitive types represent simple pieces of data that are stored as-is. There are five primitive types
+in JavaScript:
+
+• String - a sequence of characters delimited by either single or double quotes. JavaScript has
+no concept of a character type, so characters are represented as single character strings.
+• Number - any numeric value. Both integer and floating-point values are stored using this
+type.
+• Boolean - true or false.
+• Null - a primitive type that has only one value, null.
+• Undefined - a primitive type has only one value, undefined. This is the value assigned to a
+variable that is not initialized.
+
+Some examples:
+<pre class="brush:js">
+// strings
+var name = "Andrew";
+var selection = "a";
+
+// numbers
+var count = 25;
+var cost = 1.51;
+
+// boolean
+var found = true;
+
+// null
+var object = null;
+
+// undefined
+var flag = undefined;
+var ref; // assigned undefined automatically
+</pre>
+Primitive values behave in a way that's consistent with many languages. A variable holding a primitive value contains the actual value (as opposed to a pointer to an object). When you assign a primitive value to the variable, the value gets copied into that variable. That means if you assign one variable to another, each variable gets its own copy of the data. For example:
+<pre class="brush:js">
+var color1 = "red";
+var color2 = color1;
+</pre>
+Here, color1 is assigned the value of "red". The variable color2 is then assigned the value of color1, which creates a new value of "red" and stores it in color2. Now even though color1 and color2 contain the same value, they are completely separate from one another.
+
+color1 -> "red"
+color2 -> "red"
+
+You can change the value in color1 without affecting color2 and vice versa.
+
+<h3>Identifying Primitive Types</h3>
+The best way to identify primitive types is to use the typeof operator. This operator works on any variable and returns a string indicating the type of data. The typeof operator works well with strings, numbers, booleans, and undefined:
+<pre class="brush:js">
+console.log(typeof "Andrew"); // "string"
+console.log(typeof 10); // "number"
+console.log(typeof 5.1); // "number"
+console.log(typeof true); // "boolean"
+console.log(typeof undefined); // "undefined"
+</pre>
+As you might expect, typeof returns "string" when the value is a string, "number" when the value is a number (regardless of integer or floating-point values), "boolean" when the value is a boolean, and "undefined" when the value is undefined. The tricky part involves null.
+
+You wouldn't be the first developer to be confused about the result of this line of code:
+<pre class="brush:js">
+console.log(typeof null); // "object"
+</pre>
+When you run typeof null, the result is "object". This has been acknowledged as an <a href="https://mail.mozilla.org/pipermail/es-discuss/2012-July/024209.html">error</a> by
+TC-39, the committee that designs and maintains JavaScript. You could reason that null is an empty object pointer and therefore "object" is a logical return value, but in reality, this just tends to confuse everybody. The best way to determine if a value is null is to compare it against null directly:
+<pre class="brush:js">
+console.log(value === null); // true or false
+</pre>
+Note that this code uses the triple equals operator instead of the double equals operator. Triple equals does the comparison without converting the variable to another type. To understand why this is important, consider the following:
+<pre class="brush:js">
+console.log("5" == 5); // true
+console.log("5" === 5); // false
+
+console.log(undefined == null); // true
+console.log(undefined === null); // false
+</pre>
+Using the double equals, the string "5" and the number 5 are considered equal. That's because the double equals converts the string into a number and then does the comparison. Using the triple equals, however, these values are not considered equal because they are two different types. Likewise, when comparing undefined and null, the double equals says that they are equivalent while the triple equals says they are not. So when trying to identify null, it's important to always use triple equals so that you can correctly identify the type.
+
+<h3>Primitive Methods</h3>
+You may be surprised to learn that strings, numbers, and booleans have methods despite being primitive types (null and undefined do not have any methods). Strings, in particular, have a large number of methods to help you work with them. Some examples:
+<pre class="brush:js">
+var name = "Andrew";
+var lowercaseName = name.toLowerCase(); // convert to lowercase
+var firstLetter = name.charAt(0); // get first character
+var middleOfName = name.substring(2, 5); // get characters 2-4
+
+var count = 10;
+var fixedCount = count.toFixed(2); // convert to "10.00"
+var hexCount = count.toString(16); // convert to "a"
+
+var flag = true;
+var stringFlag = flag.toString(); // convert to "true"
+</pre>
+Despite having methods, primitive values themselves are not objects. JavaScript makes it look like these values are objects to provide a consistent experience in the language. Exactly how this works is explained later in this chapter.
+
+<h3>Reference Types</h3>
+Reference types represent objects in JavaScript and are the closest things to classes that you will find in the language. Reference values are instances of reference types and are synonymous with objects. An object is an unordered list of properties consisting of a name and a value. When the value of a property is a function, it is called a method. Because functions themselves are actually reference values in JavaScript, there is little difference between a property that contains a string and a property that contains a function except that a function can be executed. It sometimes helps to think of JavaScript objects as nothing more than hash tables.
+
+name -> value
+name -> value
+
+Objects are said to be instantiated when they are first created, and there are a couple of different ways to create them. The first is to use the new operator with a constructor. A constructor is simply a function that is used to create an object using new. There is no real difference between a constructor and any other function except for how it is used. By convention, constructors in JavaScript begin with a capital letter to distinguish them from non-constructor functions. The following code instantiates a generic object:
+<pre class="brush:js">
+var object = new Object();
+</pre>
+Reference values behave a bit differently than primitive values. The variable holding a reference value doesn't contain the actual object. Instead, the variable holds a pointer (a.k.a. reference) to a location in memory where the object exists. When you assign a reference value to a variable, you're actually assigning a pointer. That means if you assign one variable to another, each variable gets a copy of the pointer, and both variables still reference the same object in memory. For example:
+<pre class="brush:js">
+var object1 = new Object();
+var object2 = object1;
+</pre>
+In this code, an object is created and a reference is stored in object1. Then, object2 is assigned the value of object1. There is still only one instance of the object that was created on the first line but both variables now point to the same object.
+
+object1 --\
+			Object (memory)
+object2 --/
+
+Two variables pointing to one object
+
+Because JavaScript is a garbage collected language, you don't really need to worry about memory allocations. However, it is best to dereference objects when you no longer need them so the garbage collector can free up that memory. The best way to do this is to set the object variable to null, such as:
+<pre class="brush:js">
+var object1 = new Object();
+// do something
+object1 = null; // dereference
+</pre>
+In this example, object1 is created and used before finally being set to null. When there are no more references to an object in memory, the garbage collector is able to free up that memory. Dereferencing objects becomes important in very large applications that use millions of objects.
+
+Another interesting aspect of objects in JavaScript is that you can add and remove properties at any time. For example:
+<pre class="brush:js">
+var object1 = new Object();
+var object2 = object1;
+
+object1.myCustomProperty = "Awesome!";
+console.log(object2.myCustomProperty)); // "Awesome!"
+</pre>
+Here, myCustomProperty is added to object1 with a value of "Awesome!". Because both object1 and object2 point to the same object, that property is also accessible on object2. This is one of the unique aspects of JavaScript: it allows you to modify objects whenever you want even if you didn't define the objects in the first place. There are ways to prevent such modification and those are discussed later in this book.
+
+<h3>Built-In Types</h3>
+There are several built-in reference types in JavaScript that can be instantiated at any time:
+• Array - an ordered list of numerically indexed values.
+• Date - a date and time.
+• Error - a runtime error. There are also several subtypes of this type for more specific errors.
+• Function - a function.
+• Object - a generic object.
+• RegExp - a regular expression.
+
+Each of these built-in reference types can be instantiated using new, such as:
+<pre class="brush:js">
+var items = new Array();
+var now = new Date();
+var error = new Error("Something bad happened.");
+var func = new Function("console.log('Hi');");
+var object = new Object();
+var re = new RegExp("\\d+");
+</pre>
+Several of these reference types also have literal forms. A literal is special syntax that allows you to define a value, both primitive and reference, without explicitly creating an object. Earlier in this chapter, you saw string literals, number literals, boolean literals, the null literal, and the undefined literal. Those are all primitive literals. Reference literals allow you to define objects without using their constructor.
+
+For example, you can create an object (similar to new Object()) by using object literal syntax. An object literal is made up of curly braces with properties defined inside. Properties are made up of an identifier or string, a colon, and a value. Multiple properties are separated by commas. For example:
+<pre class="brush:js">
+// "Awesome!"
+
+var book = {
+	name: "Principles of Object-Oriented Programming in JavaScript",
+	year: 2012
+};
+</pre>
+You can also use string literals as property names, Which allow you to have property names with
+spaces or other special characters:
+<pre class="brush:js">
+var book = {
+	"name": "Principles of Object-Oriented Programming in JavaScript",
+	"year": 2012
+};
+</pre>
+Both of these examples are logically equivalent to the following:
+<pre class="brush:js">
+var book = new Object();
+book.name = "Principles of Object-Oriented Programming in JavaScript";
+book.year = 2012;
+</pre>
+Keep in mind that using an object literal doesn't actually call new Object(). Instead, the JavaScript engine follows the same steps without actually using the constructor. This is true for all reference literals.
+
+Similarly, you can define an array literal by enclosing any number of values, separated by commas, inside of square brackets. For example:
+<pre class="brush:js">
+var colors = ["red", "blue", "green"];
+console.log(colors[0]); // "red"
+
+// equivalent
+
+var colors = new Array("red", "blue", "green");
+console.log(colors[0]); // "red"
+</pre>
+Functions, of course, are almost always defined using their literal form. In fact, it's discouraged to use the Function constructor at all. It's much easier and far less error-prone to use the literal form.
+
+For example:
+<pre class="brush:js">
+function reflect(value) {
+	return value;
+}
+
+// same as
+
+var reflect = new Function("value", "return value;");
+</pre>
+This code defines the function called reflect() that simply passes back the value that is passed in. Even for this simple function, the literal form is much easier to write and understand than the constructor form. Further, there is no good way to debug functions that are created in the constructor form. You'll only ever rarely see code using the Function constructor.
+
+JavaScript also has regular expression literals that allow you to define regular expressions without using the RegExp constructor. Regular expression literals look very similar to regular expressions in Perl. The pattern itself is contained between two slashes and any additional options are single characters after the second slash. For example:
+<pre class="brush:js">
+var numbers = /\d+/g;
+// same as
+var numbers = new RegExp("\\d+", "g");
+</pre>
+The literal form of regular expressions in JavaScript is a little bit easier to deal with because you don't need to worry about escaping characters within strings. When using the RegExp constructor, the pattern is passed in as a string and therefore backslashes must be escaped (which is why \d is used in the literal and \\d is used in the string). Regular expression literals are used most of the time in JavaScript except in cases where the regular expression is being constructed dynamically from one or more strings.
+
+With the exception of Function, there really isn't any right or wrong way to instantiate built-in types. Many developers prefer using literals while some prefer using constructors. The choice of which to use is completely up to you.
+
+Property Access
+
+As discussed previously, properties are name-value pairs stored on an object. The primary way that properties are accessed on objects is through dot notation. Dot notation is very common in object-oriented languages and is the most frequently used property access pattern in JavaScript. However, it's also possible to access properties on JavaScript objects using bracket notation with a string. Consider this code using dot notation:
+<pre class="brush:js">
+var array = [];
+array.push(12345);
+
+// bracket notation
+
+var array = [];
+array["push"](12345);
+</pre>
+Note that the name of the method is now included in a string that's enclosed in square brackets. This syntax may seem a little strange, but is very useful when you want to dynamically decide what property to access. For example:
+<pre class="brush:js">
+var array = [];
+var method = "push";
+array[method](12345);
+</pre>
+Bracket notation allows you to use a variable instead of the string literal to specify the property to access. Here, the variable method has a value of "push", so push() ends up being called on the array. This capability comes is quite useful and will be used several times throughout this book. The important thing to keep in mind is that there is no difference, performance or otherwise, between using dot notation and bracket notation outside of the syntax. Developers tend to find dot notation easier to read and so it is used more frequently than bracket notation.
+
+<h3>Identifying Reference Types</h3>
+
+The easiest reference type to identify is a function because you can use the typeof operator. When used with a function, typeof returns "function":
+<pre class="brush:js">
+function reflect(value) {
+	return value;
+}
+
+console.log(typeof reflect); // "function"
+</pre>
+Other reference types are a little bit trickier because typeof doesn't provide any additional detail. For all reference types except functions, typeof returns "object". That's not very helpful when you're dealing with a lot of different types.
+
+To make identifying reference types easier, JavaScript has the instanceof operator. The instanceof operator is used with a value and a constructor. When the value is an instance of the type identified with the constructor, then instanceof returns true, otherwise it returns false. Here are some examples:
+<pre class="brush:js">
+var items = [];
+var object = {};
+
+function reflect(value) {
+	return value;
+}
+
+console.log(items instanceof Array); // true
+console.log(object instanceof Object); // true
+console.log(object instanceof Array); // false
+console.log(reflect instanceof Function); // true
+</pre>
+It's also important to understand that instanceof works with inheritance. That means every object is actually an instance of Object because every reference type inherits from Object:
+<pre class="brush:js">
+var items = [];
+var object = {};
+
+function reflect(value) {
+return value;
+}
+
+console.log(items instanceof Array); // true
+console.log(items instanceof Object); // true
+console.log(object instanceof Object); // true
+console.log(object instanceof Array); // false
+console.log(reflect instanceof Function); // true
+console.log(reflect instanceof Object); // true
+</pre>
+Inheritance is discussed later in the book, but for now, all you need to know is that all objects inherit from Object.
+
+Although instanceof can be used to identify arrays, there is one exception that affects web developers specifically. JavaScript values can be passed back and forth between frames in the same webpage. That's normally not a problem unless you try to identify the type of a reference value. Since each webpage has its own global context, that means each webpage has its own version of Object, Array, and all other built-in types. So if you pass an array from one frame into another frame, using instanceof doesn't work because the array is actually an instance of Array from a different frame.
+
+To solve this problem, ECMAScript 5 introduced Array.isArray(), which definitively identifies the value as an instance of Array regardless of the value's origin. This method returns true when a value is passed in that is a native array from any context. If you are using ECMAScript 5 compliant environment, then Array.isArray() is the best way to identify arrays:
+<pre class="brush:js">
+var items = [];
+console.log(Array.isArray(items)); // true
+</pre>
+The Array.isArray() method is supported in Node.js, WebKit-based browsers, Gecko-based browsers, Opera, and Internet Explorer 9+.
+
+<h3>Primitive Wrapper Types</h3>
+Perhaps the most confusing part of JavaScript is the concept of primitive wrapper types. There are three primitive wrapper types: String, Number, and Boolean. These primitive wrapper types exist because JavaScript aims to make working with primitive values as easy as working with objects. It would be very confusing if you had to use a different syntax or switch to a procedural style just to get a substring of text.
+
+The primitive wrapper types are reference types just like any other, however, they are automatically created behind-the-scenes whenever strings, numbers, or booleans are read. Consider the following example:
+<pre class="brush:js">
+var name = "Andrew";
+var firstChar = name.charAt(0);
+console.log(firstChar); // "A"
+</pre>
+On the first line of code, a primitive string value is assigned to name. In the second line, name is used as if it were an object and charAt(0) is called using dot notation. Behind-the-scenes, this is what actually is happening:
+<pre class="brush:js">
+var name = "Andrew";
+var temp = new String(name);
+var firstChar = temp.charAt(0);
+temp = null;
+console.log(firstChar); // A
+</pre>
+Because the second line is using a string as if it's an object, the JavaScript engine creates an instance of String so that charAt(0) will work. The String object exists only for a single statement before it is destroyed, a process called autoboxing. You can test this out by trying to add a property to a string as if it were a regular object:
+<pre class="brush:js">
+var name = "Andrew";
+name.last = "Gerst";
+console.log(name.last); // undefined
+</pre>
+This code attempts to add a property called last to the string name. There is nothing wrong with this code, either syntactically or otherwise, except that the property disappears. With regular objects, you can add properties at any time and they stay until you manually remove them. With primitive wrapper types, properties seem to disappear because the object on which the property was assigned is actually destroyed. Here's what's actually happening in the JavaScript engine:
+<pre class="brush:js">
+// What the JavaScript engine does
+var name = "Andrew";
+var temp = new String(name);
+temp.last = "Gerst";
+temp = null;
+console.log(name.last); // undefined
+</pre>
+So instead of assigning a new property to a string, the code actually creates a new property on a temporary object that is then destroyed.
+
+Since reference values are created automatically for primitive values, that means you can actually use instanceof to check for these types of values;
+<pre class="brush:js">
+var name = "Andrew";
+var count = 10;
+var found = false;
+
+console.log(name instanceof String); // true
+console.log(count instanceof Number); // true
+console.log(found instanceof Boolean); // true
+</pre>
+The reason this works is because of the temporary object being created with the primitive value is read. The temporary object is, technically, an instance of the particular primitive wrapper type. It is still best to use typeof when trying to identify primitive values, but it is important to understand why instanceof works in this way.
+
+Because primitive wrapper types are reference types just like any other, you can actually create them manually as well. However, there are some side effects:
+<pre class="brush:js">
+var name = new String("Andrew");
+var count = new Number(10);
+var found = new Boolean(false);
+
+console.log(typeof name); // "object"
+console.log(typeof count); // "object"
+console.log(typeof found); // "object"
+</pre>
+When you create an instance of the primitive wrapper type, you have now created an object just like any other. That means typeof can no longer identify the type of data you are intending to store. Also, you cannot use these objects the same way that you use primitive values. The best example is with a Boolean object:
+<pre class="brush:js">
+var found = new Boolean(false);
+
+if (found) {
+	console.log("Found"); // this executes
+}
+</pre>
+There are other confusing circumstances when you instantiate primitive wrappers on your own. It's recommended to avoid doing so unless you have figured out the special case where it makes sense. Most of the time, using primitive wrapper objects instead of primitives will only lead to errors.
+<h3>Summary</h3>
+While JavaScript has no formal concept of classes, it does have the concept of types. Each variable or piece of data has a specific type associated with it. That type can be a primitive or a reference. There are five primitive types: strings, numbers, booleans, null, and undefined. These represent simple values that are stored directly in the variable object for a given context. Primitive types can be identified using typeof with the exception of null, which must be compared directly against the special value null.
+
+Reference types are the closest thing to classes in JavaScript. Objects are said to be instances of reference types. You can create new objects by using the new operator or by using a reference literal. Properties and methods are primarily accessed using dot notation but can also be accessed using bracket notation. Functions are objects in JavaScript just like anything else, it can be identified by using the typeof operator. Other reference types should use instanceof with a constructor to determine the type of object.
+
+In order to make primitives seem more like references, JavaScript has three primitive wrapper types: String, Number, and Boolean. These are used whenever you access a primitive value corresponding to one of these types. These objects are created behind-the-scenes so that you can access methods on primitives as if they were regular objects. However, those objects are only temporary and are destroyed as soon as statement is complete. While it's possible to create your own instances of primitive wrappers, it's not recommended because it can lead to confusing situations.
+</pre>
+</div>
+</div>
+<i id="footer">Thanks for reading my book, if you have any questions or suggestions feel free to email me at gerst20051@gmail.com</i>
+<br/>
+<br/>
+</div>
+<div class="hidden">
+<div class="row">
+<div class="span12">
+<h2>Section Header</h2>
+<pre>
+Section Text
+</pre>
+<pre class="brush:js">
+</pre>
+</div>
+</div>
+</div>
+<script>
+SyntaxHighlighter.defaults['gutter']=false;
+SyntaxHighlighter.all();
+
+/**
+ * Create Table of Contents by scanning for header tags.
+ */
+(function(){
+	var toc = "";
+	var level = 0;
+
+	document.getElementById("contents").innerHTML =
+		document.getElementById("contents").innerHTML.replace(
+			/<h([\d])>([^<]+)<\/h([\d])>/gi,
+			function(str, openLevel, titleText, closeLevel){
+				if (openLevel != closeLevel) { return str; }
+				if (openLevel > level) {
+					toc += (new Array(openLevel - level + 1)).join("<ul>");
+				} else if (openLevel < level) {
+					toc += (new Array(level - openLevel + 1)).join("</ul>");
+				}
+				level = parseInt(openLevel);
+				var anchor = titleText.replace(/ /g, "_");
+				toc += "<li><a href=\"#" + anchor + "\">" + titleText + "</a></li>";
+				return "<h" + openLevel + "><a name=\"" + anchor + "\">" + titleText + "</a></h" + closeLevel + ">";
+			}
+		);
+
+	if (level) {
+		toc += (new Array(level + 1)).join("</ul>");
+	}
+
+	document.getElementById("toc").innerHTML += toc;
+})();
+
+/**
+ * Set target of external links (not table of contents / navigation links) to _blank so that
+ * they open in new tab.
+ */
+(function(){
+	var anchors = document.getElementById('contents').getElementsByTagName('a'), i, l;
+	for (i = 0, l = anchors.length; i < l; i++){
+		if (!anchors[i].hasAttribute("target")) {
+			anchors[i].setAttribute('target', '_blank');
+		}
+	}
+})();
+
+var add_the_handlers = function(nodes){
+	var helper = function(i){
+		return function(e){
+			window.links[i];
+		};
+	};
+	var i;
+	for (i = 0; i < nodes.length; i++) {
+		nodes[i].addEventListener('click', helper(i), false);
+	}
+};
+
+/**
+ * Add click handlers to links on page that have callbacks and use the addLink function.
+ */
+(function(){
+	//add_the_handlers(document.getElementsByClassName('link'));
+})();
+
+/**
+ * Trim all pre tags. Log output adds extra newlines to the end.
+ */
+(function(){
+	var pre = document.getElementsByTagName('pre'), i, l;
+	for (i = 0, l = pre.length; i < l; i++) {
+		pre[i].innerHTML = pre[i].innerHTML.trim();
+	}
+})();
+
+(function(){
+	window._gaq=[['_setAccount','UA-35801288-1'],['_trackPageview']];
+	var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;
+	ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';
+	var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s);
+})();
+</script>
+</body>
+</html>
