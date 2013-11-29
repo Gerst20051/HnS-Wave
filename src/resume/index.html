@@ -156,7 +156,6 @@ padding-bottom:0;
 </head>
 <body>
 <div id="doc" class="resumedoc"></div>
-<div id="doc2" class="resumedoc"></div>
 <script>
 var myresume = new ResumeBuilder();
 myresume.config("#doc");
@@ -165,12 +164,14 @@ $.getJSON('resume.json', function(resume){
 	myresume.updateData(resume);
 });
 
+/*
 var myresume2 = new ResumeBuilder();
 myresume2.config("#doc2");
 
 $.getJSON('resume2.json', function(resume){
 	myresume2.updateData(resume);
 });
+*/
 </script>
 </body>
 </html>
