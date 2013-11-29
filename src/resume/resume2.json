@@ -1,0 +1,115 @@
+{
+	"name": "Andrew Anthony Gerst",
+	"title": "JavaScript Engineer",
+	"location": "Chapel Hill, NC, United States",
+	"number": "9198851642",
+	"email": "gerst20051@gmail.com",
+	"url": "http://about.me/agerst",
+	"statement": "I'm seeking a Web Development position where I can join and collaboratively work with a team and/or independently to build quality web applications or games. I've been a Web Developer since 2005. I started because I wanted a central database accessible from anywhere on the internet of everything I owned. Mainly I wanted to document my games and have cheats for all of my games on my website I named Homenet. Homenet Spaces (HnS) was my first social network my spin on MySpace. I've always seen ways to improve the way we interact with our friends and family. I really want to use my skills to impact the world in life-changing ways. Another passion I have is listening to music so I've created multiple tools that offer different music listening experiences. Click for my book JavaScript Mastery.",
+	"skills": [
+		"html5",
+		"javascript",
+		"jquery",
+		"php",
+		"mysql"
+	],
+	"experience": [
+		{
+			"title": "Computer Programmer",
+			"organization": "UNC Chapel Hill Computer Science Department",
+			"startDate": "November 2011",
+			"endDate": "June 2012",
+			"technologies": [
+				"html5",
+				"css",
+				"youtube-api",
+				"javascript",
+				"dojo"
+			],
+			"responsibilities": "Accessible YouTube is an interface to YouTube designed for people who access their computers via either 2 switches for children with disabilities or a mouse. http://gbserver2.cs.unc.edu/playpen/AccessibleYouTube/"
+		}
+	],
+	"education": [
+		{
+			"degree": "Bachelor of Arts (B.A.) Computer Science",
+			"university": "University of North Carolina at Chapel Hill",
+			"startYear": 2011,
+			"endYear": 2015,
+			"technologies": [
+				"matlab",
+				"java",
+				"c",
+				"mips"
+			],
+			"achievements": "Won second place in a programming competition hosted by Passport Parking and now my picture is up on the wall in the computer science building. My team and I placed third out of eight teams in Facebook's 2012 North Carolina Hackathon."
+		}
+	],
+	"projects": [
+		{
+			"name": "HnS-Wave",
+			"url": "https://github.com/Gerst20051/HnS-Wave",
+			"technologies": [
+				"javascript",
+				"php"
+			],
+			"desc": "New Wave Web Development. HnS Quotes and WebSnapChat."
+		},
+		{
+			"name": "Campus-Flirt",
+			"url": "https://github.com/Gerst20051/Campus-Flirt",
+			"technologies": [
+				"javascript",
+				"php",
+				"mysql",
+				"jquery"
+			],
+			"desc": "Campus Flirt. Students Anonymously Flirting!"
+		},
+		{
+			"name": "HnS-QueTube",
+			"url": "https://github.com/Gerst20051/HnS-QueTube",
+			"technologies": [
+				"php",
+				"javascript",
+				"mysql"
+			],
+			"desc": "HnS QueTube is a YouTube Queue. Replace the DJ! Hosting a party, no problem, let your guests decide what music plays!"
+		},
+		{
+			"name": "HnS-All-Music",
+			"url": "https://github.com/Gerst20051/HnS-All-Music",
+			"desc": "HnS All Music is a playlist based music listening and video watching discovery engine with over 6000 songs of your favorite music."
+		},
+		{
+			"name": "Social-HnS",
+			"url": "https://github.com/Gerst20051/Social-HnS",
+			"technologies": [
+				"php",
+				"javascript",
+				"mysql",
+				"jquery"
+			],
+			"desc": "Connect Through Your Interests!"
+		},
+		{
+			"name": "HnS-Netai",
+			"url": "https://github.com/Gerst20051/HnS-Netai",
+			"technologies": [
+				"php",
+				"javascript",
+				"mysql"
+			],
+			"desc": "HnS Netai website projects code including about.me, alerts, hnsapi, contacts, craigslist, parking, quotes, text, and websurprise."
+		},
+		{
+			"name": "HnS-Desktop",
+			"url": "https://github.com/Gerst20051/HnS-Desktop",
+			"technologies": [
+				"php",
+				"javascript",
+				"mysql"
+			],
+			"desc": "Homenet Spaces OS. A jQuery web desktop."
+		}
+	]
+}
