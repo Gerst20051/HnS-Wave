@@ -53,16 +53,16 @@ ResumeBuilder.prototype.parseData = function(){
 	if (data.name || data.title || data.location || data.number || data.email || data.url || data.statement) {
 		this.modules.push('title');
 	}
-	if (data.skills.length) {
+	if (data.skills && data.skills.length) {
 		this.modules.push('skills');
 	}
-	if (data.experience.length) {
+	if (data.experience && data.experience.length) {
 		this.modules.push('experience');
 	}
-	if (data.education.length) {
+	if (data.education && data.education.length) {
 		this.modules.push('education');
 	}
-	if (data.projects.length) {
+	if (data.projects && data.projects.length) {
 		this.modules.push('projects');
 	}
 };
@@ -89,25 +89,35 @@ ResumeBuilder.prototype.createModule = function(){
 
 ResumeBuilder.prototype.addTitleModule = function(){
 	var html = [], data = this.data;
-	html.push('<div id="titleModule" class="resumemodule">');
+	html.push('<div id="titleModule" class="resumemodule clear">');
 	html.push('<div id="nametitle">');
 	html.push('<div id="name">' + data.name + '</div>');
 	html.push('<div id="title">' + data.title + '</div>');
 	html.push('</div>');
 	html.push('<div id="contact">');
-	html.push('<div>' + data.location + '</div>');
-	html.push('<div>' + data.number + '</div>');
-	html.push('<div>' + data.email + '</div>');
-	html.push('<div>' + data.url + '</div>');
+	if (data.location && data.location.length) {
+		html.push('<div>' + data.location + '</div>');
+	}
+	if (data.number && data.number.length) {
+		html.push('<div>' + data.number + '</div>');
+	}
+	if (data.email && data.email.length) {
+		html.push('<div>' + data.email + '</div>');
+	}
+	if (data.url && data.url.length) {
+		html.push('<div>' + data.url + '</div>');
+	}
 	html.push('</div>');
-	html.push('<div id="statement" class="clear">' + bbcode(data.statement) + '</div>');
+	if (data.statement && data.statement.length) {
+		html.push('<div id="statement" class="clear">' + bbcode(data.statement) + '</div>');
+	}
 	html.push('</div>');
 	this.output.push(html.join(''));
 };
 
 ResumeBuilder.prototype.addSkillsModule = function(){
 	var html = [];
-	html.push('<div id="skillsModule" class="resumemodule">');
+	html.push('<div id="skillsModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Skills</div></div>');
 	html.push('<div class="rightcol"><b>Like: </b>');
 	html.push(this.data.skills.join(', '));
@@ -118,7 +128,7 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 
 ResumeBuilder.prototype.addExperienceModule = function(){
 	var html = [], experience = this.data.experience, i;
-	html.push('<div id="experienceModule" class="resumemodule">');
+	html.push('<div id="experienceModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Experience</div></div>');
 	html.push('<div class="rightcol">');
 	for (i = 0; i < experience.length; i++) {
@@ -137,7 +147,7 @@ ResumeBuilder.prototype.addExperienceModule = function(){
 
 ResumeBuilder.prototype.addEducationModule = function(){
 	var html = [], education = this.data.education, i;
-	html.push('<div id="educationModule" class="resumemodule">');
+	html.push('<div id="educationModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Education</div></div>');
 	html.push('<div class="rightcol">');
 	for (i = 0; i < education.length; i++) {
@@ -156,7 +166,7 @@ ResumeBuilder.prototype.addEducationModule = function(){
 
 ResumeBuilder.prototype.addProjectsModule = function(){
 	var html = [], projects = this.data.projects, i;
-	html.push('<div id="projectsModule" class="resumemodule">');
+	html.push('<div id="projectsModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Projects</div></div>');
 	html.push('<div class="rightcol">');
 	for (i = 0; i < projects.length; i++) {
