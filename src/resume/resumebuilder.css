@@ -1,0 +1,160 @@
+body {
+	background-color:#dfdfdf;
+	color:#2f2f2f;
+	font-family:arial;
+	font-size:13px;
+	padding:20px;
+	text-align:center;
+}
+
+.clear:before,
+.clear:after {
+	content:"\0020";
+	display:block;
+	height:0;
+	overflow:hidden;
+}
+
+.clear:after {
+	clear:both;
+}
+
+.resumedoc {
+	background-color:#fff;
+	margin:auto;
+	padding:45px 10px 35px;
+	text-align:left;
+	width:900px;
+}
+
+@media screen {
+	.resumedoc {
+		-moz-box-shadow:1px 1px 6px rgba(0, 0, 0, 6);
+		-webkit-box-shadow:1px 1px 5px rgba(0, 0, 0, 6);
+	}
+}
+
+@media print {
+	body {
+		background-color:#fff;
+		padding:0;
+	}
+
+	.resumedoc {
+		padding:0;
+	}
+
+	#titleModule {
+		margin-top:0;
+	}
+}
+
+.resumemodule {
+	margin:0 30px;
+	padding:10px 0;
+}
+
+.resumemodule:not(#titleModule) {
+	border-top:1px #6fa0db solid;
+	min-height:18px;
+}
+
+.resumemodule .leftcol {
+	float:left;
+	width:160px;
+}
+
+.resumemodule .rightcol {
+	clear:right;
+	margin:0 0 0 160px;
+}
+
+#titleModule #titlehead {
+	padding-bottom:25px;
+}
+
+#titleModule #nametitle {
+	float:left;
+}
+
+#titleModule #name {
+	color:#2b67af;
+	font-size:46px;
+	font-weight:bold;
+}
+
+#titleModule #title {
+	color:#000;
+	font-size:14px;
+	font-weight:bold;
+	margin-top:2px;
+}
+
+#titleModule #statement {
+	color:#666;
+	font-size:16px;
+	font-weight:bold;
+	line-height:1.4em;
+	margin:0 auto;
+	padding-bottom:20px;
+	text-align:justify;
+	width:720px;
+}
+
+#titleModule #contact {
+	clear:right;
+	float:right;
+	padding-top:2px;
+	text-align:right;
+}
+
+#titleModule #contact > div {
+	padding-top:1px;
+}
+
+.resumemodule .leftcol > div {
+	color:#6fa0db;
+	font-size:18px;
+	font-weight:bold;
+}
+
+.resumemodule .datespan {
+	color:#666;
+	float:right;
+	font-style:italic;
+}
+
+.resumemodule .responsibilities,
+.resumemodule .achievements,
+.resumemodule .desc {
+	margin-top:6px;
+	text-align:justify;
+}
+
+#skillsModule b {
+	margin-right:30px;
+}
+
+#experienceModule .experiencecontainer,
+#educationModule .educationcontainer,
+#projectsModule .projectcontainer {
+	padding:10px 0;
+}
+
+#experienceModule .experiencecontainer:not(:first-child),
+#educationModule .educationcontainer:not(:first-child),
+#projectsModule .projectcontainer:not(:first-child) {
+	border-top:1px #6fa0db solid;
+}
+
+#experienceModule .experiencecontainer:first-child,
+#educationModule .educationcontainer:first-child,
+#projectsModule .projectcontainer:first-child {
+	padding-top:0;
+}
+
+#experienceModule .experiencecontainer:last-child,
+#educationModule .educationcontainer:last-child,
+#projectsModule .projectcontainer:last-child {
+	padding-bottom:0;
+}
