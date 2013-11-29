@@ -90,6 +90,7 @@ ResumeBuilder.prototype.createModule = function(){
 ResumeBuilder.prototype.addTitleModule = function(){
 	var html = [], data = this.data;
 	html.push('<div id="titleModule" class="resumemodule clear">');
+	html.push('<div id="titlehead" class="clear">');
 	html.push('<div id="nametitle">');
 	html.push('<div id="name">' + data.name + '</div>');
 	html.push('<div id="title">' + data.title + '</div>');
@@ -107,6 +108,7 @@ ResumeBuilder.prototype.addTitleModule = function(){
 	if (data.url && data.url.length) {
 		html.push('<div>' + data.url + '</div>');
 	}
+	html.push('</div>');
 	html.push('</div>');
 	if (data.statement && data.statement.length) {
 		html.push('<div id="statement" class="clear">' + bbcode(data.statement) + '</div>');
