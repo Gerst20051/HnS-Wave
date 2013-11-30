@@ -3,4 +3,3 @@
 	RewriteEngine On
 	RewriteRule ^rest/(.*)$ rest.php?route=$1 [L,QSA]
 </IfModule>
-
