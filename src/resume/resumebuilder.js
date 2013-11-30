@@ -79,8 +79,16 @@ ResumeBuilder.prototype.setData = function(data){
 };
 
 ResumeBuilder.prototype.updateData = function(data){
-	this.data = data;
-	this.run();
+	if (data) {
+		this.modules.length = 0;
+		this.output.length = 0;
+		if (typeof data == "object") {
+			this.data = data;
+		} else if (typeof data == "string") {
+			this.data = JSON.parse(data);
+		}
+		this.run();
+	}
 };
 
 ResumeBuilder.prototype.createModule = function(){
