@@ -29,6 +29,7 @@ var ResumeBuilder = function(){
 	this.moduleAliases = {
 		"title": this.addTitleModule,
 		"skills": this.addSkillsModule,
+		"certifications": this.addCertificationsModule,
 		"experience": this.addExperienceModule,
 		"education": this.addEducationModule,
 		"projects": this.addProjectsModule
@@ -55,6 +56,9 @@ ResumeBuilder.prototype.parseData = function(){
 	}
 	if (data.skills && data.skills.length) {
 		this.modules.push('skills');
+	}
+	if (data.certifications && data.certifications.length) {
+		this.modules.push('certifications');
 	}
 	if (data.experience && data.experience.length) {
 		this.modules.push('experience');
@@ -132,6 +136,15 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 	html.push('<div class="rightcol"><b>Like: </b>');
 	html.push(this.data.skills.join(', '));
 	html.push('</div>');
+	html.push('</div>');
+	this.output.push(html.join(''));
+};
+
+ResumeBuilder.prototype.addCertificationsModule = function(){
+	var html = [];
+	html.push('<div id="certificationsModule" class="resumemodule clear">');
+	html.push('<div class="leftcol"><div>Certifications</div></div>');
+	html.push('<div class="rightcol">' + this.data.certifications.join(', ') + '</div>');
 	html.push('</div>');
 	this.output.push(html.join(''));
 };
