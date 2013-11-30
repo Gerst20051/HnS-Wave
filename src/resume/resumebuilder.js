@@ -147,7 +147,9 @@ ResumeBuilder.prototype.addExperienceModule = function(){
 		if (experience[i].technologies && experience[i].technologies.length) {
 			html.push('<div>' + experience[i].technologies.join(', ') + '</div>');
 		}
-		html.push('<div class="responsibilities">' + experience[i].responsibilities + '</div>');
+		if (experience[i].responsibilities && experience[i].responsibilities.length) {
+			html.push('<div class="responsibilities">' + experience[i].responsibilities + '</div>');
+		}
 		html.push('</div>');
 	}
 	html.push('</div>');
@@ -162,11 +164,18 @@ ResumeBuilder.prototype.addEducationModule = function(){
 	html.push('<div class="rightcol">');
 	for (i = 0; i < education.length; i++) {
 		html.push('<div class="educationcontainer">');
-		html.push('<div><b>' + education[i].degree + '</b> – ' + education[i].university + '<span class="datespan">' + education[i].startYear + ' - ' + education[i].endYear + '</span></div>');
+		html.push('<div><b>' + education[i].degree + '</b> – ' + education[i].university);
+		if (education[i].startYear == education[i].endYear) {
+			html.push('<span class="datespan">' + education[i].startYear + '</span></div>');
+		} else {
+			html.push('<span class="datespan">' + education[i].startYear + ' - ' + education[i].endYear + '</span></div>');
+		}
 		if (education[i].technologies && education[i].technologies.length) {
 			html.push('<div>' + education[i].technologies.join(', ') + '</div>');
 		}
-		html.push('<div class="achievements">' + education[i].achievements + '</div>');
+		if (education[i].achievements && education[i].achievements.length) {
+			html.push('<div class="achievements">' + education[i].achievements + '</div>');
+		}
 		html.push('</div>');
 	}
 	html.push('</div>');
@@ -185,7 +194,9 @@ ResumeBuilder.prototype.addProjectsModule = function(){
 		if (projects[i].technologies && projects[i].technologies.length) {
 			html.push('<div>' + projects[i].technologies.join(', ') + '</div>');
 		}
-		html.push('<div class="desc">' + projects[i].desc + '</div>');
+		if (projects[i].desc && projects[i].desc.length) {
+			html.push('<div class="desc">' + projects[i].desc + '</div>');
+		}
 		html.push('</div>');
 	}
 	html.push('</div>');
