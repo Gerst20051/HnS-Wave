@@ -11,4 +11,3 @@ if (DISPLAY_ERRORS) {
 	error_reporting(0);
 }
 ?>
-

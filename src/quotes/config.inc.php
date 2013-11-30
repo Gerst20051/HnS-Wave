@@ -1,4 +1,4 @@
- <?php
+<?php
 define('LOCAL',true);
 define('ROOT',dirname(__FILE__));
 define('DIR',(LOCAL)?dirname(ROOT):ROOT);

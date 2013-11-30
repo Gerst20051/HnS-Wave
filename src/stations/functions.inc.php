@@ -5,4 +5,3 @@ function print_json($data, $die = true){
 	if ($die === true) die();
 }
 ?>
-
