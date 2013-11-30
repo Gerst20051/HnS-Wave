@@ -30,7 +30,7 @@
 var myresume = new ResumeBuilder();
 myresume.config("#doc");
 
-$.getJSON('maryresume.json', function(resume){
+$.getJSON('resume.json', function(resume){
 	myresume.updateData(resume);
 });
 
