@@ -4,7 +4,7 @@
  *********************************************
  */
 
-function preg_replace(pattern, pattern_replace, subject, limit) {
+function preg_replace(pattern, pattern_replace, subject, limit){
 	// +   original by: Francois-Guillaume Ribreau (http://fgribreau)
 	// *     example 1: preg_replace("/(\\@([^\\s,\\.]*))/ig",'<a href="http://twitter.com/\\0">\\1</a>','#followfriday @FGRibreau @GeekFG',1);
 	// *     returns 1: "#followfriday <a href="http://twitter.com/@FGRibreau">@FGRibreau</a> @GeekFG"
