@@ -277,6 +277,16 @@ INSERT INTO users (first_name,last_name) VALUES("John", "Doe"),("Jane", "Doe")..
 </div>
 <div class="row">
 <div class="span12">
+<h2>Scoping Rules</h2>
+<pre>
+Scoping rules should be front and center because I think they are one of the most non-standard and thus confusing design choices of PHP.
+
+The variables $_GET, $_POST, $_REQUEST, $_SESSION, and $_FILES are superglobals, which means you don't need the global keyword to use them inside a function.
+</pre>
+</div>
+</div>
+<div class="row">
+<div class="span12">
 <h2>Reserved Words</h2>
 <pre>
 PHP has a number of "reserved words," or words that have special meaning in the language. You should avoid using these words in your code except when using them with their intended meaning.

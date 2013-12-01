@@ -495,6 +495,7 @@ Now that you've been introduced to the language I'd like to provide a couple met
 <a href="http://jsbin.com/">http://jsbin.com/</a>
 <a href="http://livecoding.io/">http://livecoding.io/</a>
 <a href="https://compilr.com/">https://compilr.com/</a>
+<a href="http://plnkr.co/">http://plnkr.co/</a>
 
 Minify And Beautify JavaScript Code
 
@@ -1885,11 +1886,11 @@ printData('rounded', rounded);
 <h2>jQuery</h2>
 <pre>
 <h3>What is jQuery?</h3>
-jQuery is a fast and concise JavaScript Library created by John Resig in 2006 with a nice motto: Write less, do more. jQuery simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
+jQuery is a fast, small, concise, and feature-rich lightweight JavaScript Library created by John Resig in 2006 with a nice motto: write less, do more. jQuery simplifies HTML document traversing and manipulation, event handling, animating, and Ajax interactions much simpler with an easy-to-use API that works across a multitude of browsers for rapid web development. With a combination of versatility and extensibility, jQuery has changed the way that millions of people write JavaScript.
 
 jQuery is a JavaScript toolkit designed to simplify various tasks by writing less code. Here is the list of important core features supported by jQuery:
-- DOM manipulation: The jQuery made it easy to select DOM elements, traverse them and modifying their content by using cross-browser open source selector engine called Sizzle.
-- Event handling: The jQuery offers an elegant way to capture a wide variety of events, such as a user clicking on a link, without the need to clutter the HTML code itself with event handlers.
+- DOM Manipulation: The jQuery made it easy to select DOM elements, traverse them and modifying their content by using cross-browser open source selector engine called Sizzle.
+- Event Handling: The jQuery offers an elegant way to capture a wide variety of events, such as a user clicking on a link, without the need to clutter the HTML code itself with event handlers.
 - AJAX Support: The jQuery helps you a lot to develop a responsive and feature-rich site using AJAX technology.
 - Animations: The jQuery comes with plenty of built-in animation effects which you can use in your websites.
 - Lightweight: The jQuery is very lightweight library - about 19KB in size ( Minified and gzipped ).
@@ -2225,6 +2226,23 @@ contentLoaded(window,
 			' in ' + timeElapsed($tt) + ' ms.';
 	}
 );
+</pre>
+</div>
+</div>
+<div class="row">
+<div class="span12">
+<h2>XHR Eval</h2>
+<pre>
+Script and page must be same domain.
+</pre>
+<pre class="brush:js">
+var xhrObj = getXHRObject();
+xhrObj.onreadystatechange = function(){
+	if (xhr.readyState != 4) return;
+	eval(xhr.responseText);
+};
+xhr.open('GET', 'A.js', true);
+xhr.send('');
 </pre>
 </div>
 </div>
