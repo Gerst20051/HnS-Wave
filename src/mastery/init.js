@@ -10,8 +10,8 @@
 		g = $w.navigator.userAgent,
 		h = g.indexOf("Firefox") !== -1 || g.indexOf("Opera") !== -1 ? true : false,
 		i = ["http://getbootstrap.com/2.3.2/assets/css/bootstrap.css", "http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css"],
-		j = ["http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js", "http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js", "http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushXml.js", "http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushJScript.js", "https://rawgithub.com/kvz/phpjs/master/functions/strings/echo.js", "https://rawgithub.com/kvz/phpjs/master/functions/var/print_r.js"],
-		l = 0,
+		j = ["http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js", "http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js", "http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushXml.js", "http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushJScript.js", "http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushJScript.js", "https://rawgithub.com/kvz/phpjs/master/functions/strings/echo.js", "https://rawgithub.com/kvz/phpjs/master/functions/var/print_r.js"],
+		l = 0, // http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushPhp.js
 		n,
 		m;
 	for (m = i.length; l < m; ++l) {
