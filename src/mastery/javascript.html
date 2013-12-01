@@ -2191,7 +2191,28 @@ for (i = 0; i &lt; els.length; i++) {
 </pre>
 <pre>
 <h3>Document Ready</h3>
-Sample function to determine when the document has been loaded. Also sample script to calculate the time elapsed to load the document.
+There are multiple methods for determining when the document has been loaded.
+
+The shortest DOMReady code, ever. Weighing in at 62 characters.
+
+function r(f){/in/(document.readyState)?setTimeout(r,9,f):f()}
+
+One final thing, although this was a fun exercise, it should be noted that you'd need a shim to fix Firefox <=3.5. 
+
+So to get this to fully work in IE, we have to take into account these issues.
+
+1. IE must have .test() doesn't get /foo/('foo')
+2. IE requires a 2nd arg (Gecko, Webkit does not) (eg: setTimeout(foo)
+3.IE's 3rd arg is to specify a language (wow, how stupid is that
+So we're back to this.
+
+function r(f){/in/.test(document.readyState)?setTimeout('r('+f+')',9):f()}
+
+And of course one final note, nothing will be able to beat the built-in DOM event at 47 characters (although it won't fire after being loaded once).
+
+document.addEventListener('DOMContentLoaded',f);
+
+Also sample script to calculate the time elapsed to load the document.
 
 <a href="https://github.com/dperini/ContentLoaded/blob/master/src/contentloaded.js">ContentLoaded</a>
 <a href="http://jsfiddle.net/gerst20051/Za8fr/">jQuery's Document Ready</a>
@@ -2202,7 +2223,7 @@ function contentLoaded(win, fn){
 		add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
 		rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
 		pre = doc.addEventListener ? '' : 'on',
-		init = function(){
+		init = function(e){
 			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
 			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
 			if (!done && (done = true)) fn.call(win, e.type || e);

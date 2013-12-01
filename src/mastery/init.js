@@ -45,3 +45,21 @@ window.log.clear = function(){
 	log.history = log.history || [];
 	log.history.length = 0;
 };
+
+window.contentLoaded = function(win, fn){
+	var doc = win.document, done = false,
+		add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
+		rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
+		pre = doc.addEventListener ? '' : 'on',
+		init = function(e){
+			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+			if (!done && (done = true)) fn.call(win, e.type || e);
+		};
+	if (doc.readyState == 'complete') fn.call(win, 'lazy');
+	else {
+		doc[add](pre + 'DOMContentLoaded', init, false);
+		doc[add](pre + 'readystatechange', init, false);
+		win[add](pre + 'load', init, false);
+	}
+};
