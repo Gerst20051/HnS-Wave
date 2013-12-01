@@ -2113,6 +2113,45 @@ function contentLoaded(win, fn){
 	}
 }
 
+// another approach
+
+function contentLoaded(win, fn){
+	var done = false, top = true,
+		doc = win.document, root = doc.documentElement,
+		add = doc.addEventListener ? 'addEventListener' : 'attachEvent',
+		rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
+		pre = doc.addEventListener ? '' : 'on',
+
+		init = function(e){
+			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+			if (!done && (done = true)) fn.call(win, e.type || e);
+		},
+
+		poll = function(){
+			try {
+				root.doScroll('left');
+			} catch(e) {
+				setTimeout(poll, 50);
+				return;
+			}
+			init('poll');
+		};
+
+	if (doc.readyState == 'complete') fn.call(win, 'lazy');
+	else {
+		if (doc.createEventObject && root.doScroll) {
+			try {
+				top = !win.frameElement;
+			} catch(e) {}
+			if (top) poll();
+		}
+		doc[add](pre + 'DOMContentLoaded', init, false);
+		doc[add](pre + 'readystatechange', init, false);
+		win[add](pre + 'load', init, false);
+	}
+}
+
 var $tt = (new Date).getTime();
 function timeElapsed(t){ return ((new Date()).getTime() - t); }
 
@@ -2256,6 +2295,58 @@ var ready = (function(){
 
 	return ready;
 })();
+</pre>
+<pre>
+Another Approach. Also demonstrates writing JavaScript without semicolons.
+</pre>
+<pre class="brush:js">
+var domready = function(ready){
+	var fns = [], fn, f = false
+	, doc = document
+	, testEl = doc.documentElement
+	, hack = testEl.doScroll
+	, domContentLoaded = 'DOMContentLoaded'
+	, addEventListener = 'addEventListener'
+	, onreadystatechange = 'onreadystatechange'
+	, readyState = 'readyState'
+	, loadedRgx = hack ? /^loaded|^c/ : /^loaded|c/
+	, loaded = loadedRgx.test(doc[readyState])
+
+	function flush(f){
+		loaded = 1
+		while (f = fns.shift()) f()
+	}
+
+	doc[addEventListener] && doc[addEventListener](domContentLoaded, fn = function(){
+		doc.removeEventListener(domContentLoaded, fn, f)
+		flush()
+	}, f)
+
+
+	hack && doc.attachEvent(onreadystatechange, fn = function(){
+		if (/^c/.test(doc[readyState])) {
+			doc.detachEvent(onreadystatechange, fn)
+			flush()
+		}
+	})
+
+	return (ready = hack ?
+		function(fn){
+			self != top ?
+			loaded ? fn() : fns.push(fn) :
+			function(){
+				try {
+					testEl.doScroll('left')
+				} catch (e) {
+					return setTimeout(function() { ready(fn) }, 50)
+				}
+				fn()
+			}()
+		} :
+		function (fn) {
+			loaded ? fn() : fns.push(fn)
+		})
+};
 </pre>
 </div>
 </div>
