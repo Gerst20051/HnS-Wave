@@ -1436,7 +1436,7 @@ Additionally, attempts to introduce new variables through an eval will be blocke
 </pre>
 <pre class="brush:js">
 eval("var a = false;");
-print(typeof a); // undefined
+console.log(typeof a); // undefined
 </pre>
 <pre>
 <b>Functions</b>
@@ -1865,7 +1865,7 @@ if ($mySelection.length) { $mySelection.slideUp(); }
 
 // BEST: add a doOnce plugin
 jQuery.fn.doOnce = function(func){
-	this.length && func.apply(this);
+	this.length &amp;&amp; func.apply(this);
 	return this;
 };
 
@@ -2071,24 +2071,24 @@ for (i = 0; i &lt; els.length; i++) {
 There are multiple methods for determining when the document has been loaded.
 
 The shortest DOMReady code, ever. Weighing in at 62 characters.
-
+<pre class="brush:js">
 function r(f){/in/(document.readyState)?setTimeout(r,9,f):f()}
-
+</pre>
 One final thing, although this was a fun exercise, it should be noted that you'd need a shim to fix Firefox <=3.5. 
 
 So to get this to fully work in IE, we have to take into account these issues.
 
-1. IE must have .test() doesn't get /foo/('foo')
-2. IE requires a 2nd arg (Gecko, Webkit does not) (eg: setTimeout(foo)
-3.IE's 3rd arg is to specify a language (wow, how stupid is that
+1. IE must have <i>.test()</i> doesn't get <i>/foo/('foo')</i>
+2. IE requires a 2nd arg (Gecko, Webkit does not) eg: <i>setTimeout(foo)</i>
+3. IE's 3rd arg is to specify a language (wow, how stupid is that
 So we're back to this.
-
+<pre class="brush:js">
 function r(f){/in/.test(document.readyState)?setTimeout('r('+f+')',9):f()}
-
+</pre>
 And of course one final note, nothing will be able to beat the built-in DOM event at 47 characters (although it won't fire after being loaded once).
-
-document.addEventListener('DOMContentLoaded',f);
-
+<pre class="brush:js">
+document.addEventListener('DOMContentLoaded', f);
+</pre>
 Also sample script to calculate the time elapsed to load the document.
 
 <a href="https://github.com/dperini/ContentLoaded/blob/master/src/contentloaded.js">ContentLoaded</a>
@@ -2101,9 +2101,9 @@ function contentLoaded(win, fn){
 		rem = doc.addEventListener ? 'removeEventListener' : 'detachEvent',
 		pre = doc.addEventListener ? '' : 'on',
 		init = function(e){
-			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+			if (e.type == 'readystatechange' &amp;&amp; doc.readyState != 'complete') return;
 			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
-			if (!done && (done = true)) fn.call(win, e.type || e);
+			if (!done &amp;&amp; (done = true)) fn.call(win, e.type || e);
 		};
 	if (doc.readyState == 'complete') fn.call(win, 'lazy');
 	else {
@@ -2123,9 +2123,9 @@ function contentLoaded(win, fn){
 		pre = doc.addEventListener ? '' : 'on',
 
 		init = function(e){
-			if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+			if (e.type == 'readystatechange' &amp;&amp; doc.readyState != 'complete') return;
 			(e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
-			if (!done && (done = true)) fn.call(win, e.type || e);
+			if (!done &amp;&amp; (done = true)) fn.call(win, e.type || e);
 		},
 
 		poll = function(){
@@ -2140,7 +2140,7 @@ function contentLoaded(win, fn){
 
 	if (doc.readyState == 'complete') fn.call(win, 'lazy');
 	else {
-		if (doc.createEventObject && root.doScroll) {
+		if (doc.createEventObject &amp;&amp; root.doScroll) {
 			try {
 				top = !win.frameElement;
 			} catch(e) {}
@@ -2243,7 +2243,7 @@ function bindReady(){
 		});
 
 		// If IE and not an iframe continually check to see if the document is ready
-		if (document.documentElement.doScroll && window == window.top) (function(){
+		if (document.documentElement.doScroll &amp;&amp; window == window.top) (function(){
 			if (jQuery.isReady) return;
 
 			try {
@@ -2282,10 +2282,10 @@ var ready = (function(){
 
 	function isDOMReady(){
 		if (ready.done) return false;
-		if (document && document.getElementsByTagName && document.getElementById && document.body) {
+		if (document &amp;&amp; document.getElementsByTagName &amp;&amp; document.getElementById &amp;&amp; document.body) {
 			clearInterval(ready.timer);
 			ready.timer = null;
-			for (var i = 0; i < ready.ready.length; i++) {
+			for (var i = 0; i &lt; ready.ready.length; i++) {
 				ready.ready[i]();
 			}
 			ready.ready = null;
@@ -2317,13 +2317,13 @@ var domready = function(ready){
 		while (f = fns.shift()) f()
 	}
 
-	doc[addEventListener] && doc[addEventListener](domContentLoaded, fn = function(){
+	doc[addEventListener] &amp;&amp; doc[addEventListener](domContentLoaded, fn = function(){
 		doc.removeEventListener(domContentLoaded, fn, f)
 		flush()
 	}, f)
 
 
-	hack && doc.attachEvent(onreadystatechange, fn = function(){
+	hack &amp;&amp; doc.attachEvent(onreadystatechange, fn = function(){
 		if (/^c/.test(doc[readyState])) {
 			doc.detachEvent(onreadystatechange, fn)
 			flush()
@@ -2348,6 +2348,9 @@ var domready = function(ready){
 		})
 };
 </pre>
+<pre class="brush:js">
+var isDOMPresent = "document" in this &amp;&amp; !("fake" in this.document);
+</pre>
 </div>
 </div>
 <div class="row">
@@ -2364,6 +2367,18 @@ xhrObj.onreadystatechange = function(){
 };
 xhr.open('GET', 'A.js', true);
 xhr.send('');
+
+// Placed In A Function
+
+function ajax(url){
+	var xhr = new XMLHttpRequest;
+	xhr.open("GET", url, false);
+	if (xhr.overrideMimeType) xhr.overrideMimeType("text/plain");
+	xhr.setRequestHeader("If-Modified-Since", "Fri, 01 Jan 1960 00:00:00 GMT");
+	xhr.send(null);
+	if (xhr.status !== 200 &amp;&amp; xhr.status !== 0) throw "XMLHttpRequest failed, status code " + xhr.status;
+	return xhr.responseText;
+};
 </pre>
 <pre>
 Another approach to XHR.
@@ -2391,9 +2406,36 @@ function createXHR(){
 The main use of using XHR requests is to get JSON data from a server. This is how you parse the JSON data.
 </pre>
 <pre class="brush:js">
-function parseJSON(data) {
+function parseJSON(data){
 	return (new Function('return ' + data))();
 }
+
+// OR
+
+function parseJSON(strJSON){
+	return eval("(function(){return " + strJSON + ";})()");
+}
+
+// OR
+
+function parseJSON(myObject){
+	returne eval('(' + myObject + ')');
+}
+</pre>
+<pre>
+eval expects valid javascript, which JSON might not be, so eval cannot parse some valid JSON texts (for example, U+2028 is valid in JSON, not valid in javascript).
+
+In modern browsers you can simply do: <i>JSON.parse(myObject);</i>
+
+Most browsers support JSON.parse(), which is defined in ECMA-262 5th Edition (the specification that JS is based on). For the browsers that don't you can implement it using <a href="https://github.com/douglascrockford/JSON-js/blob/master/json2.js">json2.js</a> or <a href="http://cdnjs.cloudflare.com/ajax/libs/json3/3.2.6/json3.js">json3.js</a>.
+
+The JSON 3 parser does not use eval or regular expressions. This provides security and performance benefits in obsolete and mobile environments, where the margin is particularly significant.
+
+As noted in the comments, if you're already using jQuery, there is a $.parseJSON function that maps to JSON.parse if available or a form of eval in older browsers. However, this performs additional, unnecessary checks that are also performed by JSON.parse, so for the best all round performance I'd recommend using it like so:
+<pre class="brush:js">
+var json = '{"result":true,"count":1}', obj = JSON &amp;&amp; JSON.parse(json) || $.parseJSON(json);
+</pre>
+This will ensure you use native JSON.parse immediately, rather than having jQuery perform sanity checks on the string before passing it to the native parsing function. It's actually not necessary to check for native support first and then fall back to jQuery. jQuery 1.10 tries JSON.parse first, then the own implementation. jQuery 2.x is directly calling JSON.parse without checking or fallback.
 </pre>
 </div>
 </div>
@@ -2404,7 +2446,7 @@ function parseJSON(data) {
 There are many problems with the built in JavaScript typeof operator. As evident from the following fix, typeof return "object" for null, array, date, regex, and object values.
 </pre>
 <pre class="brush:js">
-function RealTypeOf(v) {
+function RealTypeOf(v){
 	if (typeof v == "object") {
 		if (v === null) return "null";
 		if (v.constructor == (new Array).constructor) return "array";
@@ -2414,6 +2456,241 @@ function RealTypeOf(v) {
 	}
 	return typeof v;
 }
+</pre>
+<pre>
+This object summarizes the possible return values of typeof:
+
+<b>Type=> Result</b>
+Host object (provided by the JS environment)=> Implementation-dependent
+Function object (implements [[Call]] in ECMA-262 terms)=> "function"
+E4X XML object=> "xml"
+E4X XMLList object=> "xml"
+Any other object=> "object"
+</pre>
+<pre class="brush:js">
+var obj = {};
+obj['typeof undefined'] = typeof undefined; // "undefined"
+obj['typeof null'] = typeof null; // "object"
+obj['typeof true'] = typeof true; // "boolean"
+obj['typeof false'] = typeof false; // "boolean"
+obj['typeof 1'] = typeof 1; // "number"
+obj['typeof "string"'] = typeof "string"; // "string"
+obj['typeof function(){}'] = typeof function(){}; // "function"
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+var obj = {};
+obj['typeof undefined'] = typeof undefined;
+obj['typeof null'] = typeof null;
+obj['typeof true'] = typeof true;
+obj['typeof false'] = typeof false;
+obj['typeof 1'] = typeof 1;
+obj['typeof "string"'] = typeof "string";
+obj['typeof function(){}'] = typeof function(){};
+
+printData('typeof', obj);
+})();
+</script>
+</pre>
+<pre>
+The default toString function of Object returns a string with the following format… [object [[Class]]] …where [[Class]] is the class property of the object. Unfortunately, the specialized built-in objects mostly overwrite Object.prototype.toString with toString methods of their own…
+</pre>
+<pre class="brush:js">
+var obj = {};
+obj['[1,2,3].toString()'] = [1,2,3].toString(); // "1, 2, 3"
+obj['(new Date).toString()'] = (new Date).toString(); // "Sat Aug 06 2011 16:29:13 GMT-0700 (PDT)"
+obj['/a-z/.toString()'] = /a-z/.toString(); // "/a-z/"
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+var obj = {};
+obj['[1,2,3].toString()'] = [1,2,3].toString(); // "1, 2, 3"
+obj['(new Date).toString()'] = (new Date).toString(); // "Sat Aug 06 2011 16:29:13 GMT-0700 (PDT)"
+obj['/a-z/.toString()'] = /a-z/.toString(); // "/a-z/"
+
+printData('Object.toString', obj);
+})();
+</script>
+</pre>
+<pre>
+Fortunately we can use the call function to force the generic toString function upon them. (Since a new, generic object will always use the toString function defined by Object.prototype we can safely use ({}).toString as an abbreviation for Object.prototype.toString).
+</pre>
+<pre class="brush:js">
+var obj = {};
+obj['Object.prototype.toString.call([1,2,3])'] = Object.prototype.toString.call([1,2,3]); // "[object Array]"
+obj['Object.prototype.toString.call(new Date)'] = Object.prototype.toString.call(new Date); // "[object Date]"
+obj['Object.prototype.toString.call(/a-z/)'] = Object.prototype.toString.call(/a-z/); // "[object RegExp]"
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+var obj = {};
+obj['Object.prototype.toString.call([1,2,3])'] = Object.prototype.toString.call([1,2,3]); // "[object Array]"
+obj['Object.prototype.toString.call(new Date)'] = Object.prototype.toString.call(new Date); // "[object Date]"
+obj['Object.prototype.toString.call(/a-z/)'] = Object.prototype.toString.call(/a-z/); // "[object RegExp]"
+
+printData('Object.prototype.toString.call', obj);
+})();
+</script>
+</pre>
+<pre class="brush:js">
+var toType = function(obj){
+	return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+}
+
+Object.toType = (function toType(global){
+	return function(obj){
+		if (obj === global) {
+			return "global";
+		}
+		return ({}).toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+	}
+})(this);
+
+var obj = {};
+obj['Object.toType(window)'] = Object.toType(window); // "global" (all browsers)
+obj['Object.toType([1,2,3])'] = Object.toType([1,2,3]); // "array" (all browsers)
+obj['Object.toType(/a-z/)'] = Object.toType(/a-z/); // "regexp" (all browsers)
+obj['Object.toType(JSON)'] = Object.toType(JSON); // "json" (all browsers)
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+Object.toType = (function toType(global){
+	return function(obj){
+		if (obj === global) {
+			return "global";
+		}
+		return ({}).toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+	}
+})(this);
+
+var obj = {};
+obj['Object.toType(window)'] = Object.toType(window);
+obj['Object.toType([1,2,3])'] = Object.toType([1,2,3]);
+obj['Object.toType(/a-z/)'] = Object.toType(/a-z/);
+obj['Object.toType(JSON)'] = Object.toType(JSON);
+
+printData('Object.toType', obj);
+})();
+</script>
+</pre>
+<pre>
+<b>Normal cases</b>
+</pre>
+<pre class="brush:js">
+// Numbers
+typeof 37 === 'number';
+typeof 3.14 === 'number';
+typeof Math.LN2 === 'number';
+typeof Infinity === 'number';
+typeof NaN === 'number'; // Despite being "Not-A-Number"
+typeof Number(1) === 'number'; // but never use this form!
+
+// Strings
+typeof "" === 'string';
+typeof "bla" === 'string';
+typeof (typeof 1) === 'string'; // typeof always return a string
+typeof String("abc") === 'string'; // but never use this form!
+
+// Booleans
+typeof true === 'boolean';
+typeof false === 'boolean';
+typeof Boolean(true) === 'boolean'; // but never use this form!
+
+// Undefined
+typeof undefined === 'undefined';
+typeof blabla === 'undefined'; // an undefined variable
+
+// Objects
+typeof {a:1} === 'object';
+typeof [1, 2, 4] === 'object'; // use Array.isArray or Object.prototype.toString.call to differentiate regular objects from arrays
+typeof new Date() === 'object';
+
+typeof new Boolean(true) === 'object'; // this is confusing. Don't use!
+typeof new Number(1) === 'object'; // this is confusing. Don't use!
+typeof new String("abc") === 'object';  // this is confusing. Don't use!
+
+// Functions
+typeof function(){} === 'function';
+typeof Math.sin === 'function';
+null
+
+typeof null === 'object'; // This stands since the beginning of JavaScript
+</pre>
+<pre>
+In the first implementation of JavaScript, JavaScript values were represented as a type tag and a value. The type tag for objects was 0. <i>null</i> was represented as the NULL pointer (0x00 is most platforms). Consequently, null had 0 as type tag, hence the bogus typeof return value. (reference)
+
+A fix was proposed for ECMAScript (via an opt-in), but was rejected. It would have resulted in <i>typeof null === 'null'</i>.
+
+<b>Regular expressions</b>
+
+Callable regular expressions were a non-standard addition in some browsers (need reference to say which).
+</pre>
+<pre class="brush:js">
+typeof /s/ === 'function'; // Chrome 1-12 ... // Non-conform to ECMAScript 5.1
+typeof /s/ === 'object'; // Firefox 5+ ...    // Conform to ECMAScript 5.1
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+var obj = {};
+obj['typeof /s/'] = typeof /s/;
+
+printData(obj);
+})();
+</script>
+</pre>
+<pre>
+<b>Other quirks</b>
+
+alert in old Internet Explorer versions
+
+On IE 6, 7, and 8, <i>typeof alert === 'object'</i>
+
+Note: Not a quirk. It's telling the truth. Lots of old IE host objects are objects not functions
+Specification
+</pre>
+<pre>
+typeof {a: 4}; //"object"
+typeof [1, 2, 3]; //"object"
+(function() {console.log(typeof arguments)})(); //object
+typeof new ReferenceError; //"object"
+typeof new Date; //"object"
+typeof /a-z/; //"object"
+typeof Math; //"object"
+typeof JSON; //"object"
+typeof new Number(4); //"object"
+typeof new String("abc"); //"object"
+typeof new Boolean(true); //"object"
+
+toType({a: 4}); //"object"
+toType([1, 2, 3]); //"array"
+(function() {console.log(toType(arguments))})(); //arguments
+toType(new ReferenceError); //"error"
+toType(new Date); //"date"
+toType(/a-z/); //"regexp"
+toType(Math); //"math"
+toType(JSON); //"json"
+toType(new Number(4)); //"number"
+toType(new String("abc")); //"string"
+toType(new Boolean(true)); //"boolean"
+</pre>
+<pre>
+<a href="http://joncom.be/code/realtypeof/">Jon Combe - RealTypeOf: a better JavaScript typeof</a>
+<a href="http://ecma-international.org/ecma-262/5.1/#sec-11.4.3">ECMA-262 section 11.4.3</a>
 </pre>
 </div>
 </div>
@@ -2693,10 +2970,10 @@ var s = document.createElement("script"),
 s.src = "http://code.jquery.com/jquery.min.js";
 s.onload = s.onreadystatechange = function(){
 	if (!this.readyState || this.readyState == "complete" || this.readyState == "loaded") {
-		if (!done && (done=true)) {
+		if (!done &amp;&amp; (done=true)) {
 			main();
 			s.onload = s.onreadystatechange = null;
-			if (h && s.parentNode) h.removeChild(s);
+			if (h &amp;&amp; s.parentNode) h.removeChild(s);
 			s = undefined;
 		}
 	}
@@ -2830,7 +3107,7 @@ What value gets alerted?
 <pre class="brush:js">
 var a = 1,
 	b = function a(x){
-		x && a(--x);
+		x &amp;&amp; a(--x);
 	};
 alert(a);
 </pre>
