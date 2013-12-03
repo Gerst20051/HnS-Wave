@@ -18,10 +18,9 @@
 ###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Canvas Engine</title>
+<title>Pong (via Canvas Engine)</title>
 <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
 <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js"></script>
-<script src="http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/shBrushJScript.js"></script>
 <script src="canvasengine.js"></script>
 <link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css">
 <style>
@@ -31,13 +30,31 @@ body {
 }
 
 #codepane {
-	font-family: monospace;
-	margin: 1em 0;
-	white-space: pre;
+	padding: 20px;
 }
 
 #canvaspane {
 	cursor: default;
+}
+
+pre > div .syntaxhighlighter {
+	background-color: transparent !important;
+}
+
+pre > div .syntaxhighlighter .line.alt1,
+pre > div .syntaxhighlighter .line.alt2 {
+	background-color: transparent !important;
+}
+
+.syntaxhighlighter code,
+.syntaxhighlighter pre {
+	padding: 0;
+}
+
+.syntaxhighlighter .toolbar {
+	background-color: transparent !important;
+	display: none;
+	visibility: hidden;
 }
 </style>
 </head>
@@ -49,7 +66,8 @@ body {
 <pre id="codepane" class="brush:js"></pre>
 </div>
 <script>
-var paddleWidth = 200,
+var setup = function(){
+	paddleWidth = 200,
 	initialSpeedX = 5,
 	initialSpeedY = -6,
 	ballSpeedX = initialSpeedX,
@@ -69,8 +87,7 @@ var paddleWidth = 200,
 	doFullScreen = true,
 	playWidth = (doFullScreen) ? maxWidth : sizeWidth,
 	playHeight = (doFullScreen) ? maxHeight : sizeHeight;
-
-var setup = function(){
+	
 	if (doFullScreen) {
 		fullScreen();
 	} else {
@@ -101,7 +118,7 @@ var draw = function(){
 
 	if (ballMoving === true || started === false) {
 		fill(240, 126, 65);
-		rect(mouseX - paddleWidth/2, maxHeight - 50, paddleWidth, 10);
+		rect(mouseX - paddleWidth/2, playHeight - 50, paddleWidth, 10);
 	}
 
 	if (ballMoving) {
@@ -109,7 +126,7 @@ var draw = function(){
 		ballY += ballSpeedY;
 	} else {
 		ballX = mouseX;
-		ballY = maxHeight - 60;
+		ballY = playHeight - 60;
 		textSize(20);
 		if (0 < level) {
 			oldlevel = level;
@@ -173,19 +190,58 @@ var mouseClicked = function(){
 		ballSpeedY = initialSpeedY;
 		ballMoving = true;
 		started = true;
+		paddleWidth = 200;
 	}
 };
 
 window.onload = function(){
-	document.getElementById("codepane").innerHTML = window.setup + "<br/><br/>" + window.draw + "<br/><br/>";
+	document.getElementById("codepane").innerHTML = window.setup + "\n\n" + window.draw;
 	window.canvas = new Canvas(document.getElementById("canvas1"));
 	window.ctx = canvas.ctx;
 	canvas.setup = window.setup;
 	canvas.draw = window.draw;
 	canvas.run();
-	SyntaxHighlighter.defaults['gutter'] = false;
-	SyntaxHighlighter.all();
+	highlightSyntax();
 };
+
+function highlightSyntax(){
+        var path = function(){
+                var args = arguments, result = [], i;
+
+                for (i = 0; i < args.length; i++) {
+                        result.push(args[i].replace('@', 'http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/'));
+                }
+
+                return result;
+        };
+
+        SyntaxHighlighter.autoloader.apply(null, path(
+                'bash shell             @shBrushBash.js',
+                'cpp c                  @shBrushCpp.js',
+                'c# c-sharp csharp      @shBrushCSharp.js',
+                'css                    @shBrushCss.js',
+                'java                   @shBrushJava.js',
+                'js jscript javascript  @shBrushJScript.js',
+                'perl pl                @shBrushPerl.js',
+                'php                    @shBrushPhp.js',
+                'text plain             @shBrushPlain.js',
+                'py python              @shBrushPython.js',
+                'ruby rails ror rb      @shBrushRuby.js',
+                'sql                    @shBrushSql.js',
+                'xml xhtml xslt html    @shBrushXml.js'
+        ));
+
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+}
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
 </script>
 </body>
 </html>

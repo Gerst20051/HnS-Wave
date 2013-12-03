@@ -32,88 +32,18 @@ body {
 </style>
 </head>
 <body>
-<div><h1>Canvas Engine</h1></div>
 <div id="content">
 <div id="canvaspane">
 <canvas id="canvas1" width="100" height="100"></canvas>
 </div>
 </div>
 <script>
-var drawArcs = function(){
-	noFill();
-	stroke(0, 0, 0);
-
-	for (var i = 0; i < 4; i++) {
-		if (1 < i) {
-			fill(255, 255, 255);
-		}
-		for (var j = 0; j < 3; j++) {
-			var x = 25 + j * 50,
-				y = 80 + i * 50,
-				radius = 20,
-				startAngle = 0,
-				endAngle = Math.PI + (Math.PI * j) / 2,
-				clockwise = i % 2 === 0 ? false : true;
-			arc(x, y, radius, startAngle, endAngle, clockwise);
-		}
-	}
-};
-
 var setup = function(){
-	fullScreen();
-	background(255, 0, 0);
-	grid();
-	strokeWeight(10);
-	point(35, 35);
-	strokeWeight(4);
-	point(30, 30);
-	point(30, 46);
-	point(46, 30);
-	point(46, 46);
-	fill(0, 0, 255);
-	strokeWeight(1);
-	stroke(255, 255, 255);
-	rect(170, 100, 100, 100);
-	noStroke();
-	noFill();
-	rect(300, 100, 100, 100);
-	stroke(0, 255, 0);
-	strokeWeight(10);
-	line(50, 35, 300, 35);
-	textFont('Arial', 12);
-	stroke(0, 0, 0);
-	strokeWeight(1);
-	text('Hello', 10, 20);
-	textSize(20);
-	fill(0, 0, 0);
-	stroke(0, 0, 0);
-	strokeWeight(1);
-	text('World!', 50, 23);
-	circle(350, 100, 50);
-	noFill();
-	stroke(0, 0, 255);
-	circle(350, 150, 50);
-	fill(255, 255, 255);
-	noStroke();
-	circle(350, 200, 50);
-	drawArcs();
-	noFill();
-	strokeWeight(6);
-	bezier(100, 250, 150, 100, 350, 100, 400, 250);
-	fill(191, 0, 255);
-	strokeWeight(1);
-	ellipse(360, 360, 40, 120);
-	noStroke();
-	fill(255, 0, 255);
-	triangle(360, 360, 342, 380, 378, 380);
+	
 };
 
 var draw = function(){
-	if (mouseIsPressed) {
-		noStroke();
-		fill(191, 0, 255);
-		ellipse(mouseX, mouseY, 20, 20);
-	}
+
 };
 
 window.onload = function(){
@@ -122,6 +52,10 @@ window.onload = function(){
 	canvas.setup = window.setup;
 	canvas.draw = window.draw;
 	canvas.run();
+};
+
+var mouseClicked = function(){
+
 };
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

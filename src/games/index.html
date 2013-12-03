@@ -19,7 +19,10 @@
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <title>Canvas Engine</title>
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js"></script>
 <script src="canvasengine.js"></script>
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css">
 <style>
 #content {
 	width: 1024px;
@@ -27,15 +30,34 @@
 
 #codepane {
 	float: right;
-	font-family: monospace;
+	padding-bottom: 20px;
 	width: 500px;
-	white-space: pre;
 }
 
 #canvaspane {
 	cursor: default;
 	float: left;
 	width: 500px;
+}
+
+pre > div .syntaxhighlighter {
+	background-color: transparent !important;
+}
+
+pre > div .syntaxhighlighter .line.alt1,
+pre > div .syntaxhighlighter .line.alt2 {
+	background-color: transparent !important;
+}
+
+.syntaxhighlighter code,
+.syntaxhighlighter pre {
+	padding: 0;
+}
+
+.syntaxhighlighter .toolbar {
+	background-color: transparent !important;
+	display: none;
+	visibility: hidden;
 }
 </style>
 </head>
@@ -45,9 +67,7 @@
 <div id="canvaspane">
 <canvas id="canvas1" width="100" height="100"></canvas>
 </div>
-<div id="codepane">
-
-</div>
+<pre id="codepane" class="brush:js"></pre>
 </div>
 <script>
 var drawArcs = function(){
@@ -128,13 +148,45 @@ var draw = function(){
 };
 
 window.onload = function(){
-	document.getElementById("codepane").innerHTML = window.setup + "<br/><br/>" + window.draw + "<br/><br/>";
+	document.getElementById("codepane").innerHTML = window.setup + "\n\n" + window.draw;
 	window.canvas = new Canvas(document.getElementById("canvas1"));
 	window.ctx = canvas.ctx;
 	canvas.setup = window.setup;
 	canvas.draw = window.draw;
 	canvas.run();
+	highlightSyntax();
 };
+
+function highlightSyntax(){
+        var path = function(){
+                var args = arguments, result = [], i;
+
+                for (i = 0; i < args.length; i++) {
+                        result.push(args[i].replace('@', 'http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/'));
+                }
+
+                return result;
+        };
+
+        SyntaxHighlighter.autoloader.apply(null, path(
+                'bash shell             @shBrushBash.js',
+                'cpp c                  @shBrushCpp.js',
+                'c# c-sharp csharp      @shBrushCSharp.js',
+                'css                    @shBrushCss.js',
+                'java                   @shBrushJava.js',
+                'js jscript javascript  @shBrushJScript.js',
+                'perl pl                @shBrushPerl.js',
+                'php                    @shBrushPhp.js',
+                'text plain             @shBrushPlain.js',
+                'py python              @shBrushPython.js',
+                'ruby rails ror rb      @shBrushRuby.js',
+                'sql                    @shBrushSql.js',
+                'xml xhtml xslt html    @shBrushXml.js'
+        ));
+
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+}
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
