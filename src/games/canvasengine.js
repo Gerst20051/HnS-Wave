@@ -194,6 +194,9 @@ loop = function(){
 size = function(w, h){
 	canvas.size(w, h);
 },
+fullScreen = function(){
+	size(maxWidth, maxHeight);
+},
 engage = function(){
 	ctx.fillStyle = c.fillStyle;
 	ctx.strokeStyle = c.strokeStyle;
