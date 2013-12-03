@@ -49,7 +49,7 @@ body {
 <pre id="codepane" class="brush:js"></pre>
 </div>
 <script>
-var paddleWidth = 100,
+var paddleWidth = 200,
 	initialSpeedX = 5,
 	initialSpeedY = -6,
 	ballSpeedX = initialSpeedX,
@@ -63,11 +63,19 @@ var paddleWidth = 100,
 	level = 0,
 	oldlevel = 0,
 	record = 0,
-	oldrecord = 0;
+	oldrecord = 0,
+	sizeWidth = 400,
+	sizeHeight = 400,
+	doFullScreen = true,
+	playWidth = (doFullScreen) ? maxWidth : sizeWidth,
+	playHeight = (doFullScreen) ? maxHeight : sizeHeight;
 
 var setup = function(){
-	//size(400, 400);
-	fullScreen();
+	if (doFullScreen) {
+		fullScreen();
+	} else {
+		size(sizeWidth, sizeHeight);
+	}
 };
 
 var draw = function(){
@@ -93,7 +101,7 @@ var draw = function(){
 
 	if (ballMoving === true || started === false) {
 		fill(240, 126, 65);
-		rect(mouseX - paddleWidth/2, 350, paddleWidth, 10);
+		rect(mouseX - paddleWidth/2, maxHeight - 50, paddleWidth, 10);
 	}
 
 	if (ballMoving) {
@@ -101,7 +109,7 @@ var draw = function(){
 		ballY += ballSpeedY;
 	} else {
 		ballX = mouseX;
-		ballY = 340;
+		ballY = maxHeight - 60;
 		textSize(20);
 		if (0 < level) {
 			oldlevel = level;
@@ -140,18 +148,21 @@ var draw = function(){
 	if (ballX <= 10) {
 		ballSpeedX = -ballSpeedX;
 	}
-	if (ballX >= 390) {
+	if (ballX >= playWidth - 10) {
 		ballSpeedX = -ballSpeedX;
 	}
-	if (ballY >= 340 && ballY < 346 && ballX >= mouseX - (paddleWidth)/2 - 10 && ballX <= mouseX + (paddleWidth)/2 + 10) {
+	if (ballY >= playHeight - 60 && ballY < playHeight - 54 && ballX >= mouseX - paddleWidth/2 - 10 && ballX <= mouseX + paddleWidth/2 + 10) {
 		ballSpeedY = -ballSpeedY;
 		if (ballMoving === true) {
 			level += 1;
 			ballSpeedX += (0 < ballSpeedX) ? 1 : -1;
 			ballSpeedY += (0 < ballSpeedY) ? 1 : -1;
+			if (50 < paddleWidth) {
+				paddleWidth -= 2;
+			}
 		}
 	}
-	if (ballY >= 400) {
+	if (ballY >= playHeight) {
 		ballMoving = false;
 	}
 };
