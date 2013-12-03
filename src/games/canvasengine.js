@@ -378,6 +378,15 @@ sin = function(deg){ // take the sin of an angle
 tan = function(deg){ // take the tangent of an angle
 	return Math.tan(deg);
 },
+hour = function(){
+ 	return new Date().getHours();
+},
+minute = function(){
+ 	return new Date().getMinutes();
+},
+second = function(){
+ 	return new Date().getSeconds();
+},
 grid = function(interval){
 	engage();
 	if (!interval) {
