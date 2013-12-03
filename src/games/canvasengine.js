@@ -83,7 +83,12 @@ function updateMousePosition(curElement, e){
 	};
 }());
 
-var undef, constants = {
+var undef,
+	docElem = document.documentElement,
+	docBody = document.getElementsByTagName('body')[0],
+	maxWidth = window.innerWidth || docElem.clientWidth || docBody.clientWidth,
+	maxHeight = window.innerHeight|| docElem.clientHeight|| docBody.clientHeight,
+	constants = {
 	EPSILON: 1.0E-4,
 	MAX_FLOAT: 3.4028235E38,
 	MIN_FLOAT: -3.4028235E38,
