@@ -1,96 +1,56 @@
 /*
  *********************************************
- *** ResumeBuilder created by Andrew Gerst ***
+ *** BBCodeParser created by Andrew Gerst ****
  *********************************************
  */
 
-function preg_replace(pattern, pattern_replace, subject, limit){
-	// +   original by: Francois-Guillaume Ribreau (http://fgribreau)
-	// *     example 1: preg_replace("/(\\@([^\\s,\\.]*))/ig",'<a href="http://twitter.com/\\0">\\1</a>','#followfriday @FGRibreau @GeekFG',1);
-	// *     returns 1: "#followfriday <a href="http://twitter.com/@FGRibreau">@FGRibreau</a> @GeekFG"
-	// *     example 2: preg_replace("/(\\@([^\\s,\\.]*))/ig",'<a href="http://twitter.com/\\0">\\1</a>','#followfriday @FGRibreau @GeekFG');
-	// *     returns 2: "#followfriday <a href="http://twitter.com/@FGRibreau">@FGRibreau</a> @GeekFG"
-	// *     example 3: preg_replace("/(\\#[^\\s,\\.]*)/ig",'<strong>$0</strong>','#followfriday @FGRibreau @GeekFG');
-	// *     returns 3: "<strong>#followfriday</strong> @FGRibreau @GeekFG"
-
-	if (limit === undefined) {
-		limit = -1;
-	}
-
-	var _flag = pattern.substr(pattern.lastIndexOf(pattern[0]) + 1),
-		_pattern = pattern.substr(1, pattern.lastIndexOf(pattern[0]) - 1),
-		reg = new RegExp(_pattern, _flag),
-		rs = null,
-		res = [],
-		x = 0,
-		y = 0,
-		ret = subject,
-		temp;
-
-	if (limit === -1) {
-		tmp = [];
-
-		do {
-			tmp = reg.exec(subject);
-			if (tmp !== null) {
-				res.push(tmp);
-			}
-		} while (tmp !== null && _flag.indexOf('g') !== -1);
-	} else {
-		res.push(reg.exec(subject));
-	}
-
-	for (x = res.length - 1; x > -1; x--) { // explore match
-		tmp = pattern_replace;
-
-		for (y = res[x].length - 1; y > -1; y--) {
-			tmp = tmp.replace('${' + y + '}', res[x][y])
-				.replace('$' + y, res[x][y])
-				.replace('\\' + y, res[x][y]);
-		}
-		ret = ret.replace(res[x][0], tmp);
-	}
-
-	return ret;
-}
-
 function bbcode(str){
-	var search = [
-		'/\[b\](.*?)\[\/b\]/is',
-		'/\[i\](.*?)\[\/i\]/is',
-		'/\[u\](.*?)\[\/u\]/is',
-		'/\[img\](.*?)\[\/img\]/is',
-		'/\[url\](.*?)\[\/url\]/is',
-		'/\[url\=(.*?)\](.*?)\[\/url\]/is'
+	var search, replace, i;
+	
+	search = [
+		/\[b\](.*?)\[\/b\]/ig,
+		/\[i\](.*?)\[\/i\]/ig,
+		/\[u\](.*?)\[\/u\]/ig,
+		/\[img\](.*?)\[\/img\]/ig,
+		/\[url\](.*?)\[\/url\]/ig
 	];
 
-	var replace = [
+	replace = [
 		'<strong>$1</strong>',
 		'<em>$1</em>',
 		'<u>$1</u>',
 		'<img src="$1"/>',
-		'<a href="$1">$1</a>',
+		'<a href="$1" target="_blank">$1</a>'
+	];
+
+	for (i = 0; i < search.length; i++) {
+		str = str.replace(search[i], function(match, p1, offset, string){
+			return replace[i].replace(/\$1/ig, p1);
+		});
+	}
+
+	search = [
+		/\[url\=(.*?)\](.*?)\[\/url\]/ig
+	];
+
+	replace = [
 		'<a href="$1">$2</a>'
 	];
 
-	return preg_replace(search, replace, str);
-
-	/*
-	var matches = [
-		'[url={URL}]{TEXT}[/url]'
-	],
-	templates = [
-		'<a href="{URL}">{TEXT}</a>'
-	],
-	i;
-
-	for (i = 0; i < matches.length; i++) {
-		str = str.replace(matches[i], templates[i]);
+	for (i = 0; i < search.length; i++) {
+		str = str.replace(search[i], function(match, p1, p2, offset, string){
+			return replace[i].replace(/\$1/ig, p1).replace(/\$2/ig, p2);
+		});
 	}
 
 	return str;
-	*/
 }
+
+/*
+ *********************************************
+ *** ResumeBuilder created by Andrew Gerst ***
+ *********************************************
+ */
 
 var ResumeBuilder = function(){
 	this.data = {};
@@ -194,10 +154,10 @@ ResumeBuilder.prototype.addTitleModule = function(){
 	html.push('</div>');
 	html.push('</div>');
 	if (data.statement && data.statement.length) {
-		html.push('<div id="statement" class="clear">' + bbcode(data.statement) + '</div>');
+		html.push('<div id="statement" class="clear">' + data.statement + '</div>');
 	}
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.addSkillsModule = function(){
@@ -208,7 +168,7 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 	html.push(this.data.skills.join(', '));
 	html.push('</div>');
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.addCertificationsModule = function(){
@@ -217,7 +177,7 @@ ResumeBuilder.prototype.addCertificationsModule = function(){
 	html.push('<div class="leftcol"><div>Certifications</div></div>');
 	html.push('<div class="rightcol">' + this.data.certifications.join(', ') + '</div>');
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.addExperienceModule = function(){
@@ -238,7 +198,7 @@ ResumeBuilder.prototype.addExperienceModule = function(){
 	}
 	html.push('</div>');
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.addEducationModule = function(){
@@ -248,12 +208,7 @@ ResumeBuilder.prototype.addEducationModule = function(){
 	html.push('<div class="rightcol">');
 	for (i = 0; i < education.length; i++) {
 		html.push('<div class="educationcontainer">');
-		html.push('<div><b>' + education[i].degree + '</b> – ' + education[i].university);
-		if (education[i].startYear == education[i].endYear) {
-			html.push('<span class="datespan">' + education[i].startYear + '</span></div>');
-		} else {
-			html.push('<span class="datespan">' + education[i].startYear + ' - ' + education[i].endYear + '</span></div>');
-		}
+		html.push('<div><b>' + education[i].degree + '</b> – ' + education[i].university + '<span class="datespan">' + education[i].startYear + ' - ' + education[i].endYear + '</span></div>');
 		if (education[i].technologies && education[i].technologies.length) {
 			html.push('<div>' + education[i].technologies.join(', ') + '</div>');
 		}
@@ -264,7 +219,7 @@ ResumeBuilder.prototype.addEducationModule = function(){
 	}
 	html.push('</div>');
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.addProjectsModule = function(){
@@ -285,7 +240,7 @@ ResumeBuilder.prototype.addProjectsModule = function(){
 	}
 	html.push('</div>');
 	html.push('</div>');
-	this.output.push(html.join(''));
+	this.output.push(bbcode(html.join('')));
 };
 
 ResumeBuilder.prototype.printResume = function(){
