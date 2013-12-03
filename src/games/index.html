@@ -1,0 +1,138 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::                               
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:                           
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+                                
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:                                 
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+                                  
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#                           
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###                                  
+                                                                                                                                   
+                                                                                                                                   
+                                                                                                                                   
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: ::::::::::: 
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:     
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+     
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+     
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+     
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#     
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Canvas Engine</title>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="canvasengine.js"></script>
+<style>
+#content {
+	width: 1024px;
+}
+
+#codepane {
+	float: right;
+	font-family: monospace;
+	width: 500px;
+	white-space: pre;
+}
+
+#canvaspane {
+	cursor: default;
+	float: left;
+	width: 500px;
+}
+</style>
+</head>
+<body>
+<div><h1>Canvas Engine</h1></div>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+<div id="codepane">
+
+</div>
+</div>
+<script>
+var drawArcs = function(){
+	noFill();
+	stroke(0, 0, 0);
+
+	for (var i = 0; i < 4; i++) {
+		if (1 < i) {
+			fill(255, 255, 255);
+		}
+		for (var j = 0; j < 3; j++) {
+			var x = 25 + j * 50,
+				y = 80 + i * 50,
+				radius = 20,
+				startAngle = 0,
+				endAngle = Math.PI + (Math.PI * j) / 2,
+				clockwise = i % 2 === 0 ? false : true;
+			arc(x, y, radius, startAngle, endAngle, clockwise);
+		}
+	}
+};
+
+var setup = function(){
+	size(500, 500);
+	background(255, 0, 0);
+	grid();
+	strokeWeight(10);
+	point(35, 35);
+	strokeWeight(4);
+	point(73, 103);
+	fill(0, 0, 255);
+	strokeWeight(1);
+	stroke(255, 255, 255);
+	rect(170, 100, 100, 100);
+	noStroke();
+	noFill();
+	rect(300, 100, 100, 100);
+	stroke(0, 255, 0);
+	strokeWeight(10);
+	line(50, 35, 300, 35);
+	textFont('Arial', 12);
+	stroke(0, 0, 0);
+	strokeWeight(1);
+	text('Hello', 10, 20);
+	textSize(20);
+	fill(0, 0, 0);
+	stroke(0, 0, 0);
+	strokeWeight(1);
+	text('World!', 50, 23);
+	circle(350, 100, 50);
+	noFill();
+	stroke(0, 0, 255);
+	circle(350, 150, 50);
+	fill(255, 255, 255);
+	noStroke();
+	circle(350, 200, 50);
+	drawArcs();
+	noFill();
+	strokeWeight(6);
+	bezier(100, 250, 150, 100, 350, 100, 400, 250);
+	fill(191, 0, 255);
+	strokeWeight(1);
+	ellipse(360, 360, 40, 120);
+	noStroke();
+	fill(255, 0, 255);
+	triangle(360, 360, 342, 380, 378, 380);
+};
+
+var draw = function(){
+	if (mouseIsPressed) {
+		noStroke();
+		fill(191, 0, 255);
+		ellipse(mouseX, mouseY, 20, 20);
+	}
+};
+
+window.onload = function(){
+	document.getElementById("codepane").innerHTML = window.setup + window.draw;
+	window.canvas = new Canvas(document.getElementById("canvas1"));
+	window.ctx = canvas.ctx;
+	canvas.setup = window.setup;
+	canvas.draw = window.draw;
+	canvas.run();
+};
+</script>
+</body>
+</html>
