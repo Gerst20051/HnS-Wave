@@ -34,7 +34,7 @@ function bbcode(str){
 	];
 
 	replace = [
-		'<a href="$1">$2</a>'
+		'<a href="$1" target="_blank">$2</a>'
 	];
 
 	for (i = 0; i < search.length; i++) {
