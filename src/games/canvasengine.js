@@ -345,28 +345,38 @@ textSize = function(size){ // change the size of text
 },
 /* Math */
 random = function(low, high){ // generate a random number
-
+	return Math.floor(Math.random() * (high - low + 1)) + low;
+},
+floor = function(num){
+	return Math.floor(num);
+},
+ceil = function(num){
+	return Math.ceil(num);
+},
+round = function(num){
+	return Math.round(num);
 },
 dist = function(x1, y1, x2, y2){ // calculates the distance between two points
-
+	var xs = x2 - x1, ys = y2 - y1;
+	return Math.sqrt(xs * xs + ys * ys);
 },
 abs = function(num){ // take the absolute value of a number
-
+	return Math.abs(num);
 },
 log = function(num){ // take the logarithm of a number
-
+	return Math.log(num);
 },
 pow = function(num, exponent){ // raise a number to an exponent
-
+	return Math.pow(num, exponent);
 },
 cos = function(deg){ // cake the cosine of an angle
-
+	return Math.cos(deg);
 },
 sin = function(deg){ // take the sin of an angle
-
+	return Math.sin(deg);
 },
 tan = function(deg){ // take the tangent of an angle
-
+	return Math.tan(deg);
 },
 grid = function(interval){
 	engage();
