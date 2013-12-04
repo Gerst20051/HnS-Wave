@@ -623,10 +623,10 @@ function Canvas(canvas){
 	};
 
 	this.attachHandlers = function(){
-		addEvent(canvas, 'mousemove', onMouseMove);
-		addEvent(canvas, 'mousedown', onMouseDown);
-		addEvent(canvas, 'mouseup', onMouseUp);
-		addEvent(canvas, 'click', mouseClicked);
+		addEvent(canvas, 'mousemove', onMouseMove || nop);
+		addEvent(canvas, 'mousedown', onMouseDown || nop);
+		addEvent(canvas, 'mouseup', onMouseUp || nop);
+		addEvent(canvas, 'click', mouseClicked || nop);
 	};
 }
 
@@ -641,5 +641,3 @@ var onMouseDown = function(e){
 var onMouseUp = function(e){
 	mouseIsPressed = false;
 };
-
-var mouseClicked = mouseClicked || nop;
