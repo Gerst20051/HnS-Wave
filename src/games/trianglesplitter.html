@@ -1,0 +1,126 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::                               
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:                           
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+                                
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:                                 
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+                                  
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#                           
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###                                  
+																																   
+																																   
+																																   
+	:::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: ::::::::::: 
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:     
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+     
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+     
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+     
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#     
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>TriangleSpliter (via Canvas Engine)</title>
+<script src="canvasengine.js"></script>
+<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#canvaspane {
+	cursor: default;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+</div>
+<script>
+// The array holding the list of all circles displayed.
+// Start off with one big circle in the middle of the screen.
+var circles = [{
+	x: 200,
+	y: 200,
+	r: 200
+}];
+
+// Draw the circle passed in based on its x coordinate, 
+// y coordinate, and radius.
+var drawCircle = function(circle){
+	var red = 250 - 250 * (circle.x / 400);
+	var green = 250 - 250 * (circle.y / 400);
+	var blue = 100 + 250;
+	fill(red, green, blue);
+	stroke(6, 6, 31);
+	triangle(circle.x, circle.y, circle.r * 2, circle.r * 2, 100,100);   
+};
+
+// Draw the initial circle.
+var setup = function(){
+	drawCircle(circles[0]);
+};
+
+var draw = function(){    
+	for (var i = 0; i < circles.length; i += 1) {
+		var circle = circles[i];
+		// If the mouse is over a circle that hasn't
+		// been split before, split it!
+		if (!circle.split && dist(mouseX, mouseY, circle.x, circle.y) < circle.r && circle.r > 5) {
+			circle.split = true;
+			var c1 = {
+				x: circle.x - circle.r/2,
+				y: circle.y - circle.r/10,
+				r: circle.r/2
+			};
+			var c2 = {
+				x: circle.x + circle.r/2,
+				y: circle.y - circle.r/2,
+				r: circle.r/2
+			};
+			var c3 = {
+				x: circle.x - circle.r/2,
+				y: circle.y + circle.r/2,
+				r: circle.r/2
+			};
+			var c4 = {
+				x: circle.x + circle.r/2,
+				y: circle.y + circle.r/22,
+				r: circle.r/50
+			};
+			
+			// Add the 4 smaller circles to the list of
+			// circles.
+			circles.push(c1);
+			circles.push(c2);
+			circles.push(c3);
+			circles.push(c4);
+			
+			// Draw the 4 new circles.
+			drawCircle(c1);
+			drawCircle(c2);
+			drawCircle(c3);
+			drawCircle(c4);
+		}
+	}
+};
+
+window.onload = function(){
+	window.canvas = new Canvas(document.getElementById("canvas1"));
+	window.ctx = canvas.ctx;
+	canvas.setup = window.setup;
+	canvas.draw = window.draw;
+	canvas.run();
+};
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
