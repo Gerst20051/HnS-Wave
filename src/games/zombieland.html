@@ -18,7 +18,7 @@
 ###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Canvas Engine</title>
+<title>Zombieland (via Canvas Engine)</title>
 <script src="canvasengine.js"></script>
 <style>
 body {
@@ -38,12 +38,31 @@ body {
 </div>
 </div>
 <script>
+var gameObjects = [];
+
+var GameBackground = function(){
+	this.draw = function(){
+		ctx.globalAlpha = 0.4;
+		var linGrad = ctx.createLinearGradient(0, 0, 0, maxHeight);
+		linGrad.addColorStop(0, '#00bfff'); // skyblue at top
+		linGrad.addColorStop(0.5, '#fff'); // white in the middle
+		linGrad.addColorStop(0.5, '#5d0'); // green for top of grass
+		linGrad.addColorStop(1, '#fff'); // white at bottom
+		ctx.fillStyle = linGrad;
+		ctx.fillRect(0, 0, maxWidth, maxHeight);
+	};
+};
+
 var setup = function(){
-	
+	gameObjects.push(new GameBackground());
 };
 
 var draw = function(){
-
+	for (var i = 0, il = gameObjects.length; i < il; i++) {
+		engage();
+		gameObjects[i].draw();
+		paint();
+	}
 };
 
 window.onload = function(){
