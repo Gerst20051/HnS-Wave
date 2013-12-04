@@ -23,6 +23,7 @@
 <style>
 body {
 	margin: 0;
+	overflow: hidden;
 	padding: 0;
 }
 
@@ -38,23 +39,139 @@ body {
 </div>
 </div>
 <script>
+// TODO: Create GameObject Class That Can Be Extended
+
 var gameObjects = [],
 	doFullScreen = true,
 	gameSize = {
 		height: (doFullScreen) ? maxHeight : 400,
 		width: (doFullScreen) ? maxWidth : 400
+	},
+	isPaused = false,
+	bg, cloud, player, enemy;
+
+var Enemy = function(){
+	this.x = 0;
+	this.y = 0;
+	this.dir = 1;
+	this.speed = 1;
+	this.health = 1;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
 	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.run = function(){
+
+	};
+
+	this.move = function(){
+		this.x += this.speed * this.dir;
+	};
+
+	this.draw = function(){
+		strokeWeight(20);
+		point(this.x, this.y);
+	};
+};
+
+var Player = function(x, y){
+	this.x = x;
+	this.y = y;
+	this.dx = 0;
+	this.dy = 0;
+	this.dir = 1;
+	this.wobbledir = 1;
+	this.speed = 1;
+	this.health = 1;
+	this.energy = 1;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
+	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.run = function(){
+		this.wobble();
+	};
+
+	this.wobble = function(){
+		if (this.dy === 7 || this.dy === -7) {
+			this.wobbledir = -this.wobbledir;
+		}
+		this.y += this.wobbledir * 0.5;
+		this.dy += this.wobbledir * 0.5;
+	};
+
+	this.move = function(){
+		this.x += this.speed * this.dir;
+	};
+
+	this.attack = function(){
+		// fire bullets or expand
+		// find closest enemy
+		// decrease enemy health
+	};
+
+	this.draw = function(){
+		strokeWeight(10);
+		circle(this.x, this.y, 50);
+	};
+};
+
+var Cloud = function(){
+	this.x = 170;
+	this.y = 80;
+	this.fill = '#8ed6ff';
+
+	this.draw = function(){
+		fill(this.fill); // TODO
+		ctx.fillStyle = this.fill;
+		stroke(colors.blue);
+		strokeWeight(5);
+		engage();
+		begin(this.x, this.y);
+		bezierCurve(130, 100, 130, 150, 230, 150);
+		bezierCurve(250, 180, 320, 180, 340, 150);
+		bezierCurve(420, 150, 420, 120, 390, 100);
+		bezierCurve(430, 40, 370, 30, 340, 50);
+		bezierCurve(320, 5, 250, 20, 250, 50);
+		bezierCurve(200, 5, 150, 20, 170, 80);
+		paint();
+	};
+};
 
 var GameBackground = function(){
 	this.draw = function(){
 		ctx.globalAlpha = 0.4;
-		var linGrad = ctx.createLinearGradient(0, 0, 0, maxHeight);
+		var linGrad = ctx.createLinearGradient(0, 0, 0, gameSize.height);
 		linGrad.addColorStop(0, colors.brightskyblue);
-		linGrad.addColorStop(0.5, colors.white);
-		linGrad.addColorStop(0.5, colors.greengrass);
-		linGrad.addColorStop(1, colors.white);
-		ctx.fillStyle = linGrad;
-		ctx.fillRect(0, 0, maxWidth, maxHeight);
+		linGrad.addColorStop(0.85, colors.skyblue);
+		linGrad.addColorStop(0.85, colors.greengrass);
+		linGrad.addColorStop(1, colors.darkgreen);
+		// TODO: fill(linGrad);
+		c.fillStyle = ctx.fillStyle = linGrad;
+		noStroke();
+		rect(0, 0, gameSize.width, gameSize.height);
+	};
+};
+
+var PausedScreen = function(){
+	this.draw = function(){
+		if (isPaused) {
+			c.fillStyle = ctx.fillStyle = colors.black;
+			noStroke();
+			rect(0, 0, gameSize.width, gameSize.height);
+		}
 	};
 };
 
@@ -64,16 +181,49 @@ var setup = function(){
 	} else {
 		size(gameSize.width, gameSize.height);
 	}
-	gameObjects.push(new GameBackground());
+
+	bg = new GameBackground();
+	cloud = new Cloud();
+	player = new Player(gameSize.width / 2, gameSize.height * 0.85);
+	enemy = new Enemy();
+
+	gameObjects.push(bg);
+	gameObjects.push(cloud);
+	gameObjects.push(player);
+	gameObjects.push(enemy);
+	gameObjects.push(new PausedScreen());
 };
 
 var draw = function(){
-	for (var i = 0, il = gameObjects.length; i < il; i++) {
-		engage();
-		gameObjects[i].draw();
-		paint();
-	}
+	loopGameObjects(function(obj){
+		obj.draw && obj.draw();
+		obj.active && obj.run && obj.run();
+	});
 };
+
+var mouseClicked = function(){
+	playPause();
+};
+
+function playPause(){
+	if (isPaused) {
+		loopGameObjects(function(obj){
+			obj.activate && obj.activate();
+		});
+	} else {
+		loopGameObjects(function(obj){
+			obj.deactivate && obj.deactivate();
+		});
+	}
+
+	isPaused = !isPaused;
+}
+
+function loopGameObjects(callback){
+	for (var i = 0, il = gameObjects.length; i < il; i++) {
+		callback(gameObjects[i]);
+	}
+}
 
 window.onload = function(){
 	window.canvas = new Canvas(document.getElementById("canvas1"));
@@ -81,10 +231,6 @@ window.onload = function(){
 	canvas.setup = window.setup;
 	canvas.draw = window.draw;
 	canvas.run();
-};
-
-var mouseClicked = function(){
-
 };
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
