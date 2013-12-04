@@ -319,7 +319,7 @@ noStroke = function(){ // no outline for shapes
 	c.doStroke = false;
 },
 color = function(r, g, b, a){ // store a color in a variable
-
+	return "rgba(" + r + ", " + g + ", " + b + ", 1)";
 },
 /* Text */
 text = function(text, x, y){ // draw some text
