@@ -552,13 +552,13 @@ tan = function(deg){ // take the tangent of an angle
 	return Math.tan(deg);
 },
 hour = function(){
- 	return new Date().getHours();
+	return new Date().getHours();
 },
 minute = function(){
- 	return new Date().getMinutes();
+	return new Date().getMinutes();
 },
 second = function(){
- 	return new Date().getSeconds();
+	return new Date().getSeconds();
 },
 grid = function(interval){
 	engage();
