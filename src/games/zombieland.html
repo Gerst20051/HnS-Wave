@@ -38,22 +38,32 @@ body {
 </div>
 </div>
 <script>
-var gameObjects = [];
+var gameObjects = [],
+	doFullScreen = true,
+	gameSize = {
+		height: (doFullScreen) ? maxHeight : 400,
+		width: (doFullScreen) ? maxWidth : 400
+	};
 
 var GameBackground = function(){
 	this.draw = function(){
 		ctx.globalAlpha = 0.4;
 		var linGrad = ctx.createLinearGradient(0, 0, 0, maxHeight);
-		linGrad.addColorStop(0, '#00bfff'); // skyblue at top
-		linGrad.addColorStop(0.5, '#fff'); // white in the middle
-		linGrad.addColorStop(0.5, '#5d0'); // green for top of grass
-		linGrad.addColorStop(1, '#fff'); // white at bottom
+		linGrad.addColorStop(0, colors.brightskyblue);
+		linGrad.addColorStop(0.5, colors.white);
+		linGrad.addColorStop(0.5, colors.greengrass);
+		linGrad.addColorStop(1, colors.white);
 		ctx.fillStyle = linGrad;
 		ctx.fillRect(0, 0, maxWidth, maxHeight);
 	};
 };
 
 var setup = function(){
+	if (doFullScreen) {
+		fullScreen();
+	} else {
+		size(gameSize.width, gameSize.height);
+	}
 	gameObjects.push(new GameBackground());
 };
 

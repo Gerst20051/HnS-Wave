@@ -95,9 +95,11 @@ var colors = {
 	blanchedalmond: "#ffebcd",
 	blue: "#0000ff",
 	blueviolet: "#8a2be2",
+	brightskyblue: "#00bfff",
 	brown: "#a52a2a",
 	burlywood: "#deb887",
 	cadetblue: "#5f9ea0",
+	carolinablue: "#56A0D3",
 	chartreuse: "#7fff00",
 	chocolate: "#d2691e",
 	coral: "#ff7f50",
@@ -136,6 +138,7 @@ var colors = {
 	goldenrod: "#daa520",
 	gray: "#808080",
 	green: "#008000",
+	greengrass: "#55dd00",
 	greenyellow: "#adff2f",
 	honeydew: "#f0fff0",
 	hotpink: "#ff69b4",
@@ -356,6 +359,24 @@ paint = function(){
 	if (c.doStroke) {
 		ctx.stroke();
 	}
+},
+clearRect: function(x, y, w, h){ // clears the canvas in the specified rectangle.
+	ctx.clearRect(x, y, w, h);
+},
+clear: function(){ // clears the entire canvas.
+	ctx.clearRect(0, 0, c.W, c.H);
+},
+save: function(){ // saves the current canvas transform state.
+	ctx.save();
+},
+restore: function(){ // restores the saved canvas transform state.
+	ctx.restore();
+},
+translate: function(x, y){ // translates the canvas transform.
+	ctx.translate(x, y);
+},
+rotate: function(degs){ // rotates the canvas transform.
+	ctx.rotate(degs);
 },
 /* Shapes */
 point = function(x, y){ // draw a point
