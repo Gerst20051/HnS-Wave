@@ -360,22 +360,22 @@ paint = function(){
 		ctx.stroke();
 	}
 },
-clearRect: function(x, y, w, h){ // clears the canvas in the specified rectangle.
+clearRect = function(x, y, w, h){ // clears the canvas in the specified rectangle.
 	ctx.clearRect(x, y, w, h);
 },
-clear: function(){ // clears the entire canvas.
+clear = function(){ // clears the entire canvas.
 	ctx.clearRect(0, 0, c.W, c.H);
 },
-save: function(){ // saves the current canvas transform state.
+save = function(){ // saves the current canvas transform state.
 	ctx.save();
 },
-restore: function(){ // restores the saved canvas transform state.
+restore = function(){ // restores the saved canvas transform state.
 	ctx.restore();
 },
-translate: function(x, y){ // translates the canvas transform.
+translate = function(x, y){ // translates the canvas transform.
 	ctx.translate(x, y);
 },
-rotate: function(degs){ // rotates the canvas transform.
+rotate = function(degs){ // rotates the canvas transform.
 	ctx.rotate(degs);
 },
 /* Shapes */
