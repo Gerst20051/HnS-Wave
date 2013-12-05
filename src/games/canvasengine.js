@@ -333,6 +333,7 @@ c = {
 	Y: 0,
 	O: 0.5,
 	grid: false,
+	fullScreen: false,
 	background: "rgba(0, 0, 0, 1)",
 	fillStyle: "rgba(0, 0, 0, 1)",
 	doFill: true,
@@ -341,6 +342,7 @@ c = {
 	lineWidthHalf: 0.5,
 	lineCap: "round",
 	doStroke: true,
+	doClosePath: false,
 	color: [0, 0, 0, 0],
 	font: "12px Arial",
 	fontSize: 12,
@@ -353,6 +355,7 @@ mouseY = 0,
 mouseIsPressed = false,
 keyCode = 0,
 keyIsPressed = false,
+keyCodeList = [],
 curElement,
 stylePaddingLeft,
 stylePaddingTop,
@@ -387,9 +390,13 @@ loop = function(){
 	loopStarted = true;
 },
 size = function(w, h){
+	if (!c.fullScreen) {
+		w++, h++;
+	}
 	canvas.size(w, h);
 },
 fullScreen = function(){
+	c.fullScreen = true;
 	size(maxWidth, maxHeight);
 },
 engage = function(){
@@ -401,7 +408,9 @@ engage = function(){
 	ctx.beginPath();
 },
 paint = function(){
-	ctx.closePath();
+	if (c.doClosePath) {
+		ctx.closePath();
+	}
 	if (c.doFill) {
 		ctx.fill();
 	}
@@ -516,6 +525,12 @@ path = function(steps){
 		ctx.lineTo(steps[i].x, steps[i].y);
 	}
 	paint();
+},
+closePath = function(){
+	c.doClosePath = true;
+},
+noClosePath = function(){
+	c.doClosePath = false;
 },
 /* Coloring */
 background = function(r, g, b, a){ // set the background color
@@ -671,8 +686,8 @@ function Canvas(canvas){
 
 	this.size = function(w, h){
 		if (this.ctx) {
-			canvas.width = c.W = ++w;
-			canvas.height = c.H = ++h;
+			canvas.width = c.W = w;
+			canvas.height = c.H = h;
 		}
 		c.X = this.canvas.offsetLeft;
 		c.Y = this.canvas.offsetTop;
@@ -719,13 +734,15 @@ var onMouseClicked = function(e){
 
 var onKeyDown = function(e){
 	keyCode = keycode.getKeyCode(e);
+	keyCodeList[keyCode] = true;
 	keyDown();
 	e.preventDefault();
 };
 
 var onKeyUp = function(e){
-	keyCode = 0;
+	keyCodeList[keycode.getKeyCode(e)] = false;
 	keyIsPressed = false;
+	keyCode = 0;
 	keyUp();
 	e.preventDefault();
 };

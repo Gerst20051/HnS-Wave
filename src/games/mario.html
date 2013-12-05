@@ -39,8 +39,6 @@ body {
 </div>
 </div>
 <script>
-// TODO: Create GameObject Class That Can Be Extended
-
 var gameObjects = [],
 	doFullScreen = true,
 	gameSize = {
@@ -74,7 +72,10 @@ function GameObject(){
 	};
 
 	this.isCollidableWith = function(obj){
-		return (this.collidableWith === obj.type);
+		return (
+			this.collidableWith === obj.type ||
+			-1 < this.collidableWith.indexOf(obj.type)
+		);
 	};
 
 	this.run = nop;
@@ -88,8 +89,10 @@ var Enemy = function(x, y){
 	this.dir = (this.x < player.x) ? 1 : -1;
 	this.speed = 1;
 	this.health = 1;
-	this.destroy = false;
-	this.active = true;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = ["wall","bullet"];
+	this.type == "enemy";
 
 	this.run = function(){
 
@@ -101,7 +104,9 @@ var Enemy = function(x, y){
 
 	this.draw = function(){
 		var offset = 50;
-		this.move();
+		if (this.active) {
+			this.move();
+		}
 		fill(colors.black);
 		noStroke();
 		triangle(
@@ -117,17 +122,20 @@ var Enemy = function(x, y){
 
 Enemy.prototype = new GameObject();
 
-var Bullet = function(x, y, dir){
+var Bullet = function(parent){
+	this.parent = parent;
 	this.size = 10;
-	this.x = x;
-	this.y = y;
-	this.dir = dir;
+	this.x = parent.x;
+	this.y = parent.y;
+	this.dir = parent.dir;
 	this.speed = 1;
-	this.destroy = false;
-	this.active = true;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = "enemy";
+	this.type == "bullet";
 
 	this.run = function(){
-		//this.move();
+
 	};
 
 	this.move = function(){
@@ -135,37 +143,49 @@ var Bullet = function(x, y, dir){
 	};
 
 	this.draw = function(){
-		var xoffset = (0 < this.dir) ? 0 : (this.size * 2) * this.dir;
-		this.move();
-		fill();
-		stroke();
+		var xoffsetrect = (0 < this.dir) ? 0 : (this.size * 2) * this.dir;
+		var xoffsetarc = (0 < this.dir) ? this.size * 2 - 1 : (this.size * 2) * this.dir + 1;
+		if (parent.active) {
+			this.move();
+		}
+		strokeWeight(1);
+		arc(
+			this.x + (parent.size * this.dir) + xoffsetarc,
+			this.y - parent.size,
+			this.size / 2,
+			PI / 2,
+			PI * 3/2,
+			(0 < this.dir) ? true : false
+		);
 		rect(
-			this.x + (player.size * this.dir) + xoffset,
-			this.y - player.size - (this.size / 2),
+			this.x + (parent.size * this.dir) + xoffsetrect,
+			this.y - parent.size - (this.size / 2),
 			this.size * 2,
 			this.size
 		);
-		//circle(this.x - player.size, this.y, 30);
 	};
 };
 
 Bullet.prototype = new GameObject();
 
 var Player = function(x, y){
-	this.size = 50;
+	this.size = 25;
 	this.x = x || gameSize.width / 2;
 	this.y = y || gameSize.height * 0.85;
 	this.dx = 0;
 	this.dy = 0;
 	this.dir = 1;
 	this.wobbledir = 1;
-	this.speed = 1;
+	this.speed = 10;
 	this.health = 1;
 	this.energy = 1;
 	this.points = 0;
 	this.bullets = [];
-	this.destroy = false;
-	this.active = true;
+	this.gravity = 1;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = "wall";
+	this.type == "player";
 
 	this.run = function(){
 
@@ -179,32 +199,45 @@ var Player = function(x, y){
 		this.dy += this.wobbledir * 0.5;
 	};
 
+	this.move = function(){
+		if (this.active) {
+			this.x += this.speed * this.dir;
+		}
+	};
+
 	this.goLeft = function(){
-		this.dir = -1;
+		if (this.active) {
+			this.dir = -1;
+			this.move();
+		}
 	};
 
 	this.goRight = function(){
-		this.dir = 1;
-	};
-
-	this.move = function(){
-		this.x += this.speed * this.dir;
+		if (this.active) {
+			this.dir = 1;
+			this.move();
+		}
 	};
 
 	this.shoot = function(){
 		// TODO: Reuse Bullet Objects
-		this.bullets.push(new Bullet(this.x, this.y, this.dir));
+		if (this.active) {
+			this.bullets.push(new Bullet(this));
+		}
 		// find closest enemy
 		// decrease enemy health
 	};
 
 	this.jump = function(){
-		this.y -= 30;
-		this.dy -= 30;
+		if (this.active) {
+			if (this.dy === 0) {
+				this.y -= this.size * 2;
+				this.dy -= this.size * 2;
+			}
+		}
 	};
 
 	this.draw = function(){
-		//var offset
 		noStroke();
 		fill(colors.white);
 		triangle(
@@ -212,6 +245,9 @@ var Player = function(x, y){
 			this.x, this.y - this.size * 2,
 			this.x + this.size * this.dir, this.y - this.size
 		);
+		if (this.active) {
+
+		}
 		this.bullets.forEach(function(obj){
 			obj.draw && obj.draw();
 			obj.active && obj.run && obj.run();
@@ -226,8 +262,7 @@ var Cloud = function(x, y){
 	this.x = x || 170;
 	this.y = y || 80;
 	this.fill = '#8ed6ff';
-	this.destroy = false;
-	this.active = true;
+	this.collidable = false;
 
 	this.draw = function(){
 		fill(this.fill);
@@ -248,6 +283,8 @@ var Cloud = function(x, y){
 Cloud.prototype = new GameObject();
 
 var GameBackground = function(){
+	this.collidable = false;
+
 	this.draw = function(){
 		ctx.globalAlpha = 0.4;
 		var linGrad = ctx.createLinearGradient(0, 0, 0, gameSize.height);
@@ -264,6 +301,8 @@ var GameBackground = function(){
 GameBackground.prototype = new GameObject();
 
 var PausedScreen = function(){
+	this.collidable = false;
+
 	this.draw = function(){
 		if (isPaused) {
 			fill(colors.black);
@@ -276,6 +315,7 @@ var PausedScreen = function(){
 PausedScreen.prototype = new GameObject();
 
 var setup = function(){
+	closePath();
 	if (doFullScreen) {
 		fullScreen();
 	} else {
@@ -292,6 +332,7 @@ var setup = function(){
 var draw = function(){
 	checkGameObjects();
 	manageEnemies();
+	monitorKeys();
 
 	gameObjects.forEach(function(obj){
 		obj.active && obj.run && obj.run();
@@ -299,21 +340,24 @@ var draw = function(){
 	});
 };
 
-var keyDown = function(){
-	if (keyCode === keys.SPACE) {
+function monitorKeys(){
+	if (keyCodeList[keys.SPACE] === true) {
 		player.shoot();
-	} else if (keyCode === keys.LEFT) {
-		player.goLeft();
-	} else if (keyCode === keys.RIGHT) {
-		player.goRight();
-	} else if (keyCode === keys.UP) {
-		player.jump();
 	}
-};
+	if (keyCodeList[keys.LEFT] === true) {
+		player.goLeft();
+	}
+	if (keyCodeList[keys.RIGHT] === true) {
+		player.goRight();
+	}
+}
 
-var keyPressed = function(){
-	if (keyCode === keys.P) {
+var keyDown = function(){
+	if (keyCodeList[keys.P] === true) {
 		playPause();
+	}
+	if (keyCodeList[keys.UP] === true) {
+		player.jump();
 	}
 };
 
