@@ -102,6 +102,7 @@ var colors = {
 	carolinablue: "#56A0D3",
 	chartreuse: "#7fff00",
 	chocolate: "#d2691e",
+	cloudblue: '#8ed6ff',
 	coral: "#ff7f50",
 	cornflowerblue: "#6495ed",
 	cornsilk: "#fff8dc",

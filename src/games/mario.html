@@ -128,7 +128,7 @@ var Bullet = function(parent){
 	this.x = parent.x;
 	this.y = parent.y;
 	this.dir = parent.dir;
-	this.speed = 1;
+	this.speed = 8;
 	this.collidable = true;
 	this.isColliding = false;
 	this.collidableWith = "enemy";
@@ -148,6 +148,7 @@ var Bullet = function(parent){
 		if (parent.active) {
 			this.move();
 		}
+		stroke(colors.gold);
 		strokeWeight(1);
 		arc(
 			this.x + (parent.size * this.dir) + xoffsetarc,
@@ -176,12 +177,12 @@ var Player = function(x, y){
 	this.dy = 0;
 	this.dir = 1;
 	this.wobbledir = 1;
-	this.speed = 10;
+	this.speed = 5;
 	this.health = 1;
 	this.energy = 1;
 	this.points = 0;
 	this.bullets = [];
-	this.gravity = 1;
+	this.gravity = 3.5;
 	this.collidable = true;
 	this.isColliding = false;
 	this.collidableWith = "wall";
@@ -189,14 +190,6 @@ var Player = function(x, y){
 
 	this.run = function(){
 
-	};
-
-	this.wobble = function(){
-		if (this.dy === 7 || this.dy === -7) {
-			this.wobbledir = -this.wobbledir;
-		}
-		this.y += this.wobbledir * 0.5;
-		this.dy += this.wobbledir * 0.5;
 	};
 
 	this.move = function(){
@@ -208,14 +201,14 @@ var Player = function(x, y){
 	this.goLeft = function(){
 		if (this.active) {
 			this.dir = -1;
-			this.move();
+			//this.move();
 		}
 	};
 
 	this.goRight = function(){
 		if (this.active) {
 			this.dir = 1;
-			this.move();
+			//this.move();
 		}
 	};
 
@@ -230,7 +223,8 @@ var Player = function(x, y){
 
 	this.jump = function(){
 		if (this.active) {
-			if (this.dy === 0) {
+			// TODO: Account for height of platform
+			if (this.dy > -100) {
 				this.y -= this.size * 2;
 				this.dy -= this.size * 2;
 			}
@@ -246,7 +240,10 @@ var Player = function(x, y){
 			this.x + this.size * this.dir, this.y - this.size
 		);
 		if (this.active) {
-
+			if (0 > this.dy) {
+				this.y += (abs(this.dy) < this.gravity) ? abs(this.dy) : this.gravity;
+				this.dy += (abs(this.dy) < this.gravity) ? abs(this.dy) : this.gravity;
+			}
 		}
 		this.bullets.forEach(function(obj){
 			obj.draw && obj.draw();
@@ -261,32 +258,104 @@ var Cloud = function(x, y){
 	this.size = 100;
 	this.x = x || 170;
 	this.y = y || 80;
-	this.fill = '#8ed6ff';
 	this.collidable = false;
 
 	this.draw = function(){
-		fill(this.fill);
+		fill(colors.cloudblue);
 		stroke(colors.carolinablue);
 		strokeWeight(5);
 		engage();
 		begin(this.x, this.y);
-		bezierCurve(130, 100, 130, 150, 230, 150);
-		bezierCurve(250, 180, 320, 180, 340, 150);
-		bezierCurve(420, 150, 420, 120, 390, 100);
-		bezierCurve(430, 40, 370, 30, 340, 50);
-		bezierCurve(320, 5, 250, 20, 250, 50);
-		bezierCurve(200, 5, 150, 20, 170, 80);
+		bezierCurve(
+			this.x - 40, this.y + 20,
+			this.x - 40, this.y + 70,
+			this.x + 60, this.y + 70
+		);
+		bezierCurve(
+			this.x + 80, this.y + 100,
+			this.x + 150, this.y + 100,
+			this.x + 170, this.y + 70
+		);
+		bezierCurve(
+			this.x + 250, this.y + 70,
+			this.x + 250, this.y + 40,
+			this.x + 220, this.y + 20
+		);
+		bezierCurve(
+			this.x + 260, this.y - 40,
+			this.x + 200, this.y - 50,
+			this.x + 170, this.y - 30
+		);
+		bezierCurve(
+			this.x + 150, this.y - 75,
+			this.x + 80, this.y - 60,
+			this.x + 80, this.y - 30
+		);
+		bezierCurve(
+			this.x + 30, this.y - 75,
+			this.x - 20, this.y - 60,
+			this.x, this.y
+		);
 		paint();
 	};
 };
 
 Cloud.prototype = new GameObject();
 
+var Shrub = function(x, y){
+	this.size = 100;
+	this.x = x || gameSize.width - 300;
+	this.y = y || gameSize.height - 150;
+	this.collidable = false;
+
+	this.draw = function(){
+		ctx.globalAlpha = 1;
+		fill(colors.green);
+		stroke(colors.springgreen);
+		strokeWeight(5);
+		engage();
+		begin(this.x, this.y);
+		bezierCurve(
+			this.x - 40, this.y + 20,
+			this.x - 40, this.y + 70,
+			this.x + 60, this.y + 70
+		);
+		bezierCurve(
+			this.x + 80, this.y + 100,
+			this.x + 150, this.y + 100,
+			this.x + 170, this.y + 70
+		);
+		bezierCurve(
+			this.x + 250, this.y + 70,
+			this.x + 250, this.y + 40,
+			this.x + 220, this.y + 20
+		);
+		bezierCurve(
+			this.x + 260, this.y - 40,
+			this.x + 200, this.y - 50,
+			this.x + 170, this.y - 30
+		);
+		bezierCurve(
+			this.x + 150, this.y - 75,
+			this.x + 80, this.y - 60,
+			this.x + 80, this.y - 30
+		);
+		bezierCurve(
+			this.x + 30, this.y - 75,
+			this.x - 20, this.y - 60,
+			this.x, this.y
+		);
+		paint();
+		ctx.globalAlpha = 0.4;
+	};
+};
+
+Shrub.prototype = new GameObject();
+
 var GameBackground = function(){
 	this.collidable = false;
 
 	this.draw = function(){
-		ctx.globalAlpha = 0.4;
 		var linGrad = ctx.createLinearGradient(0, 0, 0, gameSize.height);
 		linGrad.addColorStop(0, colors.brightskyblue);
 		linGrad.addColorStop(0.85, colors.skyblue);
@@ -326,10 +395,12 @@ var setup = function(){
 	gameObjects.push(new GameBackground());
 	gameObjects.push(new PausedScreen());
 	gameObjects.push(new Cloud());
+	gameObjects.push(new Shrub());
 	gameObjects.push(player);
 };
 
 var draw = function(){
+	ctx.globalAlpha = 0.4;
 	checkGameObjects();
 	manageEnemies();
 	monitorKeys();
