@@ -235,7 +235,7 @@ var keycode = {
 		if (window.event) {
 			keycode = window.event.keyCode;
 		} else if (e) {
-			keycode = e.which;
+			keycode = e.which || e.keyCode;
 		}
 		return keycode;
 	},
@@ -271,6 +271,7 @@ var keycode = {
 };
 
 var undef,
+	PI = Math.PI,
 	docElem = document.documentElement,
 	docBody = document.getElementsByTagName('body')[0],
 	maxWidth = window.innerWidth || docElem.clientWidth || docBody.clientWidth,
@@ -282,7 +283,7 @@ var undef,
 	MAX_INT: 2147483647,
 	MIN_INT: -2147483648,
 	PI: Math.PI,
-	TWO_PI: 2 * Math.PI,
+	TWO_PI: Math.PI * 2,
 	HALF_PI: Math.PI / 2,
 	THIRD_PI: Math.PI / 3,
 	QUARTER_PI: Math.PI / 4,
@@ -306,10 +307,12 @@ keys = {
 	SHIFT: 16,
 	CONTROL: 17,
 	ALT: 18,
+	SPACE: 32,
 	LEFT: 37,
 	UP: 38,
 	RIGHT: 39,
 	DOWN: 40,
+	P: 80,
 	F1: 112,
 	F2: 113,
 	F3: 114,
@@ -517,7 +520,11 @@ path = function(steps){
 /* Coloring */
 background = function(r, g, b, a){ // set the background color
 	var oldFillStyle = c.fillStyle;
-	c.background = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	if (1 < arguments.length) {
+		c.background = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	} else {
+		c.background = r;
+	}
 	c.fillStyle = c.background;
 	engage();
 	ctx.fillRect(0, 0, c.W, c.H);
@@ -526,14 +533,22 @@ background = function(r, g, b, a){ // set the background color
 },
 fill = function(r, g, b, a){ // fill color for shapes / text color
 	c.doFill = true;
-	c.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	if (1 < arguments.length) {
+		c.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	} else {
+		c.fillStyle = r;
+	}
 },
 noFill = function(){ // no fill for shapes
 	c.doFill = false;
 },
 stroke = function(r, g, b, a){ // outline color for shapes / text color
 	c.doStroke = true;
-	c.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	if (1 < arguments.length) {
+		c.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	} else {
+		c.strokeStyle = r;
+	}
 },
 strokeWeight = function(thickness){ // no outline for shapes
 	c.doStroke = true;
@@ -544,7 +559,11 @@ noStroke = function(){ // no outline for shapes
 	c.doStroke = false;
 },
 color = function(r, g, b, a){ // store a color in a variable
-	return "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	if (1 < arguments.length) {
+		return "rgba(" + r + ", " + g + ", " + b + ", 1)";
+	} else {
+		return r;
+	}
 },
 /* Text */
 text = function(text, x, y){ // draw some text
@@ -673,9 +692,9 @@ function Canvas(canvas){
 		addEvent(canvas, 'mousedown', onMousePressed);
 		addEvent(canvas, 'mouseup', onMouseReleased);
 		addEvent(canvas, 'click', onMouseClicked);
-		addEvent(canvas, 'onkeydown', onKeyDown);
-		addEvent(canvas, 'onkeyup', onKeyUp);
-		addEvent(canvas, 'onkeypress', onKeyPressed);
+		addEvent(window, 'keydown', onKeyDown);
+		addEvent(window, 'keyup', onKeyUp);
+		addEvent(window, 'keypress', onKeyPressed);
 	};
 }
 
@@ -701,15 +720,18 @@ var onMouseClicked = function(e){
 var onKeyDown = function(e){
 	keyCode = keycode.getKeyCode(e);
 	keyDown();
+	e.preventDefault();
 };
 
 var onKeyUp = function(e){
 	keyCode = 0;
 	keyIsPressed = false;
 	keyUp();
+	e.preventDefault();
 };
 
 var onKeyPressed = function(e){
 	keyIsPressed = true;
 	keyPressed();
+	e.preventDefault();
 };

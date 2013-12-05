@@ -48,16 +48,18 @@ var gameObjects = [],
 		width: (doFullScreen) ? maxWidth : 400
 	},
 	isPaused = false,
-	bg, cloud, player, enemy;
+	numEnemies = 0,
+	player;
 
-var Enemy = function(){
+function GameObject(){
 	this.x = 0;
 	this.y = 0;
-	this.dir = 1;
-	this.speed = 1;
-	this.health = 1;
 	this.destroy = false;
 	this.active = true;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = "";
+	this.type == "";
 
 	this.activate = function(){
 		this.active = true;
@@ -67,9 +69,27 @@ var Enemy = function(){
 		this.active = false;
 	};
 
-	this.destroy = function(){
+	this.kill = function(){
 		this.destroy = true;
 	};
+
+	this.isCollidableWith = function(obj){
+		return (this.collidableWith === obj.type);
+	};
+
+	this.run = nop;
+	this.draw = nop;
+}
+
+var Enemy = function(x, y){
+	this.size = 25;
+	this.x = x || gameSize.width * Math.random();
+	this.y = y || gameSize.height * 0.85;
+	this.dir = (this.x < player.x) ? 1 : -1;
+	this.speed = 1;
+	this.health = 1;
+	this.destroy = false;
+	this.active = true;
 
 	this.run = function(){
 
@@ -80,12 +100,25 @@ var Enemy = function(){
 	};
 
 	this.draw = function(){
-		strokeWeight(20);
-		point(this.x, this.y);
+		var offset = 50;
+		this.move();
+		fill(colors.black);
+		noStroke();
+		triangle(
+			this.x,
+			this.y,
+			this.x,
+			this.y - (this.size * 2),
+			this.x + (this.size * this.dir),
+			this.y - this.size
+		);
 	};
 };
 
+Enemy.prototype = new GameObject();
+
 var Bullet = function(x, y, dir){
+	this.size = 10;
 	this.x = x;
 	this.y = y;
 	this.dir = dir;
@@ -93,20 +126,8 @@ var Bullet = function(x, y, dir){
 	this.destroy = false;
 	this.active = true;
 
-	this.activate = function(){
-		this.active = true;
-	};
-
-	this.deactivate = function(){
-		this.active = false;
-	};
-
-	this.destroy = function(){
-		this.destroy = true;
-	};
-
 	this.run = function(){
-		this.move();
+		//this.move();
 	};
 
 	this.move = function(){
@@ -114,13 +135,26 @@ var Bullet = function(x, y, dir){
 	};
 
 	this.draw = function(){
+		var xoffset = (0 < this.dir) ? 0 : (this.size * 2) * this.dir;
 		this.move();
+		fill();
+		stroke();
+		rect(
+			this.x + (player.size * this.dir) + xoffset,
+			this.y - player.size - (this.size / 2),
+			this.size * 2,
+			this.size
+		);
+		//circle(this.x - player.size, this.y, 30);
 	};
 };
 
+Bullet.prototype = new GameObject();
+
 var Player = function(x, y){
-	this.x = x;
-	this.y = y;
+	this.size = 50;
+	this.x = x || gameSize.width / 2;
+	this.y = y || gameSize.height * 0.85;
 	this.dx = 0;
 	this.dy = 0;
 	this.dir = 1;
@@ -133,20 +167,8 @@ var Player = function(x, y){
 	this.destroy = false;
 	this.active = true;
 
-	this.activate = function(){
-		this.active = true;
-	};
-
-	this.deactivate = function(){
-		this.active = false;
-	};
-
-	this.destroy = function(){
-		this.destroy = true;
-	};
-
 	this.run = function(){
-		this.wobble();
+
 	};
 
 	this.wobble = function(){
@@ -157,20 +179,39 @@ var Player = function(x, y){
 		this.dy += this.wobbledir * 0.5;
 	};
 
+	this.goLeft = function(){
+		this.dir = -1;
+	};
+
+	this.goRight = function(){
+		this.dir = 1;
+	};
+
 	this.move = function(){
 		this.x += this.speed * this.dir;
 	};
 
-	this.attack = function(){
+	this.shoot = function(){
+		// TODO: Reuse Bullet Objects
 		this.bullets.push(new Bullet(this.x, this.y, this.dir));
-		// fire bullets or expand
 		// find closest enemy
 		// decrease enemy health
 	};
 
+	this.jump = function(){
+		this.y -= 30;
+		this.dy -= 30;
+	};
+
 	this.draw = function(){
-		strokeWeight(10);
-		circle(this.x, this.y, 50);
+		//var offset
+		noStroke();
+		fill(colors.white);
+		triangle(
+			this.x, this.y,
+			this.x, this.y - this.size * 2,
+			this.x + this.size * this.dir, this.y - this.size
+		);
 		this.bullets.forEach(function(obj){
 			obj.draw && obj.draw();
 			obj.active && obj.run && obj.run();
@@ -178,29 +219,19 @@ var Player = function(x, y){
 	};
 };
 
-var Cloud = function(){
-	this.x = 170;
-	this.y = 80;
+Player.prototype = new GameObject();
+
+var Cloud = function(x, y){
+	this.size = 100;
+	this.x = x || 170;
+	this.y = y || 80;
 	this.fill = '#8ed6ff';
 	this.destroy = false;
 	this.active = true;
 
-	this.activate = function(){
-		this.active = true;
-	};
-
-	this.deactivate = function(){
-		this.active = false;
-	};
-
-	this.destroy = function(){
-		this.destroy = true;
-	};
-
 	this.draw = function(){
-		fill(this.fill); // TODO
-		ctx.fillStyle = this.fill;
-		stroke(colors.blue);
+		fill(this.fill);
+		stroke(colors.carolinablue);
 		strokeWeight(5);
 		engage();
 		begin(this.x, this.y);
@@ -214,22 +245,9 @@ var Cloud = function(){
 	};
 };
 
+Cloud.prototype = new GameObject();
+
 var GameBackground = function(){
-	this.destroy = true;
-	this.active = true;
-
-	this.activate = function(){
-		this.active = true;
-	};
-
-	this.deactivate = function(){
-		this.active = false;
-	};
-
-	this.destroy = function(){
-		this.destroy = true;
-	};
-
 	this.draw = function(){
 		ctx.globalAlpha = 0.4;
 		var linGrad = ctx.createLinearGradient(0, 0, 0, gameSize.height);
@@ -237,37 +255,25 @@ var GameBackground = function(){
 		linGrad.addColorStop(0.85, colors.skyblue);
 		linGrad.addColorStop(0.85, colors.greengrass);
 		linGrad.addColorStop(1, colors.darkgreen);
-		// TODO: fill(linGrad);
-		c.fillStyle = ctx.fillStyle = linGrad;
+		fill(linGrad);
 		noStroke();
 		rect(0, 0, gameSize.width, gameSize.height);
 	};
 };
 
+GameBackground.prototype = new GameObject();
+
 var PausedScreen = function(){
-	this.destroy = false;
-	this.active = true;
-
-	this.activate = function(){
-		this.active = true;
-	};
-
-	this.deactivate = function(){
-		this.active = false;
-	};
-
-	this.destroy = function(){
-		this.destroy = true;
-	};
-
 	this.draw = function(){
 		if (isPaused) {
-			c.fillStyle = ctx.fillStyle = colors.black;
+			fill(colors.black);
 			noStroke();
 			rect(0, 0, gameSize.width, gameSize.height);
 		}
 	};
 };
+
+PausedScreen.prototype = new GameObject();
 
 var setup = function(){
 	if (doFullScreen) {
@@ -276,37 +282,48 @@ var setup = function(){
 		size(gameSize.width, gameSize.height);
 	}
 
-	bg = new GameBackground();
-	cloud = new Cloud();
-	player = new Player(gameSize.width / 2, gameSize.height * 0.85);
-	enemy = new Enemy();
-
-	gameObjects.push(bg);
-	gameObjects.push(cloud);
-	gameObjects.push(player);
-	gameObjects.push(enemy);
+	player = new Player();
+	gameObjects.push(new GameBackground());
 	gameObjects.push(new PausedScreen());
+	gameObjects.push(new Cloud());
+	gameObjects.push(player);
 };
 
 var draw = function(){
-	loopGameObjects(function(obj){
-		obj.draw && obj.draw();
-		obj.active && obj.run && obj.run();
-	});
 	checkGameObjects();
+	manageEnemies();
+
+	gameObjects.forEach(function(obj){
+		obj.active && obj.run && obj.run();
+		obj.draw && obj.draw();
+	});
+};
+
+var keyDown = function(){
+	if (keyCode === keys.SPACE) {
+		player.shoot();
+	} else if (keyCode === keys.LEFT) {
+		player.goLeft();
+	} else if (keyCode === keys.RIGHT) {
+		player.goRight();
+	} else if (keyCode === keys.UP) {
+		player.jump();
+	}
 };
 
 var keyPressed = function(){
-	playPause();
+	if (keyCode === keys.P) {
+		playPause();
+	}
 };
 
 function playPause(){
 	if (isPaused) {
-		loopGameObjects(function(obj){
+		gameObjects.forEach(function(obj){
 			obj.activate && obj.activate();
 		});
 	} else {
-		loopGameObjects(function(obj){
+		gameObjects.forEach(function(obj){
 			obj.deactivate && obj.deactivate();
 		});
 	}
@@ -315,6 +332,12 @@ function playPause(){
 }
 
 function containsPoint(obj1, obj2){
+	if (obj1.x < obj2.x + obj2.width &&
+		obj1.x + obj1.width  > obj2.x &&
+		obj1.y < obj2.y + obj2.height &&
+		obj1.y + obj1.height > obj2.y) {
+		return true;
+	}
 	if (obj1.x >= obj2.x &&
 		obj1.y >= obj2.y &&
 		obj1.x <= obj2.x + obj2.width &&
@@ -324,18 +347,23 @@ function containsPoint(obj1, obj2){
 	return false;
 }
 
-function checkGameObjects(){
-	loopGameObjects(function(obj, i){
-		if (obj.destroy === true) {
-			gameObjects = gameObjects.splice(i, 1);
-		}
-	});
+function manageEnemies(){
+	if (numEnemies < 5) {
+		gameObjects.push(new Enemy());
+		numEnemies++;
+	}
 }
 
-function loopGameObjects(callback){
-	for (var i = 0, il = gameObjects.length; i < il; i++) {
-		callback(gameObjects[i], i);
-	}
+function checkGameObjects(){
+	var badObjects = [];
+	gameObjects.forEach(function(obj){
+		if (obj.destroy) {
+			badObjects.push(obj);
+		}
+	});
+	badObjects.forEach(function(obj){
+		gameObjects.splice(gameObjects.indexOf(obj), 1);
+	});
 }
 
 window.onload = function(){
