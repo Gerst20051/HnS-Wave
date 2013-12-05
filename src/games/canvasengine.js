@@ -14,7 +14,7 @@ function addEvent(obj, type, fn){
 	}
 }
 
-function removeEvent(obj, type, fn) {
+function removeEvent(obj, type, fn){
 	if (obj.detachEvent) {
 		obj.detachEvent('on'+type, obj[type+fn]);
 		obj[type+fn] = null;
@@ -229,6 +229,47 @@ var colors = {
 	yellowgreen: "#9acd32"
 };
 
+var keycode = {
+	getKeyCode: function(e){
+		var keycode = null;
+		if (window.event) {
+			keycode = window.event.keyCode;
+		} else if (e) {
+			keycode = e.which;
+		}
+		return keycode;
+	},
+	getKeyCodeValue: function(keyCode, shiftKey){
+		shiftKey = shiftKey || false;
+		var value = null;
+		if (shiftKey === true) {
+			value = this.modifiedByShift[keyCode];
+		} else {
+			value = this.keyCodeMap[keyCode];
+		}
+		return value;
+	},
+	getValueByEvent: function(e){
+		return this.getKeyCodeValue(this.getKeyCode(e), e.shiftKey);
+	},
+	keyCodeMap: {
+		8:"backspace", 9:"tab", 13:"return", 16:"shift", 17:"ctrl", 18:"alt", 19:"pausebreak", 20:"capslock", 27:"escape", 32:" ", 33:"pageup",
+		34:"pagedown", 35:"end", 36:"home", 37:"left", 38:"up", 39:"right", 40:"down", 43:"+", 44:"printscreen", 45:"insert", 46:"delete",
+		48:"0", 49:"1", 50:"2", 51:"3", 52:"4", 53:"5", 54:"6", 55:"7", 56:"8", 57:"9", 59:";",
+		61:"=", 65:"a", 66:"b", 67:"c", 68:"d", 69:"e", 70:"f", 71:"g", 72:"h", 73:"i", 74:"j", 75:"k", 76:"l",
+		77:"m", 78:"n", 79:"o", 80:"p", 81:"q", 82:"r", 83:"s", 84:"t", 85:"u", 86:"v", 87:"w", 88:"x", 89:"y", 90:"z",
+		96:"0", 97:"1", 98:"2", 99:"3", 100:"4", 101:"5", 102:"6", 103:"7", 104:"8", 105:"9",
+		106: "*", 107:"+", 109:"-", 110:".", 111: "/",
+		112:"f1", 113:"f2", 114:"f3", 115:"f4", 116:"f5", 117:"f6", 118:"f7", 119:"f8", 120:"f9", 121:"f10", 122:"f11", 123:"f12",
+		144:"numlock", 145:"scrolllock", 186:";", 187:"=", 188:",", 189:"-", 190:".", 191:"/", 192:"`", 219:"[", 220:"\\", 221:"]", 222:"'"
+	},
+	modifiedByShift: {
+		192:"~", 48:")", 49:"!", 50:"@", 51:"#", 52:"$", 53:"%", 54:"^", 55:"&", 56:"*", 57:"(", 109:"_", 61:"+",
+		219:"{", 221:"}", 220:"|", 59:":", 222:"\"", 188:"<", 189:">", 191:"?",
+		96:"insert", 97:"end", 98:"down", 99:"pagedown", 100:"left", 102:"right", 103:"home", 104:"up", 105:"pageup"
+	}
+};
+
 var undef,
 	docElem = document.documentElement,
 	docBody = document.getElementsByTagName('body')[0],
@@ -248,19 +289,23 @@ var undef,
 	DEG_TO_RAD: Math.PI / 180,
 	RAD_TO_DEG: 180 / Math.PI,
 	WHITESPACE: " \t\n\r\u000c\u00a0",
+	ARROW: "default",
+	CROSS: "crosshair",
+	HAND: "pointer",
+	MOVE: "move",
+	TEXT: "text",
+	WAIT: "wait",
+	NOCURSOR: "url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='), auto",
+},
+keys = {
 	BACKSPACE: 8,
 	TAB: 9,
 	ENTER: 10,
 	RETURN: 13,
 	ESC: 27,
-	DELETE: 127,
 	SHIFT: 16,
 	CONTROL: 17,
 	ALT: 18,
-	PGUP: 33,
-	PGDN: 34,
-	END: 35,
-	HOME: 36,
 	LEFT: 37,
 	UP: 38,
 	RIGHT: 39,
@@ -276,14 +321,7 @@ var undef,
 	F9: 120,
 	F10: 121,
 	F11: 122,
-	F12: 123,
-	ARROW: "default",
-	CROSS: "crosshair",
-	HAND: "pointer",
-	MOVE: "move",
-	TEXT: "text",
-	WAIT: "wait",
-	NOCURSOR: "url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='), auto",
+	F12: 123
 },
 c = {
 	W: 0,
@@ -310,6 +348,7 @@ pmouseY = 0,
 mouseX = 0,
 mouseY = 0,
 mouseIsPressed = false,
+keyCode = 0,
 keyIsPressed = false,
 curElement,
 stylePaddingLeft,
@@ -326,6 +365,13 @@ debug = function(){
 	};
 	return nop;
 }(),
+mouseMoved = nop,
+mouseClicked = nop,
+mousePressed = nop,
+mouseReleased = nop,
+keyDown = nop,
+keyUp = nop,
+keyPressed = nop,
 noLoop = function(){
 	doLoop = false;
 	loopStarted = false;
@@ -623,21 +669,47 @@ function Canvas(canvas){
 	};
 
 	this.attachHandlers = function(){
-		addEvent(canvas, 'mousemove', onMouseMove || nop);
-		addEvent(canvas, 'mousedown', onMouseDown || nop);
-		addEvent(canvas, 'mouseup', onMouseUp || nop);
-		addEvent(canvas, 'click', mouseClicked || nop);
+		addEvent(canvas, 'mousemove', onMouseMoved);
+		addEvent(canvas, 'mousedown', onMousePressed);
+		addEvent(canvas, 'mouseup', onMouseReleased);
+		addEvent(canvas, 'click', onMouseClicked);
+		addEvent(canvas, 'onkeydown', onKeyDown);
+		addEvent(canvas, 'onkeyup', onKeyUp);
+		addEvent(canvas, 'onkeypress', onKeyPressed);
 	};
 }
 
-var onMouseMove = function(e){
+var onMouseMoved = function(e){
 	updateMousePosition(curElement, e);
+	mouseMoved();
 };
 
-var onMouseDown = function(e){
+var onMousePressed = function(e){
 	mouseIsPressed = true;
+	mousePressed();
 };
 
-var onMouseUp = function(e){
+var onMouseReleased = function(e){
 	mouseIsPressed = false;
+	mouseReleased();
+};
+
+var onMouseClicked = function(e){
+	mouseClicked();
+};
+
+var onKeyDown = function(e){
+	keyCode = keycode.getKeyCode(e);
+	keyDown();
+};
+
+var onKeyUp = function(e){
+	keyCode = 0;
+	keyIsPressed = false;
+	keyUp();
+};
+
+var onKeyPressed = function(e){
+	keyIsPressed = true;
+	keyPressed();
 };

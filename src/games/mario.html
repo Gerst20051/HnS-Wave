@@ -18,7 +18,7 @@
 ###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Zombieland (via Canvas Engine)</title>
+<title>Mario (via Canvas Engine)</title>
 <script src="canvasengine.js"></script>
 <style>
 body {
@@ -56,6 +56,7 @@ var Enemy = function(){
 	this.dir = 1;
 	this.speed = 1;
 	this.health = 1;
+	this.destroy = false;
 	this.active = true;
 
 	this.activate = function(){
@@ -64,6 +65,10 @@ var Enemy = function(){
 
 	this.deactivate = function(){
 		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
 	};
 
 	this.run = function(){
@@ -80,6 +85,39 @@ var Enemy = function(){
 	};
 };
 
+var Bullet = function(x, y, dir){
+	this.x = x;
+	this.y = y;
+	this.dir = dir;
+	this.speed = 1;
+	this.destroy = false;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
+	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
+	};
+
+	this.run = function(){
+		this.move();
+	};
+
+	this.move = function(){
+		this.x += this.speed * this.dir;
+	};
+
+	this.draw = function(){
+		this.move();
+	};
+};
+
 var Player = function(x, y){
 	this.x = x;
 	this.y = y;
@@ -90,6 +128,9 @@ var Player = function(x, y){
 	this.speed = 1;
 	this.health = 1;
 	this.energy = 1;
+	this.points = 0;
+	this.bullets = [];
+	this.destroy = false;
 	this.active = true;
 
 	this.activate = function(){
@@ -98,6 +139,10 @@ var Player = function(x, y){
 
 	this.deactivate = function(){
 		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
 	};
 
 	this.run = function(){
@@ -117,6 +162,7 @@ var Player = function(x, y){
 	};
 
 	this.attack = function(){
+		this.bullets.push(new Bullet(this.x, this.y, this.dir));
 		// fire bullets or expand
 		// find closest enemy
 		// decrease enemy health
@@ -125,6 +171,10 @@ var Player = function(x, y){
 	this.draw = function(){
 		strokeWeight(10);
 		circle(this.x, this.y, 50);
+		this.bullets.forEach(function(obj){
+			obj.draw && obj.draw();
+			obj.active && obj.run && obj.run();
+		});
 	};
 };
 
@@ -132,6 +182,20 @@ var Cloud = function(){
 	this.x = 170;
 	this.y = 80;
 	this.fill = '#8ed6ff';
+	this.destroy = false;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
+	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
+	};
 
 	this.draw = function(){
 		fill(this.fill); // TODO
@@ -151,6 +215,21 @@ var Cloud = function(){
 };
 
 var GameBackground = function(){
+	this.destroy = true;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
+	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
+	};
+
 	this.draw = function(){
 		ctx.globalAlpha = 0.4;
 		var linGrad = ctx.createLinearGradient(0, 0, 0, gameSize.height);
@@ -166,6 +245,21 @@ var GameBackground = function(){
 };
 
 var PausedScreen = function(){
+	this.destroy = false;
+	this.active = true;
+
+	this.activate = function(){
+		this.active = true;
+	};
+
+	this.deactivate = function(){
+		this.active = false;
+	};
+
+	this.destroy = function(){
+		this.destroy = true;
+	};
+
 	this.draw = function(){
 		if (isPaused) {
 			c.fillStyle = ctx.fillStyle = colors.black;
@@ -199,9 +293,10 @@ var draw = function(){
 		obj.draw && obj.draw();
 		obj.active && obj.run && obj.run();
 	});
+	checkGameObjects();
 };
 
-var mouseClicked = function(){
+var keyPressed = function(){
 	playPause();
 };
 
@@ -219,9 +314,27 @@ function playPause(){
 	isPaused = !isPaused;
 }
 
+function containsPoint(obj1, obj2){
+	if (obj1.x >= obj2.x &&
+		obj1.y >= obj2.y &&
+		obj1.x <= obj2.x + obj2.width &&
+		obj1.y <= obj2.y + obj2.height) {
+		return true;
+	}
+	return false;
+}
+
+function checkGameObjects(){
+	loopGameObjects(function(obj, i){
+		if (obj.destroy === true) {
+			gameObjects = gameObjects.splice(i, 1);
+		}
+	});
+}
+
 function loopGameObjects(callback){
 	for (var i = 0, il = gameObjects.length; i < il; i++) {
-		callback(gameObjects[i]);
+		callback(gameObjects[i], i);
 	}
 }
 
