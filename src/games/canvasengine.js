@@ -168,6 +168,9 @@ var colors = {
 	limegreen: "#32cd32",
 	linen: "#faf0e6",
 	magenta: "#ff00ff",
+	mario: "fb8b15",
+	mariobrown: "684602",
+	mariored: "fb0007",
 	maroon: "#800000",
 	mediumaquamarine: "#66cdaa",
 	mediumblue: "#0000cd",
@@ -335,6 +338,7 @@ c = {
 	O: 0.5,
 	grid: false,
 	fullScreen: false,
+	globalAlpha: 1,
 	background: "rgba(0, 0, 0, 1)",
 	fillStyle: "rgba(0, 0, 0, 1)",
 	doFill: true,
@@ -401,6 +405,7 @@ fullScreen = function(){
 	size(maxWidth, maxHeight);
 },
 engage = function(){
+	ctx.globalAlpha = c.globalAlpha;
 	ctx.fillStyle = c.fillStyle;
 	ctx.strokeStyle = c.strokeStyle;
 	ctx.lineWidth = c.lineWidth;
@@ -615,6 +620,9 @@ color = function(r, g, b, a){ // store a color in a variable
 },
 lineCap = function(lineCap){
 	c.lineCap = lineCap;
+},
+alpha = function(alpha){
+	c.globalAlpha = alpha;
 },
 /* Text */
 text = function(text, x, y){ // draw some text

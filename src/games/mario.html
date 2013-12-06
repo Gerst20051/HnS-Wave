@@ -47,7 +47,8 @@ var gameObjects = [],
 	},
 	isPaused = false,
 	numEnemies = 0,
-	player;
+	player,
+	mario;
 
 function GameObject(){
 	this.x = 0;
@@ -86,7 +87,7 @@ var Enemy = function(x, y){
 	this.size = 25;
 	this.x = x || gameSize.width * Math.random();
 	this.y = y || gameSize.height * 0.85;
-	this.dir = (this.x < player.x) ? 1 : -1;
+	this.dir = (this.x < mario.x) ? 1 : -1;
 	this.speed = 1;
 	this.health = 1;
 	this.collidable = true;
@@ -169,6 +170,40 @@ var Bullet = function(parent){
 
 Bullet.prototype = new GameObject();
 
+var Shell = function(parent){
+	this.parent = parent;
+	this.size = 10;
+	this.x = parent.x;
+	this.y = parent.y;
+	this.dir = parent.dir;
+	this.speed = 8;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = "enemy";
+	this.type == "shell";
+
+	this.move = function(){
+		this.x += this.speed * this.dir;
+	};
+
+	this.draw = function(){
+		var xoffset = (0 < this.dir) ? parent.scale : (parent.scale + parent.sizex * parent.scale) * this.dir;
+		if (parent.active) {
+			this.move();
+		}
+		fill(colors.green);
+		stroke(colors.gold);
+		strokeWeight(1);
+		circle(
+			this.x + xoffset,
+			this.y - parent.sizey - (this.size * 2),
+			this.size
+		);
+	};
+};
+
+Shell.prototype = new GameObject();
+
 var Player = function(x, y){
 	this.size = 25;
 	this.x = x || gameSize.width / 2;
@@ -176,7 +211,6 @@ var Player = function(x, y){
 	this.dx = 0;
 	this.dy = 0;
 	this.dir = 1;
-	this.wobbledir = 1;
 	this.speed = 5;
 	this.health = 1;
 	this.energy = 1;
@@ -254,6 +288,233 @@ var Player = function(x, y){
 
 Player.prototype = new GameObject();
 
+var Mario = function(x, y){
+	this.scale = 8;
+	this.sizex = 12;
+	this.sizey = 16;
+	this.x = x || gameSize.width / 2;
+	this.y = y || gameSize.height * 0.85;
+	this.dx = 0;
+	this.dy = 0;
+	this.dir = 1;
+	this.speed = 5;
+	this.health = 1;
+	this.energy = 1;
+	this.points = 0;
+	this.shells = [];
+	this.gravity = 5;
+	this.collidable = true;
+	this.isColliding = false;
+	this.collidableWith = "wall";
+	this.type == "mario";
+
+	this.move = function(){
+		if (this.active) {
+			this.x += this.speed * this.dir;
+		}
+	};
+
+	this.goLeft = function(){
+		if (this.active) {
+			this.dir = -1;
+			this.move();
+		}
+	};
+
+	this.goRight = function(){
+		if (this.active) {
+			this.dir = 1;
+			this.move();
+		}
+	};
+
+	this.shoot = function(){
+		if (this.active) {
+			this.shells.push(new Shell(this));
+		}
+	};
+
+	this.jump = function(){
+		if (this.active) {
+			if (this.dy > -100) {
+				this.y -= this.sizey * this.scale;
+				this.dy -= this.sizey * this.scale;
+			}
+		}
+	};
+
+	this.draw = function(){
+		alpha(1);
+		noStroke();
+
+		// hat
+		fill(colors.mariored);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 0},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0}
+		]);
+
+		// head
+		fill(colors.mario);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
+		]);
+
+		// hair / mustache
+		fill(colors.mariobrown);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3}
+		]);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
+		]);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4}
+		]);
+
+		// eyes
+		rect(this.x - (this.sizex * this.scale) + this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 2, this.scale * 1, this.scale * 2);
+
+		// body
+		fill(colors.mario);
+		rect(this.x - (this.sizex * this.scale) + this.scale * 0, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale * 12, this.scale * 3);
+
+		// shirt
+		fill(colors.mariobrown);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 11},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 11},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9}
+
+		]);
+
+		// overalls
+		fill(colors.mariored);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 13},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 13},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7}
+		]);
+
+		// buttons
+		fill(colors.mario);
+		rect(this.x - (this.sizex * this.scale) + this.scale * 4, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
+		rect(this.x - (this.sizex * this.scale) + this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
+
+		// shoes
+		fill(colors.mariobrown);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15}
+		]);
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14}
+		]);
+
+		if (this.active) {
+			if (0 > this.dy) {
+				this.y += (abs(this.dy) < this.gravity) ? abs(this.dy) : this.gravity;
+				this.dy += (abs(this.dy) < this.gravity) ? abs(this.dy) : this.gravity;
+			}
+		}
+		this.shells.forEach(function(obj){
+			obj.draw && obj.draw();
+			obj.active && obj.run && obj.run();
+		});
+		alpha(0.4);
+	};
+};
+
+Mario.prototype = new GameObject();
+
 var Cloud = function(x, y){
 	this.size = 100;
 	this.x = x || 170;
@@ -309,7 +570,7 @@ var Shrub = function(x, y){
 	this.collidable = false;
 
 	this.draw = function(){
-		ctx.globalAlpha = 1;
+		alpha(1);
 		fill(colors.green);
 		stroke(colors.springgreen);
 		strokeWeight(5);
@@ -346,7 +607,7 @@ var Shrub = function(x, y){
 			this.x, this.y
 		);
 		paint();
-		ctx.globalAlpha = 0.4;
+		alpha(0.4);
 	};
 };
 
@@ -391,16 +652,16 @@ var setup = function(){
 		size(gameSize.width, gameSize.height);
 	}
 
-	player = new Player();
+	mario = new Mario();
 	gameObjects.push(new GameBackground());
 	gameObjects.push(new PausedScreen());
 	gameObjects.push(new Cloud());
 	gameObjects.push(new Shrub());
-	gameObjects.push(player);
+	gameObjects.push(mario);
 };
 
 var draw = function(){
-	ctx.globalAlpha = 0.4;
+	alpha(0.4);
 	checkGameObjects();
 	manageEnemies();
 	monitorKeys();
@@ -413,13 +674,16 @@ var draw = function(){
 
 function monitorKeys(){
 	if (keyCodeList[keys.SPACE] === true) {
-		player.shoot();
+		//player.shoot();
+		mario.shoot();
 	}
 	if (keyCodeList[keys.LEFT] === true) {
-		player.goLeft();
+		//player.goLeft();
+		mario.goLeft();
 	}
 	if (keyCodeList[keys.RIGHT] === true) {
-		player.goRight();
+		//player.goRight();
+		mario.goRight();
 	}
 }
 
@@ -428,7 +692,8 @@ var keyDown = function(){
 		playPause();
 	}
 	if (keyCodeList[keys.UP] === true) {
-		player.jump();
+		//player.jump();
+		mario.jump();
 	}
 };
 
