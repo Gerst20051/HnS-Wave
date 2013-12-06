@@ -514,9 +514,41 @@ bezierCurve = function(cx1, cy1, cx2, cy2, x2, y2){ // draw a bezier curve
 },
 quad = function(x1, y1, x2, y2, x3, y3, x4, y4){ // draw any quadrilateral
 	engage();
+	ctx.moveTo(x1 + c.O, y1 + c.O);
+	ctx.lineTo(x2 + c.O, y2 + c.O);
+	ctx.lineTo(x3 + c.O, y3 + c.O);
+	ctx.lineTo(x4 + c.O, y4 + c.O);
+	ctx.lineTo(x1 + c.O, y1 + c.O);
+	paint();
 },
-image = function(image, x, y){ // display an image
+image = function(img, sx, sy, swidth, sheight, x, y, width, height){ // display an image
+	var numArgs = arguments.length, image, drawImage;
 	engage();
+
+	drawImage = function(){
+		if (numArgs === 3) {
+			// img, x, y
+			ctx.drawImage(image, sx, sy);
+		} else if (numArgs === 5) {
+			// img, x, y, width, height
+			ctx.drawImage(image, sx, sy, swidth, sheight);
+		} else if (numArgs === 7) {
+			ctx.drawImage(image, sx, sy, swidth, sheight, x, y, swidth, sheight);
+		} else if (numArgs === 9) {
+			ctx.drawImage(image, sx, sy, swidth, sheight, x, y, width, height);
+		}
+	};
+
+	if (typeof img === "string") {
+		if (numArgs === 3 || numArgs === 5 || numArgs === 7 || numArgs === 9) {
+			image = new Image();
+			image.src = img;
+			image.onload = drawImage;
+		}
+	} else {
+		image = img;
+		drawImage();
+	}
 },
 path = function(steps){
 	var length = steps.length, i;
@@ -581,6 +613,9 @@ color = function(r, g, b, a){ // store a color in a variable
 		return r;
 	}
 },
+lineCap = function(lineCap){
+	c.lineCap = lineCap;
+},
 /* Text */
 text = function(text, x, y){ // draw some text
 	var oldStrokeWeight = c.strokeWeight;
@@ -591,7 +626,6 @@ text = function(text, x, y){ // draw some text
 	} else if (c.doFill) {
 		ctx.fillText(text, x, y);
 	}
-	stroke();
 	c.strokeWeight = oldStrokeWeight;
 },
 textFont = function(font, size){ // changes the font of the text

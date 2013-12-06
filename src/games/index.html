@@ -137,6 +137,12 @@ var setup = function(){
 	noStroke();
 	fill(255, 0, 255);
 	triangle(360, 360, 342, 380, 378, 380);
+	noFill();
+	strokeWeight(3);
+	quad(170, 250, 285, 200, 285, 300, 150, 300);
+	image('images/zombie.png', 140, 308);
+	image('images/zombie.png', 0, 300, 50, 50);
+	image('images/zombie.png', 100, 100, 100, 100, 0, 250);
 };
 
 var draw = function(){
