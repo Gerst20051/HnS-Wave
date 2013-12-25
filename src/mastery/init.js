@@ -10,7 +10,7 @@
 		g = $w.navigator.userAgent,
 		h = g.indexOf("Firefox") !== -1 || g.indexOf("Opera") !== -1 ? true : false,
 		i = ["http://getbootstrap.com/2.3.2/assets/css/bootstrap.css", "http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css", "mastery.css"],
-		j = ["http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js", "http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js", "https://rawgithub.com/kvz/phpjs/master/functions/strings/echo.js", "https://rawgithub.com/kvz/phpjs/master/functions/var/print_r.js", "mastery.js"],
+		j = ["http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js", "http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js", "http://cdn.hnswave.co/echo.js", "http://cdn.hnswave.co/print_r.js", "mastery.js"],
 		l = 0,
 		n,
 		m;

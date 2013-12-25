@@ -302,6 +302,7 @@ var Mario = function(x, y){
 	this.energy = 1;
 	this.points = 0;
 	this.shells = [];
+	this.lastShell = 0;
 	this.gravity = 5;
 	this.collidable = true;
 	this.isColliding = false;
@@ -328,9 +329,15 @@ var Mario = function(x, y){
 		}
 	};
 
-	this.shoot = function(){
+	this.shoot = function(isSingle){
 		if (this.active) {
-			this.shells.push(new Shell(this));
+			if (isSingle === true && 100 < Date.now() - this.lastShell) {
+				this.lastShell = Date.now();
+				this.shells.push(new Shell(this));
+			} else if (500 < Date.now() - this.lastShell) {
+				this.lastShell = Date.now();
+				this.shells.push(new Shell(this));
+			}
 		}
 	};
 
@@ -346,79 +353,98 @@ var Mario = function(x, y){
 	this.draw = function(){
 		alpha(1);
 		noStroke();
-
+		/*
+		pathOffset(
+			this.x - (this.sizex * this.scale) + this.dir * this.scale,
+			this.y - (this.sizey * this.scale) + this.dir * this.scale
+		);
+		*/
 		// hat
 		fill(colors.mariored);
+		/*
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 0},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 1},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 1},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 1},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 1},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0}
+			{x: 3, y: 0},
+			{x: 8, y: 0},
+			{x: 8, y: 1},
+			{x: 11, y: 1},
+			{x: 11, y: 2},
+			{x: 2, y: 2},
+			{x: 2, y: 1},
+			{x: 3, y: 1},
+			{x: 3, y: 0}
+		]);
+		*/
+
+		path([
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 0},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 1},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0}
 		]);
 
 		// head
 		fill(colors.mario);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
 		]);
 
 		// hair / mustache
 		fill(colors.mariobrown);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 3}
 		]);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 2},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 2},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 3},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 2}
 		]);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 4},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 6},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 5},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 4},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 6},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 5},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 4}
 		]);
 
 		// eyes
-		rect(this.x - (this.sizex * this.scale) + this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 2, this.scale * 1, this.scale * 2);
+		rect(this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 2, this.scale * 1, this.scale * 2);
 
 		// body
 		fill(colors.mario);
@@ -427,76 +453,76 @@ var Mario = function(x, y){
 		// shirt
 		fill(colors.mariobrown);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 11},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 11},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 11},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 11},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 9}
 
 		]);
 
 		// overalls
 		fill(colors.mariored);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 7},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 9},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 12},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 12},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 13},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 13},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 12},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 12},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 10},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 7},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 9},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 8},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 9, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 10, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, y: this.y - (this.sizey * this.scale) + this.scale * 13},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 13},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 5, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 2, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 12},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 10},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 7}
 		]);
 
 		// buttons
 		fill(colors.mario);
-		rect(this.x - (this.sizex * this.scale) + this.scale * 4, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
-		rect(this.x - (this.sizex * this.scale) + this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
+		rect(this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
+		rect(this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale, this.scale);
 
 		// shoes
 		fill(colors.mariobrown);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 15},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 16},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 16},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 1, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 4, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 0, y: this.y - (this.sizey * this.scale) + this.scale * 15}
 		]);
 		path([
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 14},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 15},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 15},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 16},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 16},
-			{x: this.x - (this.sizex * this.scale) + this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14}
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 14},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 11, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 15},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 12, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 16},
+			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 14}
 		]);
 
 		if (this.active) {
@@ -570,7 +596,9 @@ var Shrub = function(x, y){
 	this.collidable = false;
 
 	this.draw = function(){
-		alpha(1);
+		if (!isPaused) {
+			alpha(1);
+		}
 		fill(colors.green);
 		stroke(colors.springgreen);
 		strokeWeight(5);
@@ -694,6 +722,10 @@ var keyDown = function(){
 	if (keyCodeList[keys.UP] === true) {
 		//player.jump();
 		mario.jump();
+	}
+	if (keyCodeList[keys.SPACE] === true) {
+		//player.shoot();
+		mario.shoot(true);
 	}
 };
 

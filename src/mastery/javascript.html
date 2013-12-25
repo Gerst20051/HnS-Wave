@@ -911,22 +911,68 @@ The algorithm itself is not really quick, but performance varies (optimizations 
 The other thing is correctness. parseInt(), ~~ and parseFloat() make errors silent. In case of parseInt() and parseFloat() characters are ignored after invalid character - you can call it a feature (in most cases it's anti-feature for me, just like switch statements fallthrough) and if you need it, use one of those. In case of ~~ it means returning 0, so be careful.
 
 In certain cases, parseInt() might hurt you. Badly. For example, if number is so big that it is written in exponential notation. Use Math methods then.
-
-parseInt(2e30); // will return 2
-
-Anyways, at end I want to make a list when of methods to convert strings to numbers (both integers and floats). They have various usages and you may be interested what method to use. In most cases, the simplest one is +number method, use it if you can. Whatever you do (except for first method), all should give correct result.
 </pre>
 <pre class="brush:js">
-parseInt('08', 10); // 8
-+'08';              // 8
-~~'08';             // 8
-parseFloat('08');   // 8
-Number('08');       // 8
-new Number('08');   // 8... I meant Object container for 8
-Math.ceil('08');    // 8
+var myNumber = new Object();
+myNumber["parseInt(2e20)"] = parseInt(2e20);
+myNumber["parseInt(2e21)"] = parseInt(2e21);
+myNumber["parseInt(2e30)"] = parseInt(2e30);
+myNumber["parseFloat(2e20)"] = parseFloat(2e20);
+myNumber["parseFloat(2e21)"] = parseFloat(2e21);
+myNumber["parseFloat(2e30)"] = parseFloat(2e30);
+myNumber["parseFloat(2e100)"] = parseFloat(2e100);
 </pre>
 <pre>
-Don't use parseInt(number). Simple as that. Either use parseInt(number, 10) or this workaround which will magically fix parseInt function. Please note that this workaround will not work in JSLint. Please don't complain about it.
+<script>
+(function(){
+log.clear();
+
+var myNumber = new Object();
+myNumber["parseInt(2e20)"] = parseInt(2e20);
+myNumber["parseInt(2e21)"] = parseInt(2e21);
+myNumber["parseInt(2e30)"] = parseInt(2e30);
+myNumber["parseFloat(2e20)"] = parseFloat(2e20);
+myNumber["parseFloat(2e21)"] = parseFloat(2e21);
+myNumber["parseFloat(2e30)"] = parseFloat(2e30);
+myNumber["parseFloat(2e100)"] = parseFloat(2e100);
+
+printData('myNumber', myNumber);
+})();
+</script>
+</pre>
+<pre>
+Here is a list with various methods to convert strings to numbers (both integers and floats). They have various usages and you may be interested what method to use. In most cases, the simplest one is +number method, use it if you can. Whatever you do (except for the first method), all should give correct result.
+</pre>
+<pre class="brush:js">
+var myNumber = new Object();
+myNumber["parseInt('08', 10)"] = parseInt('08', 10);
+myNumber["+'08'"] = +'08';
+myNumber["~~'08'"] = ~~'08';
+myNumber["parseFloat('08')"] = parseFloat('08');
+myNumber["Number('08')"] = Number('08');
+myNumber["new Number('08')"] = new Number('08'); // Object container for 8
+myNumber["Math.ceil('08')"] = Math.ceil('08');
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
+
+var myNumber = new Object();
+myNumber["parseInt('08', 10)"] = parseInt('08', 10);
+myNumber["+'08'"] = +'08';
+myNumber["~~'08'"] = ~~'08';
+myNumber["parseFloat('08')"] = parseFloat('08');
+myNumber["Number('08')"] = Number('08');
+myNumber["new Number('08')"] = new Number('08');
+myNumber["Math.ceil('08')"] = Math.ceil('08');
+
+printData('myNumber', myNumber);
+})();
+</script>
+</pre>
+<pre>
+Don't use <i>parseInt(number)</i>. Simple as that. Either use <i>parseInt(number, 10)</i> or this workaround which will magically fix parseInt function. Please note that this workaround will not work in JSLint. Please don't complain about it.
 </pre>
 <pre class="brush:js">
 (function(){
@@ -941,21 +987,40 @@ Don't use parseInt(number). Simple as that. Either use parseInt(number, 10) or t
 parseInt(number, radix);
 </pre>
 <pre>
-parseInt converts argument to numbers using mentioned above algorithm. Avoid using it on large integers as it can do incorrect results in cases like parseInt(2e30). Also, never ever give it as argument to Array.prototype.map or Underscore.js variation of it as you may get weird results (try ['1', '2', '3'].map(parseInt) if you want (for explanation, replace parseInt with console.log)).
+parseInt converts argument to numbers using mentioned above algorithm. Avoid using it on large integers as it can do incorrect results in cases like <i>parseInt(2e30)</i>. Also, never ever give it as argument to Array.prototype.map or Underscore.js variation of it as you may get weird results (try <i>['1', '2', '3'].map(parseInt)</i> if you want (for explanation, replace <i>parseInt</i> with <i>console.log</i>)).
+</pre>
+<pre class="brush:js">
+var myNumber = new Object();
+myNumber["['1', '2', '3'].map(parseInt)"] = ['1', '2', '3'].map(parseInt);
+myNumber["['1', '2', '3'].map(parseFloat)"] = ['1', '2', '3'].map(parseFloat);
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
 
+var myNumber = new Object();
+myNumber["['1', '2', '3'].map(parseInt)"] = ['1', '2', '3'].map(parseInt);
+myNumber["['1', '2', '3'].map(parseFloat)"] = ['1', '2', '3'].map(parseFloat);
+
+printData('myNumber', myNumber);
+})();
+</script>
+</pre>
+<pre>
 Use it when either:
 
 When you need to read data written in different radix.
 You need to ignore errors (for example change 123px to 123)
 Otherwise use other more safe methods (if you need integer, use Math.floor instead).
 
-+number
+<b>+number</b>
 
 + prefix (+number) converts number to float. In case of error it returns NaN which you can compare by either isNaN() or just by number !== number (it should return true only for NaN). It's very fast in Opera.
 
 Use it unless you want specific features of other types.
 
-~~number
+<b>~~number</b>
 
 ~~ is a hack which uses ~ two times on the integer. As ~ bitwise operation can be only done for integers, the number is automatically converted. Most browsers have optimizations for this case. As bitwise operations only work below Math.pow(2, 32) never use this method with big numbers. It's blazingly fast on SpiderMonkey engine.
 
@@ -965,7 +1030,7 @@ You're writing code where performance is important for SpiderMonkey (like FireFo
 
 You need integer and care resulting JavaScript size.
 
-parseFloat(number)
+<b>parseFloat(number)</b>
 
 parseFloat() works like + with the one exception - it processes number until first invalid character instead of returning NaN. It's very fast (but not as fast as ~~ on Firefox) in V8. Unlike parseInt variation, it should be safe with Array.prototype.map.
 
@@ -975,15 +1040,42 @@ You're writing performance-critical code for Node.js or you're writing Google Ch
 
 You need to ignore errors (for example change 42.13px to 42.13)
 
-Number(number)
+<b>Number(number)</b>
 
 Avoid it. It works just like + prefix and is usually slower. The only usage where it could be useful is callback for Array.prototype.map - you cannot use + as callback.
 
-new Number(number)
+<b>new Number(number)</b>
 
-Use it when you need to confuse everybody with 0 being truthy value and having typeof of 'number'. Seriously, don't.
+Use it when you need to confuse everybody with 0 being truthy value and having typeof of 'object'. Seriously, don't.
+</pre>
+<pre class="brush:js">
+var myNumber = new Object();
+myNumber["typeof +'0'"] = typeof +'0';
+myNumber["typeof Number(0)"] = typeof Number(0);
+myNumber["typeof new Number(0)"] = typeof new Number(0);
+myNumber["typeof +'0'"] = typeof +'0';
+myNumber["!!Number(0)"] = !!Number(0);
+myNumber["!!new Number(0)"] = !!new Number(0);
+</pre>
+<pre>
+<script>
+(function(){
+log.clear();
 
-Math methods, like Math.ceil(number)
+var myNumber = new Object();
+myNumber["typeof +'0'"] = typeof +'0';
+myNumber["typeof Number(0)"] = typeof Number(0);
+myNumber["typeof new Number(0)"] = typeof new Number(0);
+myNumber["typeof +'0'"] = typeof +'0';
+myNumber["!!Number(0)"] = !!Number(0);
+myNumber["!!new Number(0)"] = !!new Number(0);
+
+printData('myNumber', myNumber);
+})();
+</script>
+</pre>
+<pre>
+Math methods, like <b>Math.ceil(number)</b>
 
 Use them when you need integer as it's more safe than parseInt() by not ignoring unexpected characters. Please note that technically it involves long conversion - string ? float ? integer ? float (numbers in JavaScript are floats) - but most browser have optimizations for it, so usually it's not that noticeable. It's also safe with Array.prototype.map.
 </pre>
@@ -1286,17 +1378,27 @@ Changing location.search forces a page refresh which is most likely undesirable.
 bind() is helpful in cases where you want to create a shortcut to a function which requires a specific this value.
 
 Take Array.prototype.slice, for example, which you want to use for converting an array-like object to a real array. You could create a shortcut like this:
+</pre>
 <pre class="brush:js">
 var slice = Array.prototype.slice;
 slice.call(arguments);
 </pre>
+<pre>
 With bind(), this can be simplified. In the following piece of code, slice is a bound function to the <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/call">call()</a> function of Function.prototype, with the this value set to the slice() function of Array.prototype. This means that additional call() calls can be eliminated:
+</pre>
 <pre class="brush:js">
 var unboundSlice = Array.prototype.slice; // same as "slice" in the previous example
 var slice = Function.prototype.call.bind(unboundSlice);
 
 slice(arguments);
 </pre>
+<pre>
+Using Native Trim on an array of Strings.
+
+Here is the jsperf test of these methods. <a href="http://jsperf.com/native-trim-vs-regex-trim-vs-mixed">http://jsperf.com/native-trim-vs-regex-trim-vs-mixed</a>
+</pre>
+<pre class="brush:js">
+var trimmedarray = arr.map(Function.prototype.call, String.prototype.trim);
 </pre>
 </div>
 </div>
@@ -2663,10 +2765,10 @@ On IE 6, 7, and 8, <i>typeof alert === 'object'</i>
 Note: Not a quirk. It's telling the truth. Lots of old IE host objects are objects not functions
 Specification
 </pre>
-<pre>
+<pre class="brush:js">
 typeof {a: 4}; //"object"
 typeof [1, 2, 3]; //"object"
-(function() {console.log(typeof arguments)})(); //object
+(function(){console.log(typeof arguments)})(); //object
 typeof new ReferenceError; //"object"
 typeof new Date; //"object"
 typeof /a-z/; //"object"
@@ -2678,7 +2780,7 @@ typeof new Boolean(true); //"object"
 
 toType({a: 4}); //"object"
 toType([1, 2, 3]); //"array"
-(function() {console.log(toType(arguments))})(); //arguments
+(function(){console.log(toType(arguments))})(); //arguments
 toType(new ReferenceError); //"error"
 toType(new Date); //"date"
 toType(/a-z/); //"regexp"

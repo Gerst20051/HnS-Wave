@@ -2,16 +2,19 @@
 	"name": "Andrew Anthony Gerst",
 	"title": "JavaScript Engineer",
 	"location": "Chapel Hill, NC, United States",
-	"number": "9198851642",
+	"number": "7047650337",
 	"email": "[url=mailto:gerst20051@gmail.com]gerst20051@gmail.com[/url]",
-	"url": "[url]http://about.me/agerst[/url]",
+	"url": "[url]http://hnswave.co[/url]",
 	"statement": "I'm seeking a Web Development position where I can join and collaboratively work with a team and/or independently to build quality web applications or games. I've been a Web Developer since 2005. I started because I wanted a central database accessible from anywhere on the internet of everything I owned. Mainly I wanted to document my games and have cheats for all of my games on my website I named Homenet. Homenet Spaces (HnS) was my first social network my spin on MySpace. I've always seen ways to improve the way we interact with our friends and family. I really want to use my skills to impact the world in life-changing ways. Another passion I have is listening to music so I've created multiple tools that offer different music listening experiences. Click for my book [url=http://hnswave.co/mastery/javascript.html]JavaScript Mastery[/url].",
 	"skills": [
-		"html5",
 		"javascript",
 		"jquery",
 		"php",
-		"mysql"
+		"mysql",
+		"html",
+		"css",
+		"bash",
+		"vim"
 	],
 	"experience": [
 		{

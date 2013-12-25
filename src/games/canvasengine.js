@@ -351,7 +351,9 @@ c = {
 	color: [0, 0, 0, 0],
 	font: "12px Arial",
 	fontSize: 12,
-	fontStyle: "Arial"
+	fontStyle: "Arial",
+	pathOffsetX: 0,
+	pathOffsetY: 0
 },
 pmouseX = 0,
 pmouseY = 0,
@@ -555,12 +557,16 @@ image = function(img, sx, sy, swidth, sheight, x, y, width, height){ // display 
 		drawImage();
 	}
 },
+pathOffset = function(x, y){
+	c.pathOffsetX = x || 0;
+	c.pathOffsetY = y || 0;
+},
 path = function(steps){
 	var length = steps.length, i;
 	engage();
 	ctx.moveTo(steps[0].x, steps[0].y);
 	for (i = 1; i < length; i++) {
-		ctx.lineTo(steps[i].x, steps[i].y);
+		ctx.lineTo(c.pathOffsetX + steps[i].x, c.pathOffsetY + steps[i].y);
 	}
 	paint();
 },
