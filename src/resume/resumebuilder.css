@@ -40,6 +40,11 @@ body {
 		padding:0;
 	}
 
+	a:link,
+	a:visited {
+		color: #00f;
+	}
+
 	.resumedoc {
 		padding:0;
 	}
