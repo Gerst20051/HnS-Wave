@@ -516,6 +516,7 @@ The various methods used to get the current timestamp (number of milliseconds si
 var myDate = new Object();
 myDate["Date.now()"] = Date.now();
 myDate["+new Date()"] = +new Date();
+myDate["1*new Date()"] = 1*new Date();
 myDate["new Date().getTime()"] = new Date().getTime();
 myDate["Number(new Date())"] = Number(new Date());
 myDate["new Date().valueOf()"] = new Date().valueOf();
@@ -528,6 +529,7 @@ log.clear();
 var myDate = new Object();
 myDate["Date.now()"] = Date.now();
 myDate["+new Date()"] = +new Date();
+myDate["1*new Date()"] = 1*new Date();
 myDate["new Date().getTime()"] = new Date().getTime();
 myDate["Number(new Date())"] = Number(new Date());
 myDate["new Date().valueOf()"] = new Date().valueOf();
