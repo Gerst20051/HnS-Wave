@@ -53,6 +53,7 @@ function Particle(x, y, theta){
 	this.y = y;
 	this.theta = theta;
 	this.active = true;
+	this.color = color(0, 0, 0);
 
 	this.activate = function(){
 		this.active = true;
@@ -67,12 +68,13 @@ function Particle(x, y, theta){
 		if (this.theta > TWO_PI) {
 			this.theta = 0;
 		}
+		this.color = color(random(0, 255), random(0, 255), random(0, 255));
 	};
 
 	this.draw = function(){
 		noFill();
 		circle(this.x, this.y, 30);
-		fill("#f03");
+		fill(this.color);
 		circle(this.x + cos(this.theta) * 30, this.y + sin(this.theta) * 30, 5);
 	};
 }
