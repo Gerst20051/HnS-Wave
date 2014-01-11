@@ -479,7 +479,7 @@ arc = function(x, y, radius, start, stop, clockwise){ // draw an arc
 },
 circle = function(x, y, radius){ // draw a circle
 	engage();
-	ctx.arc(x + c.O, y + c.O, radius, 0, constants.PI * 2, false);
+	ctx.arc(x + c.O, y + c.O, radius, 0, TWO_PI, false);
 	paint();
 },
 ellipse = function(x, y, w, h){ // draw an ellipse
