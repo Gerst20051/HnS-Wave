@@ -1,0 +1,89 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::                               
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:                           
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+                                
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:                                 
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+                                  
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#                           
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###                                  
+                                                                                                                                   
+                                                                                                                                   
+                                                                                                                                   
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: ::::::::::: 
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:     
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+     
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+     
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+     
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#     
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Sound (via SoundEngine)</title>
+<script src="canvasengine.js"></script>
+<script src="soundengine.js"></script>
+<style>
+body {
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+}
+
+#canvaspane {
+	cursor: default;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+</div>
+<script>
+var doFullScreen = true,
+	mapSize = {
+		height: (doFullScreen) ? maxHeight : 400,
+		width: (doFullScreen) ? maxWidth : 400
+	},
+	isPaused = false;
+
+var setup = function(){
+	fullScreen();
+	sound('stomp');
+};
+
+var draw = function(){
+	background(colors.aqua);
+	if (!isPaused) {
+		sound('stomp');
+	}
+};
+
+var keyDown = function(){
+	if (keyCodeList[keys.P] === true) {
+		playPause();
+	}
+};
+
+function playPause(){
+	isPaused = !isPaused;
+}
+
+window.onload = function(){
+	window.canvas = new Canvas(document.getElementById("canvas1"));
+	window.ctx = canvas.ctx;
+	canvas.setup = window.setup;
+	canvas.draw = window.draw;
+	canvas.run();
+};
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
