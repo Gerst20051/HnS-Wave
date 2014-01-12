@@ -608,6 +608,9 @@ sin = function(deg){ // take the sin of an angle
 tan = function(deg){ // take the tangent of an angle
 	return Math.tan(deg);
 },
+time = function(){ // return current time in milliseconds
+	return 1 * new Date();
+},
 hour = function(){
 	return new Date().getHours();
 },
