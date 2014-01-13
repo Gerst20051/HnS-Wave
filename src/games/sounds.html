@@ -18,7 +18,7 @@
 ###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Sound (via SoundEngine)</title>
+<title>Sounds (via SoundEngine)</title>
 <script src="canvasengine.js"></script>
 <script src="soundengine.js"></script>
 <style>
@@ -47,7 +47,7 @@ var doFullScreen = true,
 	},
 	isPaused = false,
 	sounds = getSoundList(),
-	soundIndex = 0;
+	soundIndex = -1;
 
 function getSoundList(){
 	var sounds = mySoundEngine.soundCollections, soundList = [], collection;
@@ -60,7 +60,7 @@ function getSoundList(){
 }
 
 function loopThroughSounds(){
-	sound(sounds[soundIndex++]).addEventListener('ended', loopThroughSounds, false);
+	sound(sounds[++soundIndex]).addEventListener('ended', loopThroughSounds, false);
 }
 
 var setup = function(){
