@@ -45,18 +45,33 @@ var doFullScreen = true,
 		height: (doFullScreen) ? maxHeight : 400,
 		width: (doFullScreen) ? maxWidth : 400
 	},
-	isPaused = false;
+	isPaused = false,
+	sounds = getSoundList(),
+	soundIndex = 0;
+
+function getSoundList(){
+	var sounds = mySoundEngine.soundCollections, soundList = [], collection;
+	for (collection in sounds) {
+		sounds[collection].forEach(function(sound, index){
+			soundList.push(sound[0]);
+		});
+	}
+	return soundList;
+}
+
+function loopThroughSounds(){
+	sound(sounds[soundIndex++]).addEventListener('ended', loopThroughSounds, false);
+}
 
 var setup = function(){
 	fullScreen();
-	sound('stomp');
+	textSize(40);
+	loopThroughSounds();
 };
 
 var draw = function(){
 	background(colors.aqua);
-	if (!isPaused) {
-		sound('stomp');
-	}
+	text(sounds[soundIndex], 200, 200);
 };
 
 var keyDown = function(){
