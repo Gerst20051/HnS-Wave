@@ -20,6 +20,7 @@
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <title>Mario (via Canvas Engine)</title>
 <script src="canvasengine.js"></script>
+<script src="soundengine.js"></script>
 <style>
 body {
 	margin: 0;
@@ -334,9 +335,13 @@ var Mario = function(x, y){
 			if (isSingle === true && 100 < Date.now() - this.lastShell) {
 				this.lastShell = Date.now();
 				this.shells.push(new Shell(this));
+				sound('laserpulse_weapon');
+				sound('gun_shell_drop');
 			} else if (500 < Date.now() - this.lastShell) {
 				this.lastShell = Date.now();
 				this.shells.push(new Shell(this));
+				sound('laserpulse_weapon');
+				sound('gun_shell_drop');
 			}
 		}
 	};
@@ -346,6 +351,7 @@ var Mario = function(x, y){
 			if (this.dy > -100) {
 				this.y -= this.sizey * this.scale;
 				this.dy -= this.sizey * this.scale;
+				sound('jump');
 			}
 		}
 	};

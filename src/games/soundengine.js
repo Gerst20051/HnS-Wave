@@ -230,8 +230,8 @@ var mySound,
 		}
 	};
 
-	this.loadSoundCollections = function(collections){
-		var _this = this;
+	this.loadSoundCollections = function(){
+		var _this = this, collections = [].slice.call(arguments);
 		collections.forEach(function(collection, index){
 			_this.loadAllSoundsFromCollection(collection);
 		});
