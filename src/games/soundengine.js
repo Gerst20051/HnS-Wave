@@ -238,10 +238,7 @@ var mySound,
 	};
 
 	this.playAudio = function(audio, num){
-		if (!audio.playable) {
-			return;
-		}
-		if (audio && audio.canplay) {
+		if (audio && audio.playable && audio.canplay) {
 			audio.play();
 			if (num && 0 < --num) {
 				audio.remaining = num;
@@ -291,8 +288,8 @@ var mySound,
 		if (audioArray) {
 			audio = this.getAudioFromArray(audioArray);
 			if (audio && audio.canplay) {
-				audio.currentTime = 0;
 				audio.pause();
+				audio.currentTime = 0;
 			}
 		}
 	};
@@ -312,8 +309,8 @@ var mySound,
 		if (audioArray) {
 			audio = this.getAudioFromArray(audioArray);
 			if (audio) {
-				audio.pause();
 				audio.playable = false;
+				audio.pause();
 			}
 		}
 	};
