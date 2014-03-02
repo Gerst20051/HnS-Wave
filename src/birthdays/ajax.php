@@ -18,7 +18,6 @@ case 'POST':
 
 if ($ACTION == 'login') {
 	require_once 'encryption.inc.php';
-	logout();
 	$VARS = array_map('varcheck', $FORM);
 	if ($VARS['formname'] != 'login') print_json(array('logged'=>false));
 	else unset($VARS['formname']);
@@ -79,7 +78,11 @@ if ($ACTION == 'login') {
 		if ($db->affectedRows()) {
 			try {
 				$user_id = $db->insertID();
-				$activate_link = "http://{$_SERVER['SERVER_NAME']}/birthdays/ajax.php?action=verify&user_id=$user_id&key=$verification_key";
+				if (LOCAL) {
+					$activate_link = "http://localhost/git/hns-wave/src/birthdays/ajax.php?action=verify&user_id=$user_id&key=$verification_key";
+				} else {
+					$activate_link = "http://{$_SERVER['SERVER_NAME']}/birthdays/ajax.php?action=verify&user_id=$user_id&key=$verification_key";
+				}
 				$email = new EMAIL;
 				$email->setToAddress($email);
 				$email->setHeaders(

@@ -236,7 +236,7 @@ dom: function(){
 			day = currentDate.getDate(),
 			year = currentDate.getFullYear();
 		$.post(_this.ajaxURL, {action: "createbirthday", name: "New Birthday", month: month, day: day, year: year}, function(response){
-			if (!empty(response)) {
+			if (!isEmpty(response)) {
 				//_this.birthdays.unshift(response);
 				//birthdays.prepend(_this.addBirthday(response.id, response.name, response.month, response.day, response.year));
 			} else _this.alert("Error: Couldn't create a new birthday.");
