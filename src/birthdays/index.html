@@ -1,0 +1,86 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::                               
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:                           
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+                                
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:                                 
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+                                  
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#                           
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###                                  
+                                                                                                                                   
+                                                                                                                                   
+                                                                                                                                   
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: ::::::::::: 
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:     
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+     
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+     
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+     
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#     
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###     
+-->
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Birthday Reminder</title>
+<meta name="author" content="Andrew Gerst">
+<meta name="title" content="Birthday Reminder">
+<meta name="description" content="Birthday Reminder. Never again will you forget to say Happy Birthday to the people in your life you care about!">
+<script src="init.js"></script>
+</head>
+<body>
+<div class="authpanel lightbox">
+<div id="authpanel" class="modal">
+<div id="login">
+<header>Login</header>
+<form id="f_login" class="coolform" onsubmit="return false" autocomplete="off">
+<input type="hidden" name="formname" value="login"/>
+<div><label for="lemail">Email:</label><input id="lemail" name="email" type="email" spellcheck="false" value=""/></div>
+<div><label for="lpassword">Password:</label><input id="lpassword" name="password" type="password" spellcheck="false" value=""/></div>
+<div class="buttonTools">
+<ul class="toolList rfloat">
+<li class="listItem"><label class="loginButton" for="b_login_splash"><input id="b_login_splash" value="Login" type="submit"/></label></li>
+<li class="listItem"><label class="registerButton" for="b_register_splash"><input id="b_register_splash" value="Create Your Account" type="button"/></label></li>
+</ul>
+</div>
+</form>
+</div>
+<div id="register">
+<header>Register</header>
+<form id="f_register" class="coolform" onsubmit="return false" autocomplete="off">
+<input type="hidden" name="formname" value="register"/>
+<div><label for="reg_name">First and Last Name:</label><input id="reg_name" name="name" type="text" spellcheck="false" value=""/></div>
+<div><label for="reg_email">Email:</label><input id="reg_email" name="email" type="email" spellcheck="false" value=""/></div>
+<div><label for="reg_password">Password:</label><input id="reg_password" name="password" type="password" spellcheck="false" value=""/></div>
+<div><label for="reg_timezone">Time Zone:</label><input id="reg_timezone" name="timezone" type="text" spellcheck="false" value=""/></div>
+<div class="buttonTools">
+<ul class="toolList lfloat">
+<li class="listItem"><label class="loginButton" for="b_login"><input id="b_login" value="Login" type="submit"/></label></li>
+<li class="listItem"><label class="registerButton" for="b_register"><input id="b_register" value="Create Your Account" type="submit"/></label></li>
+</ul>
+</div>
+</form>
+</div>
+</div>
+</div>
+<div id="main">
+<header><span class="leftheading">birthday</span><span class="rightheading">reminder</span></header>
+<article>
+<nav id="nav">
+<span class="home-link link">home</span>
+<span class="mybirthdays-link link">my birthdays</span>
+<span class="logout-link link">logout</span>
+<span class="login-link link">login</span>
+</nav>
+<header>
+<div id="heading">
+<aside id="logoaction"><span class="leftlogo">add</span><span class="rightlogo">birthday &#187;</span></aside>
+</div>
+</header>
+<div id="content"><ul id="birthdays"></ul></div>
+</article>
+<footer>
+Homenet Spaces
+<span class="backtotop-link link">back to top</span>
+</footer>
+</div>
+</body>
+</html>
