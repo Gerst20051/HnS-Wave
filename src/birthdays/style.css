@@ -90,6 +90,10 @@ article > header {
 	padding: 20px;
 }
 
+article > header #heading {
+	height: 35px;
+}
+
 article > header aside {
 	cursor: pointer;
 	display: none;
@@ -316,6 +320,10 @@ footer {
 #authpanel input[type="password"],
 #authpanel input[type="email"] {
 	width: 250px;
+}
+
+#authpanel select {
+	width: 262px;
 }
 
 #authpanel #f_login input,
