@@ -2,9 +2,11 @@
 require_once 'mysql.config.php';
 
 class MySQL {
+
 private $query;
 private $result;
 private $data;
+
 public function __construct($host = MYSQL_HOST, $user = MYSQL_USER, $password = MYSQL_PASSWORD, $database = MYSQL_DATABASE) {
 	if (!$con = mysql_connect($host, $user, $password)) {
 		throw new Exception('Error connecting to the server');
@@ -158,5 +160,6 @@ public function insertID(){
 public function affectedRows(){
 	return mysql_affected_rows();
 }
+
 }
 ?>

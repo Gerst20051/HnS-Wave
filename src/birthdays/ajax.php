@@ -18,13 +18,14 @@ case 'POST':
 
 if ($ACTION == 'login') {
 	require_once 'encryption.inc.php';
+	logout();
 	$VARS = array_map('varcheck', $FORM);
 	if ($VARS['formname'] != 'login') print_json(array('logged'=>false));
 	else unset($VARS['formname']);
 	if (!validateinput($VARS, array('email', 'password'))) print_json(array('logged'=>false));
 	extract($VARS);
 	try {
-		$db = new MySQL();
+		$db = new MySQL;
 		$db->sfquery(array('SELECT salt FROM %s WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email));
 		if ($db->numRows()) {
 			$result = $db->fetchAssocRow();
@@ -41,7 +42,7 @@ if ($ACTION == 'login') {
 				$_SESSION['lastname'] = $row['lastname'];
 				$_SESSION['access_level'] = $row['access_level'];
 				$_SESSION['last_login'] = $row['last_login'];
-				$db->sfquery(array('UPDATE %s SET last_login = "%s", logins = logins + 1 WHERE uid = "%s"', MYSQL_TABLE_USERS, time(), $_SESSION['user_id']));
+				$db->sfquery(array('UPDATE %s SET last_login = "%s", logins = logins + 1 WHERE id = "%s"', MYSQL_TABLE_USERS, time(), $_SESSION['user_id']));
 				print_json(array('logged'=>true));
 			} else print_json(array('logged'=>false));
 		} else print_json(array('logged'=>false));
@@ -51,6 +52,7 @@ if ($ACTION == 'login') {
 	}
 } elseif ($ACTION == 'register') {
 	require_once 'encryption.inc.php';
+	require_once 'email.class.php';
 	$VARS = array_map('varcheck', $FORM);
 	if ($VARS['formname'] != 'register') print_json(array('registered'=>false));
 	else unset($VARS['formname']);
@@ -63,7 +65,7 @@ if ($ACTION == 'login') {
 	$verification_key = genVerificationKey();
 	$timestamp = time();
 	try {
-		$db = new MySQL();
+		$db = new MySQL;
 		$db->insert(MYSQL_TABLE_USERS, array(
 			'email'=>$email,
 			'pass'=>$secure_password,
@@ -76,6 +78,29 @@ if ($ACTION == 'login') {
 			'date_joined'=>$timestamp
 		));
 		if ($db->affectedRows()) {
+			try {
+				$user_id = $db->insertID();
+				$activate_link = "http://{$_SERVER['SERVER_NAME']}/birthdays/ajax.php?action=verify&user_id=$user_id&key=$verification_key";
+				$email = new EMAIL;
+				$email->setToAddress($email);
+				$email->setHeaders(
+					'MIME-Version: 1.0' . "\r\n" .
+					'Content-type: text/html; charset=iso-8859-1' . "\r\n"
+				);
+				$email->setMessage('
+					<html>
+					<head>
+						<title>Birthday Reminder Account Activation</title>
+					</head>
+					<body>
+						<h1>Birthday Reminder Account Activation</h1>
+						<p>Here is your link to activate your account!</p>
+						<p><a href="' . $activate_link . '">Activate My Account</a></p>
+					</body>
+					</html>
+				');
+			} catch (Exception $e) {
+			}
 			print_json(array('registered'=>true));
 		} else print_json(array('registered'=>false));
 	} catch (Exception $e) {
@@ -87,12 +112,15 @@ if ($ACTION == 'login') {
 	print_json(array('logged'=>false));
 } elseif ($ACTION == 'verify') {
 	try {
-		$db = new MySQL();
-		$db->sfquery(array('SELECT COUNT(*) FROM %s WHERE verification_key = "%s"', MYSQL_TABLE_USERS, ));
+		$db = new MySQL;
+		$db->sfquery(array('SELECT verified FROM %s WHERE id = "%s" AND verification_key = "%s"', MYSQL_TABLE_USERS, $USER_ID, $KEY));
 		if ($db->numRows()) {
-			$data = $db->fetchParsedRows();
-			print_json(array('timezones'=>$data));
-		} else print_json(array('timezones'=>array()));
+			$row = $db->fetchParsedRow();
+			if ($row['verified'] === 0) {
+				$db->sfquery(array('UPDATE %s SET verified = 1 WHERE id = "%s"', MYSQL_TABLE_USERS, $USER_ID));
+			}
+			print_json(array('verified'=>true));
+		} else print_json(array('verified'=>false));
 	} catch (Exception $e) {
 		echo $e->getMessage();
 		exit();
@@ -107,7 +135,7 @@ if ($ACTION == 'logged') {
 	else print_json(array('logged'=>false));
 } elseif ($ACTION == 'checkemail' && check($EMAIL)) {
 	try {
-		$db = new MySQL();
+		$db = new MySQL;
 		$db->sfquery(array('SELECT email FROM %s WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $EMAIL));
 		if ($db->numRows()) print_json(array('email'=>true));
 		else print_json(array('email'=>false));
@@ -117,7 +145,7 @@ if ($ACTION == 'logged') {
 	}
 } elseif ($ACTION == 'userdata') {
 	try {
-		$db = new MySQL();
+		$db = new MySQL;
 		$db->sfquery(array(
 			'SELECT %s
 				FROM %s u
@@ -145,7 +173,7 @@ if ($ACTION == 'logged') {
 	}
 } elseif ($ACTION == 'timezones') {
 	try {
-		$db = new MySQL();
+		$db = new MySQL;
 		$db->sfquery(array('SELECT * FROM %s', MYSQL_TABLE_TIMEZONES));
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRows();
