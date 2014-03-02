@@ -22,32 +22,33 @@ else main.run = true;
 
 window.aC = {
 title: "Birthday Reminder",
-ajaxurl: "ajax.php",
+ajaxURL: "ajax.php",
 loaded: false,
 logged: false,
 loginFocus: false,
 registerFocus: false,
 user: {},
+timezones: [],
 birthdays: [],
 init: function(){
 	if (this.loaded !== false) return;
 	var _this = this;
-	$.getJSON(this.ajaxurl, {action: "logged"}, function(response){
+	$.getJSON(this.ajaxURL, {action: "logged"}, function(response){
 		_this.loaded = true;
 		if (response.logged === true) {
 			_this.logged = true;
 			_this.loggedIn();
 		} else {
 			_this.loggedOut();
-			_this.loadTimezones();
 		}
+		_this.loadTimezones();
 	});
 	this.dom();
 },
 loggedIn: function(){
 	if (this.logged !== true) return;
 	var _this = this;
-	$.getJSON(this.ajaxurl, {action: "userdata"}, function(response){
+	$.getJSON(this.ajaxURL, {action: "userdata"}, function(response){
 		if (response.user !== false) {
 			_this.user = response.user;
 			$("#authpanel").parent().css('visibility', 'hidden');
@@ -62,7 +63,17 @@ loggedOut: function(){
 	$("#nav").slideDown();
 },
 loadTimezones: function(){
-
+	var _this = this;
+	$.getJSON(this.ajaxURL, {action: "timezones"}, function(response){
+		var select;
+		_this.timezones = response.timezones;
+		if (_this.logged === false) {
+			select = document.getElementById("reg_timezone");
+			_this.timezones.forEach(function(timezone){
+				select.add(new Option(timezone.timezone_location, timezone.id));
+			});
+		}
+	});
 },
 login: function(){
 	var _this = this, e = false, $login = $("#f_login"), $email = $login.find("#lemail"), $password = $login.find("#lpassword");
@@ -74,7 +85,7 @@ login: function(){
 		$.map(inputs, function(n, i){
 			output[n.name] = $.trim($(n).val());
 		});
-		$.post(this.ajaxurl, {action: "login", form: output}, function(response){
+		$.post(this.ajaxURL, {action: "login", form: output}, function(response){
 			$login.find("input").attr('disabled', false);
 			if (stringToBoolean(response.logged)) {
 				$login.find(".error").removeClass('error');
@@ -91,7 +102,7 @@ login: function(){
 },
 logout: function(){
 	var _this = this;
-	$.post(this.ajaxurl, {action: "logout"}, function(response){
+	$.post(this.ajaxURL, {action: "logout"}, function(response){
 		if (!stringToBoolean(response.logged)) {
 			_this.logged = false;
 			_this.user = {};
@@ -124,18 +135,21 @@ regValidate: function(){
 		e = true;
 	} else $password.removeClass('error');
 
-	//TODO: Add timezone check
+	if (isEmpty(timezone_trim)) {
+		$timezone.addClass('error');
+		e = true;
+	} else $timezone.removeClass('error');
 	
 	return !e;
 },
 register: function(){
 	if (!this.regValidate()) return;
-	var _this = this, output = {}, $f_register = $("#f_register"), inputs = $f_register.find("input").filter("[name]");
+	var _this = this, output = {}, $f_register = $("#f_register"), inputs = $f_register.find("input, select").filter("[name]");
 	$f_register.find("input").attr('disabled', true);
 	$.map(inputs, function(n, i){
 		output[n.name] = $.trim($(n).val());
 	});
-	$.post(this.ajaxurl, {action: "register", form: output}, function(response){
+	$.post(this.ajaxURL, {action: "register", form: output}, function(response){
 		$f_register.find("input").attr('disabled', false);
 		if (stringToBoolean(response.registered)) {
 			$f_register.find(".error").removeClass('error');
@@ -153,7 +167,7 @@ alert: function(message){
 isEmailRegistered: function(email){
 	email = $.trim(email);
 	if (email.length) {
-		$.getJSON(this.ajaxurl, {action: "checkemail", email: email}, function(response){
+		$.getJSON(this.ajaxURL, {action: "checkemail", email: email}, function(response){
 			if (stringToBoolean(response.email)) return true;
 			else return false;
 		});
@@ -221,12 +235,12 @@ dom: function(){
 			month = currentDate.getMonth() + 1,
 			day = currentDate.getDate(),
 			year = currentDate.getFullYear(),
-			birthday = {"name": "New Birthday", "month": month, "day": day, "year": year};
-		$.post(_this.ajaxurl, {birthday: birthday, timestamp: getTimestampPHP()}, function(response){
+			birthday = {};
+		$.post(_this.ajaxURL, {name: "New Birthday", month: month, day: day, year: year}, function(response){
 			if (!empty(response)) {
-				_this.birthdays.unshift(response);
-				birthdays.prepend(_this.addBirthday(response.id, response.name, response.month, response.day, response.year));
-			} else _this.alert("Error: Couldn't create a new quote.");
+				//_this.birthdays.unshift(response);
+				//birthdays.prepend(_this.addBirthday(response.id, response.name, response.month, response.day, response.year));
+			} else _this.alert("Error: Couldn't create a new birthday.");
 		});
 	});
 }

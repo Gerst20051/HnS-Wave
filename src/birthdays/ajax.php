@@ -71,7 +71,6 @@ if ($ACTION == 'login') {
 			'pass'=>$secure_password,
 			'salt'=>$salt,
 			'verification_key'=>$verification_key,
-			'username'=>$username,
 			'firstname'=>$firstname,
 			'lastname'=>$lastname,
 			'last_login'=>$timestamp,
@@ -161,7 +160,7 @@ if ($ACTION == 'logged') {
 			',
 			MYSQL_TABLE_USERS,
 			MYSQL_TABLE_TIMEZONES,
-			$UID
+			$USER_ID
 		));
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRow();
