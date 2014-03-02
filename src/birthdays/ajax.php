@@ -31,7 +31,7 @@ if ($ACTION == 'login') {
 			$result = $db->fetchAssocRow();
 			$salt = $result['salt'];
 			$secure_password = pbkdf2($password, $salt);
-			$db->sfquery(array('SELECT * FROM %s WHERE email = "%s" AND pass = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email, $secure_password));
+			$db->sfquery(array('SELECT * FROM %s WHERE email = "%s" AND pass = "%s" AND verified = 1 LIMIT 1', MYSQL_TABLE_USERS, $email, $secure_password));
 			if ($db->numRows()) {
 				$row = $db->fetchAssocRow();
 				$_SESSION['logged'] = true;
@@ -146,21 +146,19 @@ if ($ACTION == 'logged') {
 	try {
 		$db = new MySQL;
 		$db->sfquery(array(
-			'SELECT %s
+			"SELECT
+					u.id,
+					u.email,
+					CONCAT(u.firstname, ' ', u.lastname) as fullname,
+					tz.timezone_location as timezone
 				FROM %s u
 				LEFT JOIN %s tz ON tz.id = u.timezone_id
-				WHERE u.id = "%s"
+				WHERE u.id = '%s'
 				LIMIT 1
-			',
-			'
-				u.id,
-				u.email,
-				CONCAT(u.firstname, " ", u.lastname) as fullname,
-				tz.timezone_location as timezone
-			',
+			",
 			MYSQL_TABLE_USERS,
 			MYSQL_TABLE_TIMEZONES,
-			$USER_ID
+			$_SESSION['user_id']
 		));
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRow();

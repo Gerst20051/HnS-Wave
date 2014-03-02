@@ -234,9 +234,8 @@ dom: function(){
 		var currentDate = new Date(),
 			month = currentDate.getMonth() + 1,
 			day = currentDate.getDate(),
-			year = currentDate.getFullYear(),
-			birthday = {};
-		$.post(_this.ajaxURL, {name: "New Birthday", month: month, day: day, year: year}, function(response){
+			year = currentDate.getFullYear();
+		$.post(_this.ajaxURL, {action: "createbirthday", name: "New Birthday", month: month, day: day, year: year}, function(response){
 			if (!empty(response)) {
 				//_this.birthdays.unshift(response);
 				//birthdays.prepend(_this.addBirthday(response.id, response.name, response.month, response.day, response.year));

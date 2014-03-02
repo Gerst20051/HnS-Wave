@@ -82,6 +82,6 @@ function ucname($string){
 	return $string;
 }
 
-function removeWhitespace($string){
+function removeExtraWhitespace($string){
 	return preg_replace('/\s*/m', ' ', $string);
 }
