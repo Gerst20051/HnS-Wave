@@ -43,7 +43,7 @@ if ($ACTION == 'login') {
 				$_SESSION['last_login'] = $row['last_login'];
 				$db->sfquery(array('UPDATE %s SET last_login = "%s", logins = logins + 1 WHERE id = "%s"', MYSQL_TABLE_USERS, time(), $_SESSION['user_id']));
 				print_json(array('logged'=>true));
-			} else print_json(array('logged'=>false));
+			} else print_json(array('logged'=>false, 'error'=>'Check Your Email For Activation Email!'));
 		} else print_json(array('logged'=>false));
 	} catch (Exception $e) {
 		echo $e->getMessage();
@@ -72,6 +72,7 @@ if ($ACTION == 'login') {
 			'verification_key'=>$verification_key,
 			'firstname'=>$firstname,
 			'lastname'=>$lastname,
+			'timezone_id'=>$timezone,
 			'last_login'=>$timestamp,
 			'date_joined'=>$timestamp
 		));
@@ -112,21 +113,6 @@ if ($ACTION == 'login') {
 } elseif ($ACTION == 'logout') {
 	logout();
 	print_json(array('logged'=>false));
-} elseif ($ACTION == 'verify') {
-	try {
-		$db = new MySQL;
-		$db->sfquery(array('SELECT verified FROM %s WHERE id = "%s" AND verification_key = "%s"', MYSQL_TABLE_USERS, $USER_ID, $KEY));
-		if ($db->numRows()) {
-			$row = $db->fetchParsedRow();
-			if ($row['verified'] === 0) {
-				$db->sfquery(array('UPDATE %s SET verified = 1 WHERE id = "%s"', MYSQL_TABLE_USERS, $USER_ID));
-			}
-			print_json(array('verified'=>true));
-		} else print_json(array('verified'=>false));
-	} catch (Exception $e) {
-		echo $e->getMessage();
-		exit();
-	}
 }
 
 break;
@@ -141,6 +127,21 @@ if ($ACTION == 'logged') {
 		$db->sfquery(array('SELECT email FROM %s WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $EMAIL));
 		if ($db->numRows()) print_json(array('email'=>true));
 		else print_json(array('email'=>false));
+	} catch (Exception $e) {
+		echo $e->getMessage();
+		exit();
+	}
+} elseif ($ACTION == 'verify') {
+	try {
+		$db = new MySQL;
+		$db->sfquery(array('SELECT verified FROM %s WHERE id = "%s" AND verification_key = "%s"', MYSQL_TABLE_USERS, $USER_ID, $KEY));
+		if ($db->numRows()) {
+			$row = $db->fetchParsedRow();
+			if ($row['verified'] === 0) {
+				$db->sfquery(array('UPDATE %s SET verified = 1 WHERE id = "%s"', MYSQL_TABLE_USERS, $USER_ID));
+			}
+			print_json(array('verified'=>true));
+		} else print_json(array('verified'=>false));
 	} catch (Exception $e) {
 		echo $e->getMessage();
 		exit();

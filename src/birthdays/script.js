@@ -96,6 +96,9 @@ login: function(){
 			} else {
 				$login.find("#b_login_splash").addClass('error');
 				$password.val('');
+				if (response.error && !isEmpty(response.error)) {
+					_this.alert(response.error);
+				}
 			}
 		});
 	}
