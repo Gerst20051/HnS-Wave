@@ -39,6 +39,7 @@ init: function(){
 			_this.loggedIn();
 		} else {
 			_this.loggedOut();
+			_this.loadTimezones();
 		}
 	});
 	this.dom();
@@ -59,6 +60,9 @@ loggedOut: function(){
 	if (this.logged !== false) return;
 	$("body").addClass("out").removeClass("in");
 	$("#nav").slideDown();
+},
+loadTimezones: function(){
+
 },
 login: function(){
 	var _this = this, e = false, $login = $("#f_login"), $email = $login.find("#lemail"), $password = $login.find("#lpassword");
@@ -149,7 +153,7 @@ alert: function(message){
 isEmailRegistered: function(email){
 	email = $.trim(email);
 	if (email.length) {
-		$.get(this.ajaxurl, {action: "checkemail", email: email}, function(response){
+		$.getJSON(this.ajaxurl, {action: "checkemail", email: email}, function(response){
 			if (stringToBoolean(response.email)) return true;
 			else return false;
 		});
@@ -213,14 +217,15 @@ dom: function(){
 		$.scrollTo(0, 1000);
 	});
 	$("article > header").on('click', '#logoaction', function(){
-		var name = $.trim($("article > header #search").val());
-		if (name.length == 0) name = "New Quote";
-		else $("article > header #search").val('');
-		var birthday = {"name": name, "month": month};
-		$.post(_this.ajaxurl, {quote: quote, timestamp: getTimestampPHP()}, function(response){
+		var currentDate = new Date(),
+			month = currentDate.getMonth() + 1,
+			day = currentDate.getDate(),
+			year = currentDate.getFullYear(),
+			birthday = {"name": "New Birthday", "month": month, "day": day, "year": year};
+		$.post(_this.ajaxurl, {birthday: birthday, timestamp: getTimestampPHP()}, function(response){
 			if (!empty(response)) {
 				_this.birthdays.unshift(response);
-				birthdays.prepend(_this.addBirthday(response.id, response.quote.name, response.quote.quote)).find("li:first").fadeIn().find("header").click();
+				birthdays.prepend(_this.addBirthday(response.id, response.name, response.month, response.day, response.year));
 			} else _this.alert("Error: Couldn't create a new quote.");
 		});
 	});

@@ -11,8 +11,12 @@ function print_json($data, $die = true){
 }
 
 function error($msg, $json = true, $die = true){
-	if ($json === true) print_r(json_encode(array("error"=>$msg)));
-	else $final['error'] = $msg;
+	if ($json === true) {
+		print_r(json_encode(array("error"=>$msg)));
+	} else {
+		global $final;
+		$final['error'] = $msg;
+	}
 	if ($die === true) die();
 }
 

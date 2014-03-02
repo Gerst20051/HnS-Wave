@@ -25,23 +25,23 @@ if ($ACTION == 'login') {
 	extract($VARS);
 	try {
 		$db = new MySQL();
-		$db->sfquery(array('SELECT salt FROM `%s` WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email));
+		$db->sfquery(array('SELECT salt FROM %s WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email));
 		if ($db->numRows()) {
 			$result = $db->fetchAssocRow();
 			$salt = $result['salt'];
 			$secure_password = pbkdf2($password, $salt);
-			$db->sfquery(array('SELECT * FROM `%s` WHERE email = "%s" AND pass = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email, $secure_password));
+			$db->sfquery(array('SELECT * FROM %s WHERE email = "%s" AND pass = "%s" LIMIT 1', MYSQL_TABLE_USERS, $email, $secure_password));
 			if ($db->numRows()) {
 				$row = $db->fetchAssocRow();
 				$_SESSION['logged'] = true;
-				$_SESSION['uid'] = $row['uid'];
+				$_SESSION['user_id'] = $row['id'];
 				$_SESSION['email'] = $row['email'];
 				$_SESSION['fullname'] = $row['firstname'] . ' ' . $row['lastname'];
 				$_SESSION['firstname'] = $row['firstname'];
 				$_SESSION['lastname'] = $row['lastname'];
 				$_SESSION['access_level'] = $row['access_level'];
 				$_SESSION['last_login'] = $row['last_login'];
-				$db->sfquery(array('UPDATE `%s` SET last_login = "%s", logins = logins + 1 WHERE uid = "%s"', MYSQL_TABLE_USERS, time(), $_SESSION['uid']));
+				$db->sfquery(array('UPDATE %s SET last_login = "%s", logins = logins + 1 WHERE uid = "%s"', MYSQL_TABLE_USERS, time(), $_SESSION['user_id']));
 				print_json(array('logged'=>true));
 			} else print_json(array('logged'=>false));
 		} else print_json(array('logged'=>false));
@@ -86,7 +86,17 @@ if ($ACTION == 'login') {
 	logout();
 	print_json(array('logged'=>false));
 } elseif ($ACTION == 'verify') {
-	print_json(array('verified'=>true));
+	try {
+		$db = new MySQL();
+		$db->sfquery(array('SELECT COUNT(*) FROM %s WHERE verification_key = "%s"', MYSQL_TABLE_USERS, ));
+		if ($db->numRows()) {
+			$data = $db->fetchParsedRows();
+			print_json(array('timezones'=>$data));
+		} else print_json(array('timezones'=>array()));
+	} catch (Exception $e) {
+		echo $e->getMessage();
+		exit();
+	}
 }
 
 break;
@@ -98,7 +108,7 @@ if ($ACTION == 'logged') {
 } elseif ($ACTION == 'checkemail' && check($EMAIL)) {
 	try {
 		$db = new MySQL();
-		$db->sfquery(array('SELECT email FROM `%s` WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $EMAIL));
+		$db->sfquery(array('SELECT email FROM %s WHERE email = "%s" LIMIT 1', MYSQL_TABLE_USERS, $EMAIL));
 		if ($db->numRows()) print_json(array('email'=>true));
 		else print_json(array('email'=>false));
 	} catch (Exception $e) {
@@ -110,12 +120,19 @@ if ($ACTION == 'logged') {
 		$db = new MySQL();
 		$db->sfquery(array(
 			'SELECT %s
-				FROM %s.u
-				WHERE uid = "%s"
+				FROM %s u
+				LEFT JOIN %s tz ON tz.id = u.timezone_id
+				WHERE u.id = "%s"
 				LIMIT 1
 			',
-			'id, email, firstname, lastname, access_level, last_login, date_joined, logins',
+			'
+				u.id,
+				u.email,
+				CONCAT(u.firstname, " ", u.lastname) as fullname,
+				tz.timezone_location as timezone
+			',
 			MYSQL_TABLE_USERS,
+			MYSQL_TABLE_TIMEZONES,
 			$UID
 		));
 		if ($db->numRows()) {
@@ -133,7 +150,7 @@ if ($ACTION == 'logged') {
 		if ($db->numRows()) {
 			$data = $db->fetchParsedRows();
 			print_json(array('timezones'=>$data));
-		} else print_json(array('timezomes'=>array()));
+		} else print_json(array('timezones'=>array()));
 	} catch (Exception $e) {
 		echo $e->getMessage();
 		exit();
