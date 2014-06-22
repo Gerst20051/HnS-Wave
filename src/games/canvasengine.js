@@ -577,6 +577,12 @@ noClosePath = function(){
 random = function(low, high){ // generate a random number
 	return Math.floor(Math.random() * (high - low + 1)) + low;
 },
+isOdd = function(num){
+	return num & 1;
+},
+isEven = function(num){
+	return !(num & 1);
+},
 floor = function(num){
 	return Math.floor(num);
 },
@@ -714,6 +720,9 @@ grid = function(interval){
 	}
 	c.grid = true;
 	paint();
+},
+cloneArray = function(array){
+	return array.slice(0);
 };
 
 function Canvas(canvas){
