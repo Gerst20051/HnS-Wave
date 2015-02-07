@@ -1,0 +1,122 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###
+
+
+
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: :::::::::::
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>3D Rotating Cubes (via Canvas Engine)</title>
+<script src="canvasengine.js"></script>
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+#canvaspane {
+    cursor: default;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+</div>
+<script>
+'use strict';
+
+var cubeAngle = 0,
+    cubePOV = 150,
+    cubeViewDistance = 6,
+    randomFaceColors = randomBoolean(),
+    cubeFaceColors = [],
+    cubeHasStroke = randomBoolean(),
+    cubeIncrementAngle = 2,
+    cubeCoordinates = [],
+    doFullScreen = true,
+    canvasSize = {
+        height: (doFullScreen) ? maxHeight : 500,
+        width: (doFullScreen) ? maxWidth : 800
+    };
+
+var setup = function() {
+    if (doFullScreen) {
+        fullScreen();
+    } else {
+        size(canvasSize.width, canvasSize.height);
+    }
+    if (randomFaceColors === false) {
+        cubeFaceColors = [
+            color(255, 0, 0),
+            color(0, 255, 0),
+            color(0, 0, 255),
+            color(255, 255, 0),
+            color(0, 255, 255),
+            color(255, 0, 255)
+        ];
+    } else {
+        cubeFaceColors = [
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor()
+        ];
+    }
+    cubeCoordinates = gridCoordinates(100);
+    alpha(0.5);
+};
+
+var draw = function() {
+    background(0, 0, 0);
+    cubeAngle += cubeIncrementAngle;
+    if (cubeHasStroke) {
+        strokeWeight(2);
+        stroke(colors.white);
+    } else {
+        noStroke();
+    }
+    for (var i = cubeCoordinates.length - 1; i >= 0; i--) {
+        cube3D(cubeCoordinates[i][0], cubeCoordinates[i][1], canvasSize.width, canvasSize.height, cubeAngle, random(100, 200) || cubePOV, cubeViewDistance, cubeFaceColors);
+    }
+};
+
+var mouseClicked = function(){
+    cubeHasStroke = !cubeHasStroke;
+};
+
+window.onload = function() {
+    window.canvas = new Canvas(document.getElementById('canvas1'));
+    window.ctx = canvas.ctx;
+    canvas.setup = window.setup;
+    canvas.draw = window.draw;
+    canvas.run();
+};
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>

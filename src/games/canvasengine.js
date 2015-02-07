@@ -615,7 +615,7 @@ Point3D = function(x, y, z){ // create a point in three dimensions
 		return new Point3D(x, y, this.z);
 	};
 },
-cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, faceColors){ // draw a 3d cube
+cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, cubeFaceColors){ // draw a 3d cube
 	var i = 0, t = [], avg_z = [], vertices, faces;
 	xPos -= c.W / 2;
 	yPos -= c.H / 2;
