@@ -18,11 +18,12 @@
 ###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
-<title>3D Cube (via Canvas Engine)</title>
+<title>3D Rotating Cube (via Canvas Engine)</title>
 <script src="canvasengine.js"></script>
 <style>
 body {
     margin: 0;
+    overflow: hidden;
     padding: 0;
 }
 
@@ -38,16 +39,62 @@ body {
 </div>
 </div>
 <script>
-var setup = function() {
+'use strict';
 
+var cubeAngle = 0,
+    cubePOV = 800,
+    cubeViewDistance = 4,
+    randomFaceColors = randomBoolean(),
+    cubeFaceColors = [],
+    cubeHasStroke = randomBoolean(),
+    cubeIncrementAngle = random(1, 5),
+    doFullScreen = true,
+    canvasSize = {
+        height: (doFullScreen) ? maxHeight : 500,
+        width: (doFullScreen) ? maxWidth : 800
+    };
+
+var setup = function() {
+    if (doFullScreen) {
+        fullScreen();
+    } else {
+        size(canvasSize.width, canvasSize.height);
+    }
+    if (randomFaceColors === false) {
+        cubeFaceColors = [
+            color(255, 0, 0),
+            color(0, 255, 0),
+            color(0, 0, 255),
+            color(255, 255, 0),
+            color(0, 255, 255),
+            color(255, 0, 255)
+        ];
+    } else {
+        cubeFaceColors = [
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor(),
+            randomColor()
+        ];
+    }
 };
 
 var draw = function() {
-
+    background(0, 0, 0);
+    cubeAngle += cubeIncrementAngle;
+    if (cubeHasStroke) {
+        strokeWeight(4);
+        stroke(colors.white);
+    } else {
+        noStroke();
+    }
+    cube3D(maxWidth / 2, maxHeight / 2, canvasSize.width, canvasSize.height, cubeAngle, cubePOV, cubeViewDistance, cubeFaceColors);
 };
 
-var mouseClicked = function() {
-
+var mouseClicked = function(){
+    cubeHasStroke = !cubeHasStroke;
 };
 
 window.onload = function() {

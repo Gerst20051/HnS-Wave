@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  ********************************************
  *** CanvasEngine created by Andrew Gerst ***
@@ -486,7 +488,7 @@ ellipse = function(x, y, w, h){ // draw an ellipse
 	engage();
 	x -= 0.5 * w;
 	y -= 0.5 * h;
-	var k = 0.55; // kappa = (-1 + sqrt(2)) / 3 * 4 
+	var k = 0.55; // kappa = (-1 + sqrt(2)) / 3 * 4
 	var dx = k * 0.5 * w;
 	var dy = k * 0.5 * h;
 	var x0 = x + 0.5 * w;
@@ -573,9 +575,101 @@ closePath = function(){
 noClosePath = function(){
 	c.doClosePath = false;
 },
+/* 3D Shapes */
+Point3D = function(x, y, z){ // create a point in three dimensions
+	this.x = x;
+	this.y = y;
+	this.z = z;
+	this.rotateX = function(angle){
+		var rad, cosa, sina, y, z;
+		rad = angle * PI / 180;
+		cosa = cos(rad);
+		sina = sin(rad);
+		y = this.y * cosa - this.z * sina;
+		z = this.y * sina + this.z * cosa;
+		return new Point3D(this.x, y, z);
+	};
+	this.rotateY = function(angle){
+		var rad, cosa, sina, x, z;
+		rad = angle * PI / 180;
+		cosa = cos(rad);
+		sina = sin(rad);
+		z = this.z * cosa - this.x * sina;
+		x = this.z * sina + this.x * cosa;
+		return new Point3D(x, this.y, z);
+	};
+	this.rotateZ = function(angle){
+		var rad, cosa, sina, x, y;
+		rad = angle * PI / 180;
+		cosa = cos(rad);
+		sina = sin(rad);
+		x = this.x * cosa - this.y * sina;
+		y = this.x * sina + this.y * cosa;
+		return new Point3D(x, y, this.z);
+	};
+	this.project = function(viewWidth, viewHeight, fov, viewDistance){
+		var factor, x, y;
+		factor = fov / (viewDistance + this.z);
+		x = this.x * factor + viewWidth / 2;
+		y = this.y * factor + viewHeight / 2;
+		return new Point3D(x, y, this.z);
+	};
+},
+cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, faceColors){ // draw a 3d cube
+	var i = 0, t = [], avg_z = [], vertices, faces;
+	xPos -= c.W / 2;
+	yPos -= c.H / 2;
+	vertices = [
+		new Point3D(-1, 1, -1),
+		new Point3D(1, 1, -1),
+		new Point3D(1, -1, -1),
+		new Point3D(-1, -1, -1),
+		new Point3D(-1, 1, 1),
+		new Point3D(1, 1, 1),
+		new Point3D(1, -1, 1),
+		new Point3D(-1, -1, 1)
+	];
+	faces = [
+		[0, 1, 2, 3],
+		[1, 5, 6, 2],
+		[5, 4, 7, 6],
+		[4, 0, 3, 7],
+		[0, 4, 5, 1],
+		[3, 2, 6, 7]
+	];
+	for (i = 0; i < vertices.length; i++) {
+		var v = vertices[i];
+		var r = v.rotateX(angle).rotateY(angle);
+		var p = r.project(width, height, cubePOV, cubeViewDistance);
+		t.push(p);
+	}
+	for (i = 0; i < faces.length; i++) {
+		var f = faces[i];
+		avg_z[i] = {
+			'index': i,
+			'z': (t[f[0]].z + t[f[1]].z + t[f[2]].z + t[f[3]].z) / cubeViewDistance
+		};
+	}
+	avg_z.sort(function(a, b) {
+		return b.z - a.z;
+	});
+	for (i = 0; i < faces.length; i++) {
+		var f = faces[avg_z[i].index];
+		fill(cubeFaceColors[avg_z[i].index]);
+		engage();
+		ctx.moveTo(t[f[0]].x + xPos, t[f[0]].y + yPos);
+		ctx.lineTo(t[f[1]].x + xPos, t[f[1]].y + yPos);
+		ctx.lineTo(t[f[2]].x + xPos, t[f[2]].y + yPos);
+		ctx.lineTo(t[f[3]].x + xPos, t[f[3]].y + yPos);
+		paint();
+	}
+},
 /* Math */
 random = function(low, high){ // generate a random number
 	return Math.floor(Math.random() * (high - low + 1)) + low;
+},
+randomBoolean = function(){
+	return Math.random() < 0.5;
 },
 isOdd = function(num){
 	return num & 1;
@@ -720,6 +814,18 @@ grid = function(interval){
 	}
 	c.grid = true;
 	paint();
+},
+gridCoordinates = function(interval){
+	var coordinates = [];
+	if (!interval) {
+		interval = 10;
+	}
+	for (var x = c.O; x <= c.W; x += interval) { // vertical
+		for (var y = c.O; y <= c.H; y += interval) { // horizontal
+			coordinates.push([x, y]);
+		}
+	}
+	return coordinates;
 },
 cloneArray = function(array){
 	return array.slice(0);
