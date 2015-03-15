@@ -154,7 +154,8 @@ if ($ACTION == 'logged') {
 					u.id,
 					u.email,
 					CONCAT(u.firstname, ' ', u.lastname) as fullname,
-					tz.timezone_location as timezone
+					tz.timezone_location as timezone,
+					tz.gmt
 				FROM %s u
 				LEFT JOIN %s tz ON tz.id = u.timezone_id
 				WHERE u.id = '%s'
