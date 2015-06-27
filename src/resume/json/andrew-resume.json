@@ -1,33 +1,83 @@
 {
 	"name": "Andrew Anthony Gerst",
-	"title": "JavaScript Engineer",
-	"location": "Chapel Hill, NC, United States",
-	"number": "7047650337",
+	"title": "Software Developer",
+	"location": "Charlotte, NC, United States",
+	"number": "7047408492",
 	"email": "[url=mailto:gerst20051@gmail.com]gerst20051@gmail.com[/url]",
 	"url": "[url]http://hnswave.co[/url]",
 	"statement": "I'm seeking a Web Development position where I can join and collaboratively work with a team and/or independently to build quality web applications or games. I've been a Web Developer since 2005. I started because I wanted a central database accessible from anywhere on the internet of everything I owned. Mainly I wanted to document my games and have cheats for all of my games on my website I named Homenet. Homenet Spaces (HnS) was my first social network my spin on MySpace. I've always seen ways to improve the way we interact with our friends and family. I really want to use my skills to impact the world in life-changing ways. Another passion I have is listening to music so I've created multiple tools that offer different music listening experiences. Click for my book [url=http://hnswave.co/mastery/javascript.html]JavaScript Mastery[/url].",
 	"skills": [
-		"javascript",
-		"jquery",
-		"php",
-		"mysql",
-		"html",
-		"css",
+		"ansible",
+		"arduino",
 		"bash",
+		"bower",
+		"coffee-script",
+		"jade",
+		"node",
+		"socket.io",
+		"stylus",
+		"swift",
+		"vagrant",
 		"vim"
 	],
 	"experience": [
+		{
+			"title": "Software Developer",
+			"organization": "[url=http://gopassport.com/]GoPassport[/url] | Cloud-based Parking and Transit Solutions",
+			"startDate": "December 2013",
+			"endDate": "Present",
+			"technologies": [
+				"android/adt",
+				"ansible",
+				"arduino",
+				"asana",
+				"aws",
+				"bash",
+				"ble",
+				"ci",
+				"less",
+				"fogbugz",
+				"gitlab",
+				"gwt",
+				"jscs",
+				"jshint",
+				"make",
+				"migrations",
+				"mysql",
+				"nfc",
+				"oauth",
+				"phpcs",
+				"python",
+				"qrcode",
+				"raspberry pi",
+				"redbean",
+				"redis",
+				"redmine",
+				"ruby",
+				"sass/scss",
+				"swift",
+				"testflight",
+				"titanium",
+				"ubuntu",
+				"unix",
+				"vagrant",
+				"wsdl",
+				"xcode",
+				"yaml"
+			],
+			"responsibilities": "(WIP) All around navy seal that puts out fires. Contributed to every platform in our system from server-side programming using php / python to client side programming of our web, android, and ios apps (originally titanium and then I cloned our app to swift when that was released) to creating the vagrant/ansible development environments that all the developers use today which also contributed and was the main driving force toward out transition to building our production environment from scratch in code and ultimately a very fast-paced environment with continuous deployments using gitlab, merge requests, and gitlab ci. I have developed a majority of our whitelabel apps on all of our platforms for our biggest clients such as [url=http://chicagoparking.ppprk.com/apps/v7/mobilepayweb]ParkChicago[/url], [url=http://parkgreenp.ppprk.com/apps/v7/mobilepayweb]ParkGreenP[/url] (largest mobile payment platform in north america), and [url=http://gotucsonapp.ppprk.com/apps/v7/mobilepayweb]GoTucson[/url] (first all city app for parking & transit). Coordinated round the clock projects with multiple team members that are located in 3 continents including Barcelona, Spain and Bangalore, India. I took the initiative to document all of our systems and processes to help make the onboarding of all future developers seamless. I also created many of our internal shell scripts and tools that our devs use everyday such as the log reader to debug server logs. I've also created a Makefile that will setup a complete dev environment in one command. Maintained and improved our rate engine which remains to be the most versatile, reliable, and flexible rate engine in the industry. Without a reliable rate engine it's unlikely that Passport would exist today. I've also helped develop our ticket reader for transit ticket validation using BLE (Bluetooth Low Energy), NFC, and QR Codes."
+		},
 		{
 			"title": "Computer Programmer",
 			"organization": "UNC Chapel Hill Computer Science Department",
 			"startDate": "November 2011",
 			"endDate": "June 2012",
 			"technologies": [
-				"html5",
 				"css",
-				"youtube-api",
+				"dojo",
+				"html5",
 				"javascript",
-				"dojo"
+				"youtube-api"
 			],
 			"responsibilities": "Accessible YouTube is an interface to YouTube designed for people who access their computers via either 2 switches for children with disabilities or a mouse. [url]http://gbserver2.cs.unc.edu/playpen/AccessibleYouTube/[/url]"
 		}
@@ -39,15 +89,54 @@
 			"startYear": 2011,
 			"endYear": 2015,
 			"technologies": [
-				"matlab",
-				"java",
 				"c",
+				"java",
+				"matlab",
 				"mips"
 			],
 			"achievements": "Won second place in a programming competition hosted by Passport Parking and now my picture is up on the wall in the computer science building. My team and I placed third out of eight teams in Facebook's 2012 North Carolina Hackathon."
 		}
 	],
 	"projects": [
+		{
+			"name": "Casper, Nightmare, Phantom",
+			"url": "[url]https://github.com/Gerst20051/casper-nightmare-reader[/url]",
+			"technologies": [
+				"casperjs",
+				"chai",
+				"coffee-script",
+				"mocha",
+				"nightmarejs",
+				"node",
+				"phantomjs"
+			],
+			"desc": "Navigation scripting & testing utility written in Coffeescript for the PhantomJS WebKit headless browser using CasperJS and NightmareJS."
+		},
+		{
+			"name": "Log Reader",
+			"url": "[url]https://github.com/Gerst20051/log-reader[/url]",
+			"technologies": [
+				"bower",
+				"browser-sync",
+				"browserify",
+				"coffee-script",
+				"coffeeify",
+				"debowerify",
+				"express",
+				"gulp",
+				"jade",
+				"jquery",
+				"node",
+				"npm",
+				"socket.io",
+				"stylus",
+				"web-workers",
+				"workerify",
+				"yamilify",
+				"yaml"
+			],
+			"desc": "Tool for streaming server logs to the browser for filtering, highlighting, excluding, color-coding, and adding syntax highlighting to json objects and mysql queries."
+		},
 		{
 			"name": "HnS-Wave",
 			"url": "[url]https://github.com/Gerst20051/HnS-Wave[/url]",
@@ -62,9 +151,9 @@
 			"url": "[url]https://github.com/Gerst20051/Campus-Flirt[/url]",
 			"technologies": [
 				"javascript",
-				"php",
+				"jquery",
 				"mysql",
-				"jquery"
+				"php"
 			],
 			"desc": "Campus Flirt. Students Anonymously Flirting!"
 		},
@@ -72,9 +161,9 @@
 			"name": "HnS-QueTube",
 			"url": "[url]https://github.com/Gerst20051/HnS-QueTube[/url]",
 			"technologies": [
-				"php",
 				"javascript",
-				"mysql"
+				"mysql",
+				"php"
 			],
 			"desc": "HnS QueTube is a YouTube Queue. Replace the DJ! Hosting a party, no problem, let your guests decide what music plays!"
 		},
@@ -87,10 +176,10 @@
 			"name": "Social-HnS",
 			"url": "[url]https://github.com/Gerst20051/Social-HnS[/url]",
 			"technologies": [
-				"php",
 				"javascript",
+				"jquery",
 				"mysql",
-				"jquery"
+				"php"
 			],
 			"desc": "Connect Through Your Interests!"
 		},
@@ -98,9 +187,9 @@
 			"name": "HnS-Netai",
 			"url": "[url]https://github.com/Gerst20051/HnS-Netai[/url]",
 			"technologies": [
-				"php",
 				"javascript",
-				"mysql"
+				"mysql",
+				"php"
 			],
 			"desc": "HnS Netai website projects code including about.me, alerts, hnsapi, contacts, craigslist, parking, quotes, text, and websurprise."
 		},
@@ -108,9 +197,9 @@
 			"name": "HnS-Desktop",
 			"url": "[url]https://github.com/Gerst20051/HnS-Desktop[/url]",
 			"technologies": [
-				"php",
 				"javascript",
-				"mysql"
+				"mysql",
+				"php"
 			],
 			"desc": "Homenet Spaces OS. A jQuery web desktop."
 		}

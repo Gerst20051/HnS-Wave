@@ -82,7 +82,7 @@ ResumeBuilder.prototype.parseData = function(){
 	var data = this.data;
 
 	//TODO: Extract this info directly from this.data using Object.keys?
-	if (data.name || data.title || data.location || data.number || data.email || data.url || data.statement) {
+	if (data.name || data.title || data.address || data.location || data.number || data.email || data.url || data.statement) {
 		this.modules.push('title');
 	}
 	if (data.skills && data.skills.length) {
@@ -140,6 +140,9 @@ ResumeBuilder.prototype.addTitleModule = function(){
 	html.push('<div id="title">' + data.title + '</div>');
 	html.push('</div>');
 	html.push('<div id="contact">');
+	if (data.address && data.address.length) {
+		html.push('<div>' + data.address + '</div>');
+	}
 	if (data.location && data.location.length) {
 		html.push('<div>' + data.location + '</div>');
 	}
