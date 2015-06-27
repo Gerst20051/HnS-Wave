@@ -6,7 +6,7 @@
 
 function bbcode(str){
 	var search, replace, i;
-	
+
 	search = [
 		/\[b\](.*?)\[\/b\]/ig,
 		/\[i\](.*?)\[\/i\]/ig,
@@ -132,6 +132,7 @@ ResumeBuilder.prototype.createModule = function(){
 
 ResumeBuilder.prototype.addTitleModule = function(){
 	var html = [], data = this.data;
+	document.title = ['Resume', data.name, data.title].join(' - ');
 	html.push('<div id="titleModule" class="resumemodule clear">');
 	html.push('<div id="titlehead" class="clear">');
 	html.push('<div id="nametitle">');
