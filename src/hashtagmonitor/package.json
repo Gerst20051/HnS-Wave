@@ -1,0 +1,19 @@
+{
+  "name": "hashtagmonitor",
+  "description": "Monitor Instagram Hashtags",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "make",
+    "coffee": "make coffee",
+    "jade": "make jade",
+    "lint": "make lint",
+    "min": "make min",
+    "test": "make lint"
+  },
+  "devDependencies": {
+    "coffee-script": "1.9.3",
+    "coffeelint": "1.10.1",
+    "jade": "1.11.0",
+    "uglify-js": "2.4.23"
+  }
+}
