@@ -9,7 +9,7 @@
 function addEvent(obj, type, fn){
 	if (obj.attachEvent) {
 		obj['e'+type+fn] = fn;
-		obj[type+fn] = function(){obj['e'+type+fn](window.event);}
+		obj[type+fn] = function(){obj['e'+type+fn](window.event);};
 		obj.attachEvent('on'+type, obj[type+fn]);
 	} else {
 		obj.addEventListener(type, fn, false);
@@ -33,7 +33,7 @@ function calculateOffset(curElement, event){
 	if (element.offsetParent) {
 		do {
 			offsetX += element.offsetLeft;
-			offsetY += element.offsetTop
+			offsetY += element.offsetTop;
 		} while ( !! (element = element.offsetParent));
 	}
 
@@ -280,7 +280,8 @@ var undef,
 	docElem = document.documentElement,
 	docBody = document.getElementsByTagName('body')[0],
 	maxWidth = window.innerWidth || docElem.clientWidth || docBody.clientWidth,
-	maxHeight = window.innerHeight|| docElem.clientHeight|| docBody.clientHeight,
+	maxHeight = window.innerHeight || docElem.clientHeight || docBody.clientHeight,
+	isTouchEnabled = 'ontouchstart' in docElem || 'ontouchstart' in window,
 	EPSILON = 1.0E-4,
 	MAX_FLOAT = 3.4028235E38,
 	MIN_FLOAT = -3.4028235E38,
@@ -359,9 +360,13 @@ pmouseY = 0,
 mouseX = 0,
 mouseY = 0,
 mouseIsPressed = false,
+screenIsTouched = false,
+numberOfTouches = 0,
+touchesList = [],
 keyCode = 0,
 keyIsPressed = false,
 keyCodeList = [],
+currentOrientation,
 curElement,
 stylePaddingLeft,
 stylePaddingTop,
@@ -381,9 +386,14 @@ mouseMoved = nop,
 mouseClicked = nop,
 mousePressed = nop,
 mouseReleased = nop,
+touchMoved = nop,
+touchStart = nop,
+touchEnd = nop,
 keyDown = nop,
 keyUp = nop,
 keyPressed = nop,
+orientationChanged = nop,
+windowResized = nop,
 noLoop = function(){
 	doLoop = false;
 	loopStarted = false;
@@ -401,7 +411,7 @@ size = function(w, h){
 	}
 	canvas.size(w, h);
 },
-fullScreen = function(){
+fullScreen = function(){ // adjust size of canvas to be fullscreen
 	c.fullScreen = true;
 	size(maxWidth, maxHeight);
 },
@@ -616,7 +626,7 @@ Point3D = function(x, y, z){ // create a point in three dimensions
 	};
 },
 cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, cubeFaceColors){ // draw a 3d cube
-	var i = 0, t = [], avg_z = [], vertices, faces;
+	var i = 0, t = [], avg_z = [], vertices, faces, f;
 	xPos -= c.W / 2;
 	yPos -= c.H / 2;
 	vertices = [
@@ -644,7 +654,7 @@ cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, c
 		t.push(p);
 	}
 	for (i = 0; i < faces.length; i++) {
-		var f = faces[i];
+		f = faces[i];
 		avg_z[i] = {
 			'index': i,
 			'z': (t[f[0]].z + t[f[1]].z + t[f[2]].z + t[f[3]].z) / cubeViewDistance
@@ -654,7 +664,7 @@ cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, c
 		return b.z - a.z;
 	});
 	for (i = 0; i < faces.length; i++) {
-		var f = faces[avg_z[i].index];
+		f = faces[avg_z[i].index];
 		fill(cubeFaceColors[avg_z[i].index]);
 		engage();
 		ctx.moveTo(t[f[0]].x + xPos, t[f[0]].y + yPos);
@@ -668,27 +678,51 @@ cube3D = function(xPos, yPos, width, height, angle, cubePOV, cubeViewDistance, c
 random = function(low, high){ // generate a random number
 	return Math.floor(Math.random() * (high - low + 1)) + low;
 },
-randomBoolean = function(){
+randomDouble = function(low, high){ // generate a random double
+	if (arguments.length === 0) {
+		return Math.random();
+	}
+	return Math.random() * (high - low) + low;
+},
+randomBoolean = function(){ // generate a random boolean
 	return Math.random() < 0.5;
 },
-isOdd = function(num){
+randomElement = function(array){ // return a random element from an array
+	return array[random(0, array.length - 1)];
+},
+min = function(array){ // return min element from an array or arguments
+	if (1 < arguments.length) {
+		array = [].slice.call(arguments);
+	}
+	return Math.min.apply(null, array);
+},
+max = function(array){ // return max element from an array or arguments
+	if (1 < arguments.length) {
+		array = [].slice.call(arguments);
+	}
+	return Math.max.apply(null, array);
+},
+isOdd = function(num){ // return boolean for if number is odd
 	return num & 1;
 },
-isEven = function(num){
+isEven = function(num){ // return boolean for if number is even
 	return !(num & 1);
 },
-floor = function(num){
+floor = function(num){ // return floor of number
 	return Math.floor(num);
 },
-ceil = function(num){
+ceil = function(num){ // return ceil of number
 	return Math.ceil(num);
 },
-round = function(num){
+round = function(num){ // return ronud of number
 	return Math.round(num);
 },
 dist = function(x1, y1, x2, y2){ // calculates the distance between two points
 	var xs = x2 - x1, ys = y2 - y1;
 	return Math.sqrt(xs * xs + ys * ys);
+},
+diff = function(num1, num2){
+	return num2 - num1;
 },
 abs = function(num){ // take the absolute value of a number
 	return Math.abs(num);
@@ -711,13 +745,16 @@ tan = function(deg){ // take the tangent of an angle
 time = function(){ // return current time in milliseconds
 	return 1 * new Date();
 },
-hour = function(){
+timeSeconds = function(){ // return current time in seconds
+	return 1 * new Date() / 1E3;
+},
+hour = function(){ // return current hour
 	return new Date().getHours();
 },
-minute = function(){
+minute = function(){ // return current minute
 	return new Date().getMinutes();
 },
-second = function(){
+second = function(){ // return current second
 	return new Date().getSeconds();
 },
 /* Coloring */
@@ -753,7 +790,7 @@ stroke = function(r, g, b, a){ // outline color for shapes / text color
 		c.strokeStyle = r;
 	}
 },
-strokeWeight = function(thickness){ // no outline for shapes
+strokeWeight = function(thickness){ // outline width for shapes
 	c.doStroke = true;
 	c.lineWidth = thickness;
 	c.lineWidthHalf = thickness / 2;
@@ -768,13 +805,104 @@ color = function(r, g, b, a){ // store a color in a variable
 		return r;
 	}
 },
+hexToRgb = function(hex){ // convert hex color code to rgb color code
+	var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+		return r + r + g + g + b + b;
+	});
+	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+},
+hsvToRgb = function(h, s, v){ // convert hsv color code to rgb color code
+	var r, g, b;
+	var i = Math.floor(h * 6);
+	var f = h * 6 - i;
+	var p = v * (1 - s);
+	var q = v * (1 - f * s);
+	var t = v * (1 - (1 - f) * s);
+	switch (i % 6) {
+		case 0: r = v, g = t, b = p; break;
+		case 1: r = q, g = v, b = p; break;
+		case 2: r = p, g = v, b = t; break;
+		case 3: r = p, g = q, b = v; break;
+		case 4: r = t, g = p, b = v; break;
+		case 5: r = v, g = p, b = q; break;
+	}
+	return [Math.ceil(r * 255), Math.ceil(g * 255), Math.ceil(b * 255)];
+},
+rgbToHsl = function(r, g, b){ // convert rgb color code to hsl color code
+	r /= 255, g /= 255, b /= 255;
+	var max = Math.max(r, g, b), min = Math.min(r, g, b);
+	var h, s, l = (max + min) / 2;
+	if (max === min) {
+		h = s = 0; // achromatic
+	} else {
+		var d = max - min;
+		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+		switch (max) {
+			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+			case g: h = (b - r) / d + 2; break;
+			case b: h = (r - g) / d + 4; break;
+		}
+		h /= 6;
+	}
+	return [h, s, l];
+},
+hslToRgb = function(h, s, l){ // convert hsl color code to rgb color code
+	var r, g, b;
+	if (s === 0) {
+		r = g = b = l; // achromatic
+	} else {
+		var hue2rgb = function(p, q, t){
+			if (t < 0) t += 1;
+			if (t > 1) t -= 1;
+			if (t < 1 / 6) return p + (q - p) * 6 * t;
+			if (t < 1 / 2) return q;
+			if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+			return p;
+		};
+		var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+		var p = 2 * l - q;
+		r = hue2rgb(p, q, h + 1 / 3);
+		g = hue2rgb(p, q, h);
+		b = hue2rgb(p, q, h - 1 / 3);
+	}
+	return [Math.ceil(r * 255), Math.ceil(g * 255), Math.ceil(b * 255)];
+},
+naiveRandomValueForColor = function(){ // naive random color value
+	return random(0, 255);
+},
+randomValueForColor = function(){ // random color value using arc4random
+	return (Math.random() * 4294967296) % 256.0;
+},
 randomColor = function(){ // store a random color in a variable
 	return color(random(0, 255), random(0, 255), random(0, 255));
 },
-lineCap = function(lineCap){
+naiveRandomColor = function(){ // store a naive random color in a variable
+	return color(naiveRandomValueForColor(), naiveRandomValueForColor(), naiveRandomValueForColor());
+},
+randomPastelColor = function(){ // store a random pastel color in a variable
+	var r = (Math.round(Math.random() * 127) + 127).toString(16);
+	var g = (Math.round(Math.random() * 127) + 127).toString(16);
+	var b = (Math.round(Math.random() * 127) + 127).toString(16);
+	return color('#' + r + g + b);
+},
+randomGoldenRatioColor = function(){ // store a random color in a variable using the golden ratio
+	var goldenRatioConjugate = 0.618033988749895;
+	var hue = Math.random();
+	hue += goldenRatioConjugate;
+	hue %= 1;
+	return color.apply(null, hsvToRgb(hue, 0.5, 0.95));
+},
+randomToneByColor = function(r, g, b){ // store a random color in a variable with the same color tone
+	var hsl = rgbToHsl(r, g, b);
+	var newHsl = [Math.min(hsl[0] * randomDouble(0.95, 1.05), 1), hsl[1] * randomDouble(0.7, 1), Math.min(hsl[2] * randomDouble(0.8, 1.2), 1)];
+	return color.apply(null, hslToRgb(newHsl[0], newHsl[1], newHsl[2]));
+},
+lineCap = function(lineCap){ // sets the style of end caps for a line [butt, round, square]
 	c.lineCap = lineCap;
 },
-alpha = function(alpha){
+alpha = function(alpha){ // change the opacity of all elements in canvas
 	c.globalAlpha = alpha;
 },
 /* Text */
@@ -789,17 +917,17 @@ text = function(text, x, y){ // draw some text
 	}
 	c.strokeWeight = oldStrokeWeight;
 },
-textFont = function(font, size){ // changes the font of the text
+textFont = function(font, size){ // change the font of the text
 	c.fontStyle = font;
 	c.fontSize = size;
 	c.font = size + "px " + font;
 },
-textSize = function(size){ // change the size of text
+textSize = function(size){ // change the size of the text
 	c.textSize = size;
 	c.font = size + "px " + c.fontStyle;
 },
 /* Misc */
-grid = function(interval){
+grid = function(interval){ // draw a grid of vertical and horizontal lines with equal spacing interval between each line
 	engage();
 	if (!interval) {
 		interval = 10;
@@ -815,7 +943,7 @@ grid = function(interval){
 	c.grid = true;
 	paint();
 },
-gridCoordinates = function(interval){
+gridCoordinates = function(interval){ // return the coordinates of each line intersection that forms a grid
 	var coordinates = [];
 	if (!interval) {
 		interval = 10;
@@ -827,7 +955,7 @@ gridCoordinates = function(interval){
 	}
 	return coordinates;
 },
-cloneArray = function(array){
+cloneArray = function(array){ // return a copy of the supplied array
 	return array.slice(0);
 };
 
@@ -866,7 +994,7 @@ function Canvas(canvas){
 			stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(curElement, null)["paddingLeft"], 10) || 0;
 			stylePaddingTop = parseInt(document.defaultView.getComputedStyle(curElement, null)["paddingTop"], 10) || 0;
 			styleBorderLeft = parseInt(document.defaultView.getComputedStyle(curElement, null)["borderLeftWidth"], 10) || 0;
-			styleBorderTop = parseInt(document.defaultView.getComputedStyle(curElement, null)["borderTopWidth"], 10) || 0
+			styleBorderTop = parseInt(document.defaultView.getComputedStyle(curElement, null)["borderTopWidth"], 10) || 0;
 		}
 	};
 
@@ -875,35 +1003,81 @@ function Canvas(canvas){
 		addEvent(canvas, 'mousedown', onMousePressed);
 		addEvent(canvas, 'mouseup', onMouseReleased);
 		addEvent(canvas, 'click', onMouseClicked);
+		if (isTouchEnabled) {
+			addEvent(canvas, 'touchmove', onTouchMoved);
+			addEvent(canvas, 'touchstart', onTouchStart);
+			addEvent(canvas, 'touchend', onTouchEnd);
+		}
 		addEvent(window, 'keydown', onKeyDown);
 		addEvent(window, 'keyup', onKeyUp);
 		addEvent(window, 'keypress', onKeyPressed);
+		addEvent(window, 'orientationchange', onOrientationChanged);
 	};
 }
 
 var onMouseMoved = function(e){
 	updateMousePosition(curElement, e);
-	mouseMoved();
+	mouseMoved(e);
 };
 
 var onMousePressed = function(e){
 	mouseIsPressed = true;
-	mousePressed();
+	mousePressed(e);
 };
 
 var onMouseReleased = function(e){
 	mouseIsPressed = false;
-	mouseReleased();
+	mouseReleased(e);
 };
 
 var onMouseClicked = function(e){
-	mouseClicked();
+	mouseClicked(e);
 };
+
+var onTouchMoved = function(e){
+	e.preventDefault();
+	touchesList = e.targetTouches;
+	touchMoved(e);
+};
+
+var onTouchStart = function(e){
+	screenIsTouched = true;
+	numberOfTouches = e.targetTouches.length;
+	touchesList = e.targetTouches;
+	touchStart(e);
+};
+
+var onTouchEnd = function(e){
+	if (e.targetTouches.length === 0) {
+		screenIsTouched = false;
+	}
+	numberOfTouches = e.targetTouches.length;
+	touchesList = e.targetTouches;
+	touchEnd(e);
+};
+
+// addEventListener('touchmove', function(e){
+// 	if (e.targetTouches.length == 1) {
+// 		var touch = e.targetTouches[0];
+// 		console.log('Touch X', touch.pageX);
+// 		console.log('Touch Y', touch.pageY);
+// 	}
+// }, false);
+
+// addEventListener('touchmove', function(e){
+// 	for (var i = 0; i < e.touches.length; i++) {
+// 		var touch = e.touches[i];
+// 		ctx.beginPath();
+// 		ctx.arc(touch.pageX, touch.pageY, 20, 0, TWO_PI, true);
+// 		ctx.fill();
+// 		ctx.stroke();
+// 	}
+// }, false);
 
 var onKeyDown = function(e){
 	keyCode = keycode.getKeyCode(e);
 	keyCodeList[keyCode] = true;
-	keyDown();
+	keyDown(e);
 	e.preventDefault();
 };
 
@@ -911,12 +1085,35 @@ var onKeyUp = function(e){
 	keyCodeList[keycode.getKeyCode(e)] = false;
 	keyIsPressed = false;
 	keyCode = 0;
-	keyUp();
+	keyUp(e);
 	e.preventDefault();
 };
 
 var onKeyPressed = function(e){
 	keyIsPressed = true;
-	keyPressed();
+	keyPressed(e);
 	e.preventDefault();
+};
+
+var onOrientationChanged = function(){
+	if (Math.abs(window.orientation) === 90) {
+		currentOrientation = 'Landscape';
+	} else {
+		currentOrientation = 'Portrait';
+	}
+	maxWidth = window.innerWidth || docElem.clientWidth || docBody.clientWidth;
+	maxHeight = window.innerHeight || docElem.clientHeight || docBody.clientHeight;
+	if (c.fullScreen) {
+		size(maxWidth, maxHeight);
+	}
+	orientationChanged();
+};
+
+window.onresize = function(){
+	maxWidth = window.innerWidth || docElem.clientWidth || docBody.clientWidth;
+	maxHeight = window.innerHeight || docElem.clientHeight || docBody.clientHeight;
+	if (c.fullScreen) {
+		size(maxWidth, maxHeight);
+	}
+	windowResized();
 };

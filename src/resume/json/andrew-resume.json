@@ -110,7 +110,7 @@
 				"node",
 				"phantomjs"
 			],
-			"desc": "Navigation scripting & testing utility written in Coffeescript for the PhantomJS WebKit headless browser using CasperJS and NightmareJS."
+			"desc": "Navigation scripting & testing utility written in CoffeeScript for the PhantomJS WebKit headless browser using CasperJS and NightmareJS."
 		},
 		{
 			"name": "Log Reader",
