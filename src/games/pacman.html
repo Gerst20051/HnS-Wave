@@ -53,7 +53,7 @@ var gameObjects = [],
     levelWon = false,
     gameOver = false,
     isPaused = false,
-    numGhosts = 5,
+    numGhosts = 4,
     eatenGhosts = 0,
     numLivesRemaining = 3,
     currentMazeLevel = 0,
@@ -80,6 +80,19 @@ var PACMAN = 1,
     GHOST = 2,
     FOOD = 3,
     PILL = 4;
+
+// ghost types
+var RED = 1, // shadow / blinky
+    PINK = 2, // speedy / pinky
+    BLUE = 3, // bashful / inky
+    ORANGE = 4; // inky / clyde
+
+var ghostRankings = [
+    RED,
+    PINK,
+    BLUE,
+    ORANGE
+];
 
 // movement directions
 var NO_DIRECTION = 0,
@@ -136,6 +149,13 @@ function collidePoint(obj1, obj2, buffer) {
     return false;
 }
 
+function collideBlock(obj1, obj2) {
+    if (getBlockFromGameObject(obj1).toString() === getBlockFromGameObject(obj2).toString()) {
+        return true;
+    }
+    return false;
+}
+
 function getBlockDimensions() {
     var currentMaze = mazes[currentMazeLevel];
     blockHeight = mapSize.height / currentMaze.length;
@@ -177,6 +197,17 @@ function getRandomCoordinateOfType(blockType) {
             return getCenterCoordinatesFromBlockIndex.apply(null, randomElement(eligibleBlocks));
         }
     }
+}
+
+function getRealCoordinateToSpawnPacman() {
+    var block = getBlockFromCoordinates.apply(null, getRandomCoordinateOfType(DOOR));
+    var currentMaze = mazes[currentMazeLevel];
+    for (var i = block[0]; i < currentMaze.length; i++) {
+        if (currentMaze[i][block[1]] === PATH) {
+            return getCenterCoordinatesFromBlockIndex(i, block[1]);
+        }
+    }
+    return getRandomCoordinateToSpawnPacman();
 }
 
 function getRandomCoordinateToSpawnPacman() {
@@ -454,12 +485,19 @@ var Pacman = function () {
     };
 };
 
-var Ghost = function (x, y) {
+var Ghost = function (ghostType) {
     var spawnCoordinate = getRandomCoordinateToSpawnGhost();
-    this.x = x || spawnCoordinate[0];
-    this.y = y || spawnCoordinate[1];
+    this.x = spawnCoordinate[0];
+    this.y = spawnCoordinate[1];
 
+    if (ghostType === RED) {
+        this.x = ;
+        this.y = ;
+    }
+
+    this.prevDir = NO_DIRECTION;
     this.type = GHOST;
+    this.ghostType = ghostType;
     this.frightened = false;
     this.frightenedTimeInSeconds = 0;
     this.timeToBeFrightenedInSeconds = 10;
@@ -527,9 +565,13 @@ var Ghost = function (x, y) {
     };
 
     this.chooseRandomDirection = function () {
-        var possibleDirections = [LEFT, UP, RIGHT, DOWN];
-        var newDirection = randomElement(possibleDirections);
+        var possibleDirections = [LEFT, UP, RIGHT, DOWN],
+            newDirection = NO_DIRECTION;
+        do {
+             newDirection = randomElement(possibleDirections);
+        } while (newDirection === this.prevDir && ); // TODO
         this.dir = newDirection;
+        this.prevDir = newDirection;
     };
 
     this.move = function () {
@@ -776,13 +818,13 @@ var Scene = function () {
 
     this.generatePacman = function () {
         pacman = new Pacman();
-        pacman.init.apply(pacman, getRandomCoordinateToSpawnPacman());
+        pacman.init.apply(pacman, getRealCoordinateToSpawnPacman());
         gameObjects.push(pacman);
     };
 
     this.generateGhosts = function (num) {
         for (var i = 0; i < num; i++) {
-            gameObjects.push(new Ghost());
+            gameObjects.push(new Ghost(ghostRankings[i % 4]));
         }
     };
 
@@ -791,7 +833,7 @@ var Scene = function () {
 
         var ghosts = getGameObjectsOfType(GHOST);
         for (i = 0, l = ghosts.length; i < l; i++) {
-            if (collidePoint(pacman, ghosts[i])) {
+            if (collideBlock(pacman, ghosts[i])) {
                 if (ghosts[i].isFrightened()) {
                     ghosts[i].kill();
                 } else {
@@ -861,16 +903,16 @@ function monitorKeys() {
         // maybe interact with pause screen?
         // how to interact with pause screen on touch screens?
     }
-    if (keyCodeList[keys.LEFT] === true) {
+    if (keyCodeList[keys.LEFT] === true || keyCodeList[keys.A] === true) {
         pacman.goLeft();
     }
-    if (keyCodeList[keys.UP] === true) {
+    if (keyCodeList[keys.UP] === true || keyCodeList[keys.W] === true) {
         pacman.goUp();
     }
-    if (keyCodeList[keys.RIGHT] === true) {
+    if (keyCodeList[keys.RIGHT] === true || keyCodeList[keys.D] === true) {
         pacman.goRight();
     }
-    if (keyCodeList[keys.DOWN] === true) {
+    if (keyCodeList[keys.DOWN] === true || keyCodeList[keys.S] === true) {
         pacman.goDown();
     }
 }
@@ -978,7 +1020,8 @@ function playPause() {
 
 function checkFood() {
     var food = getGameObjectsOfType(FOOD);
-    if (!food.length) {
+    var pills = getGameObjectsOfType(PILL);
+    if (!food.length && !pills.length) {
         levelWon = true;
     }
 }
