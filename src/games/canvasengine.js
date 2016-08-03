@@ -1094,6 +1094,7 @@ var onKeyUp = function(e){
 };
 
 var onKeyPressed = function(e){
+	console.log(e);
 	keyIsPressed = true;
 	keyPressed(e);
 	e.preventDefault();
