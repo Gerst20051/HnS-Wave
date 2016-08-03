@@ -60,6 +60,13 @@ body {
     position: absolute;
     text-align: center;
 }
+
+#wordpanel {
+    color: #fff;
+    font-family: Helvetica;
+    position: absolute;
+    width: 250px;
+}
 </style>
 </head>
 <body>
@@ -69,6 +76,7 @@ body {
         <canvas id="canvas1" height="100" width="100"></canvas>
     </div>
     <div id="searchterm"></div>
+    <div id="wordpanel"></div>
 </div>
 <script>
 var dictionary, frequencies, grids;
@@ -212,6 +220,7 @@ var Node,
     currentGridIndex = 0,
     timeLimitIntervalId = 0,
     gridNodes = [],
+    wordsFound = [[], [], [], []],
     doFullScreen = false,
     centeredCanvas = true,
     canvasDimension = 800,
@@ -225,7 +234,8 @@ timeLimitIntervalId = setInterval(function () {
     currentSearchTerm = '';
     $('#searchterm').text(currentSearchTerm);
     generateScene();
-}, 1E3 * 15);
+    addWordsFoundToPanel();
+}, 1E3 * 60);
 
 function generateScene() {
     mainScene = new Scene();
@@ -337,6 +347,7 @@ var setup = function () {
     }
     centerCanvas();
     positionSearchTerm();
+    positionWordPanel();
 };
 
 var draw = function () {
@@ -357,12 +368,21 @@ function drawNodes() {
     });
 }
 
+function addWordsFoundToPanel() {
+    $('#wordpanel').html(_.map(wordsFound[currentGridIndex], function (word) {
+        return $('<div/>').text(word);
+    }));
+}
+
 keyUp = function (e) {
     if (keycode.getKeyCode(e) === keys.BACKSPACE) {
         currentSearchTerm = currentSearchTerm.slice(0, -1);
     } else if (_.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
-        // TODO: search for term in grid
+        if (_.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
+            wordsFound[currentGridIndex].unshift(currentSearchTerm);
+        }
         currentSearchTerm = '';
+        addWordsFoundToPanel();
     } else {
         var letter = (keycode.getValueByEvent(e) || '').toUpperCase().replace(/[^a-zA-Z]/g, '');
         letter = letter.length === 1 ? letter : '';
@@ -374,6 +394,7 @@ keyUp = function (e) {
 windowResized = function () {
     centerCanvas();
     positionSearchTerm();
+    positionWordPanel();
 };
 
 function centerCanvas() {
@@ -388,6 +409,13 @@ function positionSearchTerm() {
     $div.css('top', (parseInt($canvas.css('top')) + canvasSize.height + 20) + 'px');
     $div.css('left', parseInt($canvas.css('left')) + 'px');
     $div.css('width', canvasSize.width + 'px');
+}
+
+function positionWordPanel() {
+    $div = $('#wordpanel'); $canvas = $('#canvas1');
+    $div.css('top', parseInt($canvas.css('top')) + 'px');
+    $div.css('left', (parseInt($canvas.css('left')) + canvasSize.width + 20) + 'px');
+    $div.css('height', canvasSize.height + 'px');
 }
 
 window.onload = function () {
