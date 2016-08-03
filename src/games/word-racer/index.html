@@ -31,6 +31,18 @@ body {
     padding: 0;
 }
 
+#title {
+    color: #fff;
+    font-family: Helvetica;
+    font-size: 80px;
+    height: 200px;
+    line-height: 200px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+}
+
 #canvaspane {
     cursor: default;
 }
@@ -52,6 +64,7 @@ body {
 </head>
 <body>
 <div id="content">
+    <div id="title">Word Racer</div>
     <div id="canvaspane">
         <canvas id="canvas1" height="100" width="100"></canvas>
     </div>
@@ -197,6 +210,7 @@ var Node,
     mainScene,
     currentSearchTerm = '',
     currentGridIndex = 0,
+    timeLimitIntervalId = 0,
     gridNodes = [],
     doFullScreen = false,
     centeredCanvas = true,
@@ -205,6 +219,13 @@ var Node,
         height: (doFullScreen) ? maxHeight : canvasDimension,
         width: (doFullScreen) ? maxWidth : canvasDimension
     };
+
+timeLimitIntervalId = setInterval(function () {
+    currentGridIndex === 3 ? currentGridIndex = 0 : currentGridIndex++;
+    currentSearchTerm = '';
+    $('#searchterm').text(currentSearchTerm);
+    generateScene();
+}, 1E3 * 15);
 
 function generateScene() {
     mainScene = new Scene();
@@ -221,11 +242,11 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
     highlighted = false;
 
     this.draw = function () {
-        fill(colors.ghostwhite);
+        fill(colors.ghostwhite); // TODO: set to blue for type 2 and red for type 3
         stroke(colors.white);
         strokeWeight(2);
         circle(x, y, this.radius);
-        textSize(46);
+        textSize(currentGridIndex ? 30 : 46);
         fill(colors.black);
         var radiusXOffset = (letter === 'I') ? this.radius / 10 : (letter === 'Qu') ? this.radius / 1.7 : this.radius / 3;
         text(letter, x - radiusXOffset, y + this.radius / 2.7);
@@ -298,9 +319,11 @@ Scene = function () {
         var grid = playGrids[currentGridIndex];
         _.each(grid, function (row, rowIndex) {
             _.each(row, function (item, itemIndex) {
-                var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
-                var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
-                gridNodes.push(new Node(nodeXPos, nodeYPos, item, rowIndex, itemIndex));
+                if (item) {
+                    var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
+                    var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
+                    gridNodes.push(new Node(nodeXPos, nodeYPos, item, rowIndex, itemIndex));
+                }
             });
         });
     };
