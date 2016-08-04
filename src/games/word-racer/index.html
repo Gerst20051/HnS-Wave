@@ -57,6 +57,22 @@ body {
     position: absolute;
 }
 
+#progressinfo.gameover {
+    background-color: #fff;
+    text-align: center;
+}
+
+#gameover {
+    display: none;
+    font-family: Helvetica;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#progressinfo.gameover #gameover {
+    display: block;
+}
+
 #roundinfo,
 #countdown {
     font-family: Helvetica;
@@ -77,6 +93,11 @@ body {
 #roundnumber,
 #countdowntime {
     color: rgb(79, 113, 29);
+}
+
+#progressinfo.gameover #roundinfo,
+#progressinfo.gameover #countdown {
+    display: none;
 }
 
 #searchterm {
@@ -133,7 +154,8 @@ body {
     font-family: Helvetica;
     font-weight: bold;
     letter-spacing: 6px;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     padding: 20px;
     position: absolute;
     width: 210px;
@@ -182,8 +204,9 @@ hr#wordpaneldivider:after {
         <canvas id="canvas1" height="100" width="100"></canvas>
     </div>
     <div id="progressinfo">
+        <div id="gameover">Game Over. Press 'Enter' To Start A New Game.</div>
         <div id="roundinfo">Round: <span id="roundnumber"></span></div>
-        <div id="countdown">Time: <span id="countdowntime"></span></div>
+        <div id="countdown"><span id="countdownlabel">Time:</span> <span id="countdowntime"></span></div>
     </div>
     <div id="searchterm"></div>
     <div id="alertpanel"></div>
@@ -199,6 +222,37 @@ var eow = '_';
 var gridSolutions = [];
 var playGrids = {};
 var pathTree = [];
+var Node,
+    Scene,
+    mainScene,
+    currentSearchTerm = '',
+    currentGridIndex = 0,
+    countdownToBeginningOfRoundTimeoutId = 0,
+    countdownToEndOfRoundTimeoutId = 0,
+    gameAlertTimeoutId = 0,
+    foundWordTimeoutId = 0,
+    gridNodes = [],
+    nodeConnectors = [],
+    wordsFound = [],
+    gridLoading = true,
+    gameStarted = false,
+    gameOver = false,
+    roundStartTime = 0,
+    roundIntermissionStartTime = 0,
+    roundTimeLimitInSeconds = 80,
+    roundIntermissionInSeconds = 12,
+    playerScore = 0,
+    doFullScreen = false,
+    centeredCanvas = true,
+    canvasDimension = 800,
+    canvasSize = {
+        height: (doFullScreen) ? maxHeight : canvasDimension,
+        width: (doFullScreen) ? maxWidth : canvasDimension
+    };
+
+function log(key, value) {
+  console.log(key, JSON.stringify(value));
+}
 
 loadJSONFiles();
 
@@ -211,23 +265,9 @@ function loadJSONFiles() {
         dictionary = dictionaryJSON[0];
         frequencies = frequenciesJSON[0];
         grids = gridJSON[0];
-        gridSolutions = Array(6).fill([]);
-        pathTree = Array(6).fill({});
-        wordsFound = Array(6).fill([]);
-        init();
+        createTrie();
+        startGame();
     });
-}
-
-function log(key, value) {
-  console.log(key, JSON.stringify(value));
-}
-
-function init() {
-  createTrie();
-  generateGrid();
-  generateGridSolutions();
-  generateScene();
-  startCountdownToBeginningOfRound();
 }
 
 function createTrie() {
@@ -242,6 +282,39 @@ function searchTrie(word) {
 
 function existsInTrie(word) {
   return __.has(trie, word.toUpperCase().split('').join('.'));
+}
+
+function startGame() {
+    resetSettings();
+    setJSONArrays();
+    generateGrid();
+    generateGridSolutions();
+    generateScene();
+    startCountdownToBeginningOfRound();
+}
+
+function resetSettings() {
+    currentSearchTerm = '';
+    currentGridIndex = 0;
+    countdownToBeginningOfRoundTimeoutId = 0;
+    countdownToEndOfRoundTimeoutId = 0;
+    gameAlertTimeoutId = 0;
+    foundWordTimeoutId = 0;
+    gridNodes = [];
+    nodeConnectors = [];
+    wordsFound = [];
+    gridLoading = true;
+    gameStarted = false;
+    gameOver = false;
+    roundStartTime = 0;
+    roundIntermissionStartTime = 0;
+    playerScore = 0;
+}
+
+function setJSONArrays() {
+    gridSolutions = Array(grids.length).fill([]);
+    pathTree = Array(grids.length).fill({});
+    wordsFound = Array(grids.length).fill([]);
 }
 
 function generateLetterDistribution() {
@@ -328,39 +401,6 @@ function spiderGridFromIndex(gridIndex, rowIndex, itemIndex, startingPathKey, fu
   });
 }
 
-var Node,
-    Scene,
-    mainScene,
-    currentSearchTerm = '',
-    currentGridIndex = 0,
-    countdownToBeginningOfRoundTimeoutId = 0,
-    countdownToEndOfRoundTimeoutId = 0,
-    gameAlertTimeoutId = 0,
-    foundWordTimeoutId = 0,
-    gridNodes = [],
-    nodeConnectors = [],
-    wordsFound = [],
-    gridLoading = true,
-    gameStarted = false,
-    gameOver = false,
-    roundStartTime = 0,
-    roundIntermissionStartTime = 0,
-    roundTimeLimitInSeconds = 80,
-    roundIntermissionInSeconds = 12,
-    playerScore = 0,
-    doFullScreen = false,
-    centeredCanvas = true,
-    canvasDimension = 800,
-    canvasSize = {
-        height: (doFullScreen) ? maxHeight : canvasDimension,
-        width: (doFullScreen) ? maxWidth : canvasDimension
-    };
-
-function startCountdownToBeginningOfRound() {
-    preBeginningOfRound();
-    countdownToBeginningOfRoundTimeoutId = setTimeout(beginningOfRoundCallback, 1E3 * roundIntermissionInSeconds);
-}
-
 function preBeginningOfRound() {
     roundIntermissionStartTime = timeSeconds();
     roundStartTime = 0;
@@ -368,6 +408,11 @@ function preBeginningOfRound() {
     if (gameStarted) {
         addSolutionsToWordPanel();
     }
+}
+
+function startCountdownToBeginningOfRound() {
+    preBeginningOfRound();
+    countdownToBeginningOfRoundTimeoutId = setTimeout(beginningOfRoundCallback, 1E3 * roundIntermissionInSeconds);
 }
 
 function beginningOfRoundCallback() {
@@ -394,6 +439,8 @@ function endOfRoundCallback() {
     if (currentGridIndex === gridSolutions.length - 1) {
         roundStartTime = 0;
         gameOver = true;
+        toggleGameOverLabel();
+        // TODO: use a keyboard shortcut or after 15 seconds show all words that have been found for each round in the word panel.
     } else {
         startCountdownToBeginningOfRound();
     }
@@ -404,9 +451,19 @@ function endOfRoundCallback() {
 }
 
 function nextRound() {
+    if (gameOver) {
+        return;
+    }
+    clearTimeout(countdownToBeginningOfRoundTimeoutId);
     endOfRoundCallback();
-    preBeginningOfRound();
-    beginningOfRoundCallback();
+    if (currentGridIndex < gridSolutions.length - 1) {
+        preBeginningOfRound();
+        beginningOfRoundCallback();
+    }
+}
+
+function toggleGameOverLabel() {
+    $('#progressinfo').toggleClass('gameover');
 }
 
 function generateScene() {
@@ -425,10 +482,13 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
 
     this.draw = function () {
         var nodeType = grids[currentGridIndex][rowIndex][itemIndex];
-        fill(gridLoading || gameOver ? (gameStarted ? colors.gray : colors.black) : [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1]);
-        stroke(gridLoading || gameOver || __.includes(currentSearchTerm, letter) ? colors.black : colors.white);
-        strokeWeight(2);
+        var isLetterInSearchTerm = __.includes(currentSearchTerm, letter.toUpperCase());
+        var nodeColor = [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1];
+        fill(gridLoading || gameOver ? (gameStarted ? colors.gray : colors.black) : nodeColor);
+        stroke(gridLoading || gameOver ? colors.black : isLetterInSearchTerm ? colors.yellow : nodeColor);
+        strokeWeight(isLetterInSearchTerm ? 4 : 2);
         circle(x, y, this.radius);
+        strokeWeight(1);
         textSize(currentGridIndex ? 30 : 46);
         fill(colors.black);
         var radiusXOffset = (letter === 'I') ? this.radius / 10 : (letter === 'Qu') ? this.radius / 1.7 : this.radius / 3;
@@ -461,22 +521,29 @@ Scene = function () {
 
     this.draw = function () {
         background(color(130, 170, 230));
-        if (true) {
-            $('#roundnumber').text(currentGridIndex + 1);
-            var countdownTimeString = '';
-            if (!gameOver) {
-                var secondsRemaining = 0;
-                if (gridLoading) {
-                    secondsRemaining = __.round((roundIntermissionStartTime + roundIntermissionInSeconds) - timeSeconds());
+        this.updateProgressInfo();
+    };
+
+    this.updateProgressInfo = function () {
+        var countdownTimeString = '';
+        if (!gameOver) {
+            var secondsRemaining = 0;
+            if (gridLoading) {
+                if (gameStarted) {
+                    $('#roundnumber').text(currentGridIndex + 2);
                 } else {
-                    secondsRemaining = __.round((roundStartTime + roundTimeLimitInSeconds) - timeSeconds());
+                    $('#roundnumber').text(currentGridIndex + 1);
                 }
-                countdownTimeString = new Date(secondsRemaining * 1E3).toISOString().substr(15, 4);
+                secondsRemaining = __.round((roundIntermissionStartTime + roundIntermissionInSeconds) - timeSeconds());
             } else {
-                countdownTimeString = 'Game Over';
+                $('#roundnumber').text(currentGridIndex + 1);
+                secondsRemaining = __.round((roundStartTime + roundTimeLimitInSeconds) - timeSeconds());
             }
-            $('#countdowntime').text(countdownTimeString);
+            countdownTimeString = new Date(secondsRemaining * 1E3).toISOString().substr(15, 4);
+        } else {
+            countdownTimeString = 'Game Over';
         }
+        $('#countdowntime').text(countdownTimeString);
     };
 
     this.calculateNodeRadius = function () {
@@ -489,7 +556,7 @@ Scene = function () {
     this.getNodeCoordinates = function (rowIndex, itemIndex) {
         var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
         var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
-        return [nodeXPos, nodeYPos];
+        return [ nodeXPos, nodeYPos ];
     };
 
     this.generateNodes = function () {
@@ -615,6 +682,11 @@ function doFoundWordEffect() {
 }
 
 keyUp = function (e) {
+    if (gameOver && _.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
+        startGame();
+        toggleGameOverLabel();
+        return;
+    }
     if (gridLoading || gameOver) {
         return;
     }
@@ -651,7 +723,6 @@ keyUp = function (e) {
 windowResized = function () {
     positionElements();
 };
-
 
 function positionElements() {
     centerCanvas();
