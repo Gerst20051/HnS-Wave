@@ -356,40 +356,56 @@ var Node,
     };
 
 function startCountdownToBeginningOfRound() {
+    preBeginningOfRound();
+    countdownToBeginningOfRoundTimeoutId = setTimeout(beginningOfRoundCallback, 1E3 * roundIntermissionInSeconds);
+}
+
+function preBeginningOfRound() {
     roundIntermissionStartTime = timeSeconds();
     roundStartTime = 0;
     gridLoading = true;
     if (gameStarted) {
         addSolutionsToWordPanel();
     }
-    countdownToBeginningOfRoundTimeoutId = setTimeout(function () {
-        roundIntermissionStartTime = 0;
-        roundStartTime = timeSeconds();
-        gridLoading = false;
-        if (gameStarted) {
-            currentGridIndex++;
-        } else {
-            gameStarted = true;
-        }
-        startCountdownToEndOfRound();
-        generateScene();
-        addWordsFoundToPanel();
-        countdownToBeginningOfRoundTimeoutId = 0;
-    }, 1E3 * roundIntermissionInSeconds);
+}
+
+function beginningOfRoundCallback() {
+    roundIntermissionStartTime = 0;
+    roundStartTime = timeSeconds();
+    gridLoading = false;
+    if (gameStarted) {
+        currentGridIndex++;
+    } else {
+        gameStarted = true;
+    }
+    startCountdownToEndOfRound();
+    generateScene();
+    addWordsFoundToPanel();
+    clearTimeout(countdownToBeginningOfRoundTimeoutId);
+    countdownToBeginningOfRoundTimeoutId = 0;
 }
 
 function startCountdownToEndOfRound() {
-    countdownToEndOfRoundTimeoutId = setTimeout(function () {
-        if (currentGridIndex === gridSolutions.length - 1) {
-            roundStartTime = 0;
-            gameOver = true;
-        } else {
-            startCountdownToBeginningOfRound();
-        }
-        currentSearchTerm = '';
-        $('#searchterm').text(currentSearchTerm);
-        countdownToEndOfRoundTimeoutId = 0;
-    }, 1E3 * roundTimeLimitInSeconds);
+    countdownToEndOfRoundTimeoutId = setTimeout(endOfRoundCallback, 1E3 * roundTimeLimitInSeconds);
+}
+
+function endOfRoundCallback() {
+    if (currentGridIndex === gridSolutions.length - 1) {
+        roundStartTime = 0;
+        gameOver = true;
+    } else {
+        startCountdownToBeginningOfRound();
+    }
+    currentSearchTerm = '';
+    $('#searchterm').text(currentSearchTerm);
+    clearTimeout(countdownToEndOfRoundTimeoutId);
+    countdownToEndOfRoundTimeoutId = 0;
+}
+
+function nextRound() {
+    endOfRoundCallback();
+    preBeginningOfRound();
+    beginningOfRoundCallback();
 }
 
 function generateScene() {
