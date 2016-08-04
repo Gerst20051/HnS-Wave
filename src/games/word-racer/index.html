@@ -338,6 +338,7 @@ var Node,
     gameAlertTimeoutId = 0,
     foundWordTimeoutId = 0,
     gridNodes = [],
+    nodeConnectors = [],
     wordsFound = [],
     gridLoading = true,
     gameStarted = false,
@@ -455,6 +456,7 @@ Scene = function () {
     this.init = function () {
         this.calculateNodeRadius();
         this.generateNodes();
+        this.generateNodeConnectors();
     };
 
     this.draw = function () {
@@ -502,6 +504,26 @@ Scene = function () {
             });
         });
     };
+
+    this.generateNodeConnectors = function () {
+        var neighborNodes = {}, _this = this;
+        _.each(gridNodes, function (node) {
+            const nodeKey = `${node.getRowIndex()},${node.getItemIndex()}`;
+            const nearNodes = getNearGridOptions(playGrids[currentGridIndex], node.getRowIndex(), node.getItemIndex());
+            neighborNodes[nodeKey] = nearNodes;
+        });
+        nodeConnectors = _.flatten(_.values(_.mapObject(neighborNodes, function (nodes, originNodeKey) {
+            const nodeOrigin = originNodeKey.split(',');
+            const startCoordinates = _this.getNodeCoordinates(nodeOrigin[0], nodeOrigin[1]);
+            return _.map(_.compact(nodes), function (node) {
+                const endCoordinates = _this.getNodeCoordinates(node[0], node[1]);
+                return {
+                    start: { x: startCoordinates[0], y: startCoordinates[1] },
+                    end: { x: endCoordinates[0], y: endCoordinates[1] }
+                };
+            });
+        })));
+    };
 };
 
 var setup = function () {
@@ -520,8 +542,9 @@ var draw = function () {
 };
 
 function drawNodeConnectors() {
-    _.each(gridNodes, function (node) {
-        var neighborNodes = [];
+    stroke(colors.black);
+    _.each(nodeConnectors, function (connector) {
+        line(connector.start.x, connector.start.y, connector.end.x, connector.end.y);
     });
 }
 
