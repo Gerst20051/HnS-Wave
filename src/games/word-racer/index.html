@@ -132,7 +132,7 @@ body {
     display: none;
     font-family: Helvetica;
     font-weight: bold;
-    letter-spacing: 8px;
+    letter-spacing: 6px;
     overflow: scroll;
     padding: 20px;
     position: absolute;
@@ -196,9 +196,9 @@ hr#wordpaneldivider:after {
 var dictionary, frequencies, grids;
 var trie = {};
 var eow = '_';
-var gridSolutions = [[], [], [], []];
+var gridSolutions = [];
 var playGrids = {};
-var pathTree = [{}, {}, {}, {}];
+var pathTree = [];
 
 loadJSONFiles();
 
@@ -211,6 +211,9 @@ function loadJSONFiles() {
         dictionary = dictionaryJSON[0];
         frequencies = frequenciesJSON[0];
         grids = gridJSON[0];
+        gridSolutions = Array(6).fill([]);
+        pathTree = Array(6).fill({});
+        wordsFound = Array(6).fill([]);
         init();
     });
 }
@@ -335,7 +338,7 @@ var Node,
     gameAlertTimeoutId = 0,
     foundWordTimeoutId = 0,
     gridNodes = [],
-    wordsFound = [[], [], [], []],
+    wordsFound = [],
     gridLoading = true,
     gameStarted = false,
     gameOver = false,
@@ -377,7 +380,7 @@ function startCountdownToBeginningOfRound() {
 
 function startCountdownToEndOfRound() {
     countdownToEndOfRoundTimeoutId = setTimeout(function () {
-        if (currentGridIndex === 3) {
+        if (currentGridIndex === gridSolutions.length - 1) {
             roundStartTime = 0;
             gameOver = true;
         } else {
@@ -465,15 +468,20 @@ Scene = function () {
         Node.prototype.radius = nodeRadius;
     };
 
+    this.getNodeCoordinates = function (rowIndex, itemIndex) {
+        var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
+        var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
+        return [nodeXPos, nodeYPos];
+    };
+
     this.generateNodes = function () {
         gridNodes = [];
-        var grid = playGrids[currentGridIndex];
+        var grid = playGrids[currentGridIndex], _this = this;
         _.each(grid, function (row, rowIndex) {
             _.each(row, function (item, itemIndex) {
                 if (item) {
-                    var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
-                    var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
-                    gridNodes.push(new Node(nodeXPos, nodeYPos, item, rowIndex, itemIndex));
+                    var coordinates = _this.getNodeCoordinates(rowIndex, itemIndex);
+                    gridNodes.push(new Node(coordinates[0], coordinates[1], item, rowIndex, itemIndex));
                 }
             });
         });
@@ -497,7 +505,7 @@ var draw = function () {
 
 function drawNodeConnectors() {
     _.each(gridNodes, function (node) {
-        // var neighborNodes = [];
+        var neighborNodes = [];
     });
 }
 
@@ -508,8 +516,9 @@ function drawNodes() {
 }
 
 function addWordsFoundToPanel() {
+    var wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
     $('#wordpanel').html(_.map(wordsFound[currentGridIndex], function (word) {
-        var wordPoints = [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+        var wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
@@ -518,7 +527,7 @@ function addWordsFoundToPanel() {
     $('#wordsfoundcount').text('(' + wordsFound[currentGridIndex].length + ') ' + __.round((wordsFoundCount / _.filter(gridSolutions[currentGridIndex], function (s) { return s.length > 2; }).length) * 100) + '%');
     playerScore = _.reduce(wordsFound, function (carry, wordsFoundGrid) {
         return carry += _.reduce(wordsFoundGrid, function (carry, word) {
-            return carry += [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+            return carry += wordPointsDistribution[word.length - 3] || 400;
         }, 0);
     }, 0);
     $('#scorepanel').html(
@@ -529,6 +538,7 @@ function addWordsFoundToPanel() {
 }
 
 function addSolutionsToWordPanel() {
+    var wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
     var solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
         return s.length > 2 && !_.contains(wordsFound[currentGridIndex], s);
     }).sort(); // could also sort by word length
@@ -539,7 +549,7 @@ function addSolutionsToWordPanel() {
         $('#wordpanel').append($('<hr/>', { 'id': 'wordpaneldivider' }));
     }
     $('#wordpanel').append(_.map(solutions, function (word) {
-        var wordPoints = [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+        var wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
