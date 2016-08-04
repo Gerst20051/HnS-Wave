@@ -206,7 +206,7 @@ hr#wordpaneldivider:after {
     <div id="progressinfo">
         <div id="gameover">Game Over. Press 'Enter' To Start A New Game.</div>
         <div id="roundinfo">Round: <span id="roundnumber"></span></div>
-        <div id="countdown"><span id="countdownlabel">Time:</span> <span id="countdowntime"></span></div>
+        <div id="countdown"><span id="countdownlabel">Starts in:</span> <span id="countdowntime"></span></div>
     </div>
     <div id="searchterm"></div>
     <div id="alertpanel"></div>
@@ -527,6 +527,7 @@ Scene = function () {
     this.updateProgressInfo = function () {
         var countdownTimeString = '';
         if (!gameOver) {
+            $('#countdownlabel').text(gridLoading ? 'Starts in:' : 'Time:');
             var secondsRemaining = 0;
             if (gridLoading) {
                 if (gameStarted) {
