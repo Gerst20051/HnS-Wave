@@ -47,10 +47,43 @@ body {
     cursor: default;
 }
 
+#progressinfo {
+    background-color: rgb(241, 240, 157);
+    border: 2px solid #111;
+    border-radius: 10px;
+    display: none;
+    height: 50px;
+    line-height: 50px;
+    position: absolute;
+}
+
+#roundinfo,
+#countdown {
+    font-family: Helvetica;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    width: 50%;
+}
+
+#roundinfo {
+    float: left;
+}
+
+#countdown {
+    float: right;
+}
+
+#roundnumber,
+#countdowntime {
+    color: rgb(79, 113, 29);
+}
+
 #searchterm {
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 1em;
     color: #fff;
+    display: none;
     font-family: Helvetica;
     font-size: 50px;
     font-weight: bold;
@@ -61,11 +94,84 @@ body {
     text-align: center;
 }
 
-#wordpanel {
-    color: #fff;
+#searchterm.foundword {
+    border: 2px solid #ffd700;
+}
+
+#alertpanel {
+    color: #f00;
+    display: none;
     font-family: Helvetica;
+    font-size: 18px;
+    font-weight: bold;
+    height: 50px;
+    letter-spacing: 12px;
+    line-height: 50px;
     position: absolute;
+    text-align: center;
+}
+
+#scorepaneltitle,
+#wordpaneltitle {
+    color: #000;
+    display: none;
+    font-family: Helvetica;
+    font-weight: bold;
+    height: 40px;
+    line-height: 40px;
+    position: absolute;
+    text-align: center;
     width: 250px;
+}
+
+#wordpanel,
+#scorepanel {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    color: #fff;
+    display: none;
+    font-family: Helvetica;
+    font-weight: bold;
+    letter-spacing: 8px;
+    overflow: scroll;
+    padding: 20px;
+    position: absolute;
+    width: 210px;
+}
+
+#wordpanel .wordpanelrow > div,
+#scorepanel .scorepanelrow > div {
+    width: 50%;
+}
+
+#wordpanel .wordpanelrowtext,
+#scorepanel .scorepanelrowtext {
+    float: left;
+}
+
+#wordpanel .wordpanelrowpoints,
+#scorepanel .scorepanelrowpoints {
+    float: right;
+    text-align: right;
+}
+
+hr#wordpaneldivider {
+    border: none;
+    border-top: medium double #fff;
+    clear: both;
+    color: #fff;
+    margin-top: 70px;
+    padding: 0;
+    text-align: center;
+}
+
+hr#wordpaneldivider:after {
+    content: '§';
+    display: inline-block;
+    font-size: 1.5em;
+    padding: 0 0.25em;
+    position: relative;
+    top: -0.7em;
 }
 </style>
 </head>
@@ -75,7 +181,15 @@ body {
     <div id="canvaspane">
         <canvas id="canvas1" height="100" width="100"></canvas>
     </div>
+    <div id="progressinfo">
+        <div id="roundinfo">Round: <span id="roundnumber"></span></div>
+        <div id="countdown">Time: <span id="countdowntime"></span></div>
+    </div>
     <div id="searchterm"></div>
+    <div id="alertpanel"></div>
+    <div id="scorepaneltitle">Points</div>
+    <div id="scorepanel"></div>
+    <div id="wordpaneltitle">Words Found <span id="wordsfoundcount"></span></div>
     <div id="wordpanel"></div>
 </div>
 <script>
@@ -110,6 +224,7 @@ function init() {
   generateGrid();
   generateGridSolutions();
   generateScene();
+  startCountdownToBeginningOfRound();
 }
 
 function createTrie() {
@@ -148,8 +263,6 @@ function generateGrid() {
 
 function generateGridSolutions() {
   _.each(playGrids, (grid, gridIndex) => {
-    // console.log(`Round ${gridIndex + 1}`);
-    // console.log(grid);
     _.each(grid, (row, rowIndex) => {
       _.each(row, (item, itemIndex) => {
         if (item) {
@@ -202,9 +315,8 @@ function spiderGridFromIndex(gridIndex, rowIndex, itemIndex, startingPathKey, fu
   _.each(nearGridOptionsFiltered, (gridOption, gridOptionIndex) => {
     const pathTreeKey = `${gridOption[0]},${gridOption[1]}`;
     const currentFullPath = fullPath.concat([ pathTreeKey ]);
-    const currentWord = getWordFromPath(gridIndex, startingPathKey, currentFullPath);
+    const currentWord = getWordFromPath(gridIndex, startingPathKey, currentFullPath).toUpperCase();
     if (searchTrie(currentWord) && !_.contains(gridSolutions[gridIndex], currentWord)) {
-      // console.log(currentWord.toUpperCase());
       gridSolutions[gridIndex].push(currentWord);
     }
     if (existsInTrie(currentWord)) {
@@ -218,9 +330,20 @@ var Node,
     mainScene,
     currentSearchTerm = '',
     currentGridIndex = 0,
-    timeLimitIntervalId = 0,
+    countdownToBeginningOfRoundTimeoutId = 0,
+    countdownToEndOfRoundTimeoutId = 0,
+    gameAlertTimeoutId = 0,
+    foundWordTimeoutId = 0,
     gridNodes = [],
     wordsFound = [[], [], [], []],
+    gridLoading = true,
+    gameStarted = false,
+    gameOver = false,
+    roundStartTime = 0,
+    roundIntermissionStartTime = 0,
+    roundTimeLimitInSeconds = 80,
+    roundIntermissionInSeconds = 12,
+    playerScore = 0,
     doFullScreen = false,
     centeredCanvas = true,
     canvasDimension = 800,
@@ -229,13 +352,42 @@ var Node,
         width: (doFullScreen) ? maxWidth : canvasDimension
     };
 
-timeLimitIntervalId = setInterval(function () {
-    currentGridIndex === 3 ? currentGridIndex = 0 : currentGridIndex++;
-    currentSearchTerm = '';
-    $('#searchterm').text(currentSearchTerm);
-    generateScene();
-    addWordsFoundToPanel();
-}, 1E3 * 60);
+function startCountdownToBeginningOfRound() {
+    roundIntermissionStartTime = timeSeconds();
+    roundStartTime = 0;
+    gridLoading = true;
+    if (gameStarted) {
+        addSolutionsToWordPanel();
+    }
+    countdownToBeginningOfRoundTimeoutId = setTimeout(function () {
+        roundIntermissionStartTime = 0;
+        roundStartTime = timeSeconds();
+        gridLoading = false;
+        if (gameStarted) {
+            currentGridIndex++;
+        } else {
+            gameStarted = true;
+        }
+        startCountdownToEndOfRound();
+        generateScene();
+        addWordsFoundToPanel();
+        countdownToBeginningOfRoundTimeoutId = 0;
+    }, 1E3 * roundIntermissionInSeconds);
+}
+
+function startCountdownToEndOfRound() {
+    countdownToEndOfRoundTimeoutId = setTimeout(function () {
+        if (currentGridIndex === 3) {
+            roundStartTime = 0;
+            gameOver = true;
+        } else {
+            startCountdownToBeginningOfRound();
+        }
+        currentSearchTerm = '';
+        $('#searchterm').text(currentSearchTerm);
+        countdownToEndOfRoundTimeoutId = 0;
+    }, 1E3 * roundTimeLimitInSeconds);
+}
 
 function generateScene() {
     mainScene = new Scene();
@@ -252,8 +404,9 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
     highlighted = false;
 
     this.draw = function () {
-        fill(colors.ghostwhite); // TODO: set to blue for type 2 and red for type 3
-        stroke(colors.white);
+        var nodeType = grids[currentGridIndex][rowIndex][itemIndex];
+        fill(gridLoading || gameOver ? (gameStarted ? colors.gray : colors.black) : [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1]);
+        stroke(gridLoading || gameOver || __.includes(currentSearchTerm, letter) ? colors.black : colors.white);
         strokeWeight(2);
         circle(x, y, this.radius);
         textSize(currentGridIndex ? 30 : 46);
@@ -262,49 +415,17 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
         text(letter, x - radiusXOffset, y + this.radius / 2.7);
     };
 
-    this.setX = function (newX) {
-        x = newX;
-    };
-
-    this.getX = function () {
-        return x;
-    };
-
-    this.setY = function (newY) {
-        y = newY;
-    };
-
-    this.getY = function () {
-        return y;
-    };
-
-    this.getLetter = function () {
-        return letter;
-    };
-
-    this.getRowIndex = function () {
-        return rowIndex;
-    };
-
-    this.getItemIndex = function () {
-        return itemIndex;
-    };
-
-    this.isSelected = function () {
-        return selected;
-    };
-
-    this.setSelected = function (isSelected) {
-        selected = isSelected;
-    };
-
-    this.isHighlighted = function () {
-        return highlighted;
-    };
-
-    this.setHighlighted = function (isHighlighted) {
-        highlighted = isHighlighted;
-    };
+    this.setX = function (newX) { x = newX; };
+    this.getX = function () { return x; };
+    this.setY = function (newY) { y = newY; };
+    this.getY = function () { return y; };
+    this.getLetter = function () { return letter; };
+    this.getRowIndex = function () { return rowIndex; };
+    this.getItemIndex = function () { return itemIndex; };
+    this.isSelected = function () { return selected; };
+    this.setSelected = function (isSelected) { selected = isSelected; };
+    this.isHighlighted = function () { return highlighted; };
+    this.setHighlighted = function (isHighlighted) { highlighted = isHighlighted; };
 };
 
 Scene = function () {
@@ -315,6 +436,26 @@ Scene = function () {
     this.init = function () {
         this.calculateNodeRadius();
         this.generateNodes();
+    };
+
+    this.draw = function () {
+        background(color(130, 170, 230));
+        if (true) {
+            $('#roundnumber').text(currentGridIndex + 1);
+            var countdownTimeString = '';
+            if (!gameOver) {
+                var secondsRemaining = 0;
+                if (gridLoading) {
+                    secondsRemaining = __.round((roundIntermissionStartTime + roundIntermissionInSeconds) - timeSeconds());
+                } else {
+                    secondsRemaining = __.round((roundStartTime + roundTimeLimitInSeconds) - timeSeconds());
+                }
+                countdownTimeString = new Date(secondsRemaining * 1E3).toISOString().substr(15, 4);
+            } else {
+                countdownTimeString = 'Game Over';
+            }
+            $('#countdowntime').text(countdownTimeString);
+        }
     };
 
     this.calculateNodeRadius = function () {
@@ -345,13 +486,11 @@ var setup = function () {
     } else {
         size(canvasSize.width, canvasSize.height);
     }
-    centerCanvas();
-    positionSearchTerm();
-    positionWordPanel();
+    positionElements();
 };
 
 var draw = function () {
-    background(color(130, 170, 230));
+    mainScene && mainScene.draw();
     drawNodeConnectors();
     drawNodes();
 };
@@ -370,16 +509,85 @@ function drawNodes() {
 
 function addWordsFoundToPanel() {
     $('#wordpanel').html(_.map(wordsFound[currentGridIndex], function (word) {
-        return $('<div/>').text(word);
+        var wordPoints = [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+        return $('<div/>', { 'class': 'wordpanelrow' })
+            .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
+            .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
+    }));
+    var wordsFoundCount = wordsFound[currentGridIndex].length;
+    $('#wordsfoundcount').text('(' + wordsFound[currentGridIndex].length + ') ' + __.round((wordsFoundCount / _.filter(gridSolutions[currentGridIndex], function (s) { return s.length > 2; }).length) * 100) + '%');
+    playerScore = _.reduce(wordsFound, function (carry, wordsFoundGrid) {
+        return carry += _.reduce(wordsFoundGrid, function (carry, word) {
+            return carry += [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+        }, 0);
+    }, 0);
+    $('#scorepanel').html(
+        $('<div/>', { 'class': 'scorepanelrow' })
+            .append($('<div/>', { 'class': 'scorepanelrowtext' }).text('You'))
+            .append($('<div/>', { 'class': 'scorepanelrowpoints' }).text(playerScore))
+    );
+}
+
+function addSolutionsToWordPanel() {
+    var solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
+        return s.length > 2 && !_.contains(wordsFound[currentGridIndex], s);
+    }).sort(); // could also sort by word length
+    if (!solutions.length) {
+        return;
+    }
+    if (wordsFound[currentGridIndex].length) {
+        $('#wordpanel').append($('<hr/>', { 'id': 'wordpaneldivider' }));
+    }
+    $('#wordpanel').append(_.map(solutions, function (word) {
+        var wordPoints = [ 10, 20, 40, 80, 120, 140, 220, 300 ][word.length - 3] || 400;
+        return $('<div/>', { 'class': 'wordpanelrow' })
+            .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
+            .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
     }));
 }
 
+function showGameToastAlert(text) {
+    $('#alertpanel').finish().text(text).fadeIn();
+    clearTimeout(gameAlertTimeoutId);
+    gameAlertTimeoutId = setTimeout(function() {
+        $('#alertpanel').finish().fadeOut(400, function () {
+            $(this).empty();
+        });
+    }, 2E3);
+}
+
+function doFoundWordEffect() {
+    $('#alertpanel').finish().empty();
+    $('#searchterm').addClass('foundword');
+    clearTimeout(foundWordTimeoutId);
+    foundWordTimeoutId = setTimeout(function() {
+        $('#searchterm').removeClass('foundword');
+    }, 500);
+}
+
 keyUp = function (e) {
+    if (gridLoading || gameOver) {
+        return;
+    }
     if (keycode.getKeyCode(e) === keys.BACKSPACE) {
         currentSearchTerm = currentSearchTerm.slice(0, -1);
     } else if (_.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
-        if (_.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
-            wordsFound[currentGridIndex].unshift(currentSearchTerm);
+        if (!currentSearchTerm.length) {
+            return;
+        }
+        if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
+            if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
+                wordsFound[currentGridIndex].unshift(currentSearchTerm);
+                doFoundWordEffect();
+            } else {
+                showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
+            }
+        } else if (currentSearchTerm.length < 3) {
+            showGameToastAlert('Words Must Be 3 Characters Or Longer!');
+        } else if (searchTrie(currentSearchTerm)) {
+            showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
+        } else {
+            showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
         }
         currentSearchTerm = '';
         addWordsFoundToPanel();
@@ -392,30 +600,79 @@ keyUp = function (e) {
 };
 
 windowResized = function () {
-    centerCanvas();
-    positionSearchTerm();
-    positionWordPanel();
+    positionElements();
 };
+
+
+function positionElements() {
+    centerCanvas();
+    positionProgressInfo()
+    positionSearchTerm();
+    positionAlertPanel();
+    positionWordPanel();
+    positionScorePanel();
+}
 
 function centerCanvas() {
     $canvas = $('#canvas1'), $window = $(window);
-    $canvas.css('position', 'absolute');
-    $canvas.css('top', (($window.height() - canvasSize.height) / 2) + 'px');
-    $canvas.css('left', (($window.width() - canvasSize.width) / 2) + 'px');
+    $canvas.css({
+        'left': (($window.width() - canvasSize.width) / 2) + 'px',
+        'position': 'absolute',
+        'top': (($window.height() - canvasSize.height) / 2) + 'px'
+    });
+}
+
+function positionProgressInfo() {
+    $div = $('#progressinfo'), $canvas = $('#canvas1'), padding = 20;
+    $div.css({
+        'top': (parseInt($canvas.css('top')) + canvasSize.height + padding) + 'px',
+        'left': parseInt($canvas.css('left')) + 'px',
+        'width': canvasSize.width + 'px'
+    }).show();
 }
 
 function positionSearchTerm() {
-    $div = $('#searchterm'); $canvas = $('#canvas1');
-    $div.css('top', (parseInt($canvas.css('top')) + canvasSize.height + 20) + 'px');
-    $div.css('left', parseInt($canvas.css('left')) + 'px');
-    $div.css('width', canvasSize.width + 'px');
+    $div = $('#searchterm'), $progressinfo = $('#progressinfo'), padding = 40;
+    $div.css({
+        'left': parseInt($progressinfo.css('left')) + 'px',
+        'top': (parseInt($progressinfo.css('top')) + parseInt($progressinfo.css('height')) + padding) + 'px',
+        'width': canvasSize.width + 'px'
+    }).show();
+}
+
+function positionAlertPanel() {
+    $div = $('#alertpanel'), $searchterm = $('#searchterm'), panelWidth = 250, padding = 20;
+    $div.css({
+        'left': (parseInt($searchterm.css('left')) - panelWidth) + 'px',
+        'top': (parseInt($searchterm.css('top')) + parseInt($searchterm.css('height')) + padding) + 'px',
+        'width': (canvasSize.width + 2 * panelWidth) + 'px'
+    }).show();
 }
 
 function positionWordPanel() {
-    $div = $('#wordpanel'); $canvas = $('#canvas1');
-    $div.css('top', parseInt($canvas.css('top')) + 'px');
-    $div.css('left', (parseInt($canvas.css('left')) + canvasSize.width + 20) + 'px');
-    $div.css('height', canvasSize.height + 'px');
+    $div = $('#wordpanel'), $title = $('#wordpaneltitle'), $canvas = $('#canvas1'), titleHeight = 40, padding = 20;
+    $div.css({
+        'height': (canvasSize.height - (2 * parseInt($div.css('padding')))) + 'px',
+        'left': (parseInt($canvas.css('left')) + canvasSize.width + padding) + 'px',
+        'top': parseInt($canvas.css('top')) + 'px'
+    }).show();
+    $title.css({
+        'left': parseInt($div.css('left')) + 'px',
+        'top': (parseInt($div.css('top')) - titleHeight) + 'px'
+    }).show();
+}
+
+function positionScorePanel() {
+    $div = $('#scorepanel'), $title = $('#scorepaneltitle'), $canvas = $('#canvas1'), panelWidth = 250, titleHeight = 40, padding = 20;
+    $div.css({
+        'height': (canvasSize.height - (2 * parseInt($div.css('padding')))) + 'px',
+        'left': (parseInt($canvas.css('left')) - panelWidth - (2 * padding)) + 'px',
+        'top': parseInt($canvas.css('top')) + 'px'
+    }).show();
+    $title.css({
+        'left': parseInt($div.css('left')) + 'px',
+        'top': (parseInt($div.css('top')) - titleHeight) + 'px'
+    }).show();
 }
 
 window.onload = function () {
