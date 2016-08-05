@@ -610,10 +610,11 @@ var draw = function () {
 };
 
 function drawNodeConnectors() {
-    stroke(colors.black);
+    stroke(gameOver ? colors.white : colors.black);
     _.each(nodeConnectors, function (connector) {
         line(connector.start.x, connector.start.y, connector.end.x, connector.end.y);
     });
+    stroke(colors.black);
 }
 
 function drawNodes() {
