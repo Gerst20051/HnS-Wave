@@ -514,12 +514,12 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
             nearNodeLetters = _.map(_.compact(getNearGridOptions(playGrids[currentGridIndex], rowIndex, itemIndex)), function (nearNode) {
                 return playGrids[currentGridIndex][nearNode[0]][nearNode[1]];
             });
-            areNearbyNodesAlsoInSearchTerm = containsMultiLetterNode ? 2 : 1 < currentSearchTerm.length && _.filter(nearNodeLetters, function (nearNodeLetter) {
+            areNearbyNodesAlsoInSearchTerm = (containsMultiLetterNode ? 2 : 1) < currentSearchTerm.length && _.filter(nearNodeLetters, function (nearNodeLetter) {
                 if (__.includes(currentSearchTerm.replace(letter.toUpperCase(), ''), nearNodeLetter)) {
                     return true;
                 }
             }).length;
-            shouldHightlightNode = isLetterInSearchTerm && (currentSearchTerm.length < containsMultiLetterNode ? 3 : 2 || areNearbyNodesAlsoInSearchTerm);
+            shouldHightlightNode = isLetterInSearchTerm && (currentSearchTerm.length < (containsMultiLetterNode ? 3 : 2) || areNearbyNodesAlsoInSearchTerm);
         }
         const nodeType = grids[currentGridIndex][rowIndex][itemIndex];
         const nodeColor = [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1];
