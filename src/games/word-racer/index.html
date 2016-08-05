@@ -762,7 +762,7 @@ function submitWord() {
 }
 
 keyUp = function (e) {
-    if (gameOver && _.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
+    if (gameOver && _.contains([ keys.ENTER, keys.RETURN, keys.SPACE ], keycode.getKeyCode(e))) {
         startGame();
         toggleGameOverLabel();
         return;
@@ -773,7 +773,7 @@ keyUp = function (e) {
     if (keycode.getKeyCode(e) === keys.BACKSPACE) {
         currentSearchTerm = currentSearchTerm.slice(0, -1);
         $('#searchterm').text(currentSearchTerm);
-    } else if (_.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
+    } else if (_.contains([ keys.ENTER, keys.RETURN, keys.SPACE ], keycode.getKeyCode(e))) {
         submitWord();
     } else {
         var letter = (keycode.getValueByEvent(e) || '').toUpperCase().replace(/[^a-zA-Z]/g, '');
