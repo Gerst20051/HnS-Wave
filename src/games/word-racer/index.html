@@ -31,6 +31,24 @@ body {
     padding: 0;
 }
 
+.disable-user-select,
+.disable-user-select:focus {
+    cursor: default;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.disable-user-select::-moz-selection,
+.disable-user-select::selection {
+    background: transparent;
+}
+
 #title {
     color: #fff;
     font-family: Helvetica;
@@ -44,7 +62,7 @@ body {
 }
 
 #canvaspane {
-    cursor: default;
+    cursor: pointer;
 }
 
 #progressinfo {
@@ -104,6 +122,7 @@ body {
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 1em;
     color: #fff;
+    cursor: pointer;
     display: none;
     font-family: Helvetica;
     font-size: 50px;
@@ -113,6 +132,10 @@ body {
     line-height: 100px;
     position: absolute;
     text-align: center;
+}
+
+#searchterm:hover {
+    border: 2px solid #fff;
 }
 
 #searchterm.foundword {
@@ -198,7 +221,7 @@ hr#wordpaneldivider:after {
 </style>
 </head>
 <body>
-<div id="content">
+<div id="content" class="disable-user-select">
     <div id="title">Word Racer</div>
     <div id="canvaspane">
         <canvas id="canvas1" height="100" width="100"></canvas>
@@ -216,8 +239,8 @@ hr#wordpaneldivider:after {
     <div id="wordpanel"></div>
 </div>
 <script>
+const trie = {};
 var dictionary, frequencies, grids;
-var trie = {};
 var eow = '_';
 var gridSolutions = [];
 var playGrids = {};
@@ -257,10 +280,10 @@ function log(key, value) {
 loadJSONFiles();
 
 function loadJSONFiles() {
-    var jsonPath = 'https://raw.githubusercontent.com/Gerst20051/HnS-Wave/wordracer/src/games/word-racer/';
-    var getDictionaries = $.getJSON(jsonPath + 'dictionary.json');
-    var getFrequencies = $.getJSON(jsonPath + 'frequencies.json');
-    var getGrids = $.getJSON(jsonPath + 'round-grids.json');
+    const jsonPath = 'https://raw.githubusercontent.com/Gerst20051/HnS-Wave/wordracer/src/games/word-racer/';
+    const getDictionaries = $.getJSON(jsonPath + 'dictionary.json');
+    const getFrequencies = $.getJSON(jsonPath + 'frequencies.json');
+    const getGrids = $.getJSON(jsonPath + 'round-grids.json');
     $.when(getDictionaries, getFrequencies, getGrids).done(function (dictionaryJSON, frequenciesJSON, gridJSON) {
         dictionary = dictionaryJSON[0];
         frequencies = frequenciesJSON[0];
@@ -352,15 +375,15 @@ function generateGridSolutions() {
 }
 
 function getNearGridOptions(grid, rowIndex, itemIndex) {
-    const w = grid[rowIndex] && grid[rowIndex][itemIndex - 1] && [rowIndex, itemIndex - 1];
-    const nw = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex - 1] && [rowIndex - 1 , itemIndex - 1];
-    const n = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex] && [rowIndex - 1 , itemIndex];
-    const ne = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex + 1] && [rowIndex - 1 , itemIndex + 1];
-    const e = grid[rowIndex] && grid[rowIndex][itemIndex + 1] && [rowIndex , itemIndex + 1];
-    const se = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex + 1] && [rowIndex + 1 , itemIndex + 1];
-    const s = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex] && [rowIndex + 1 , itemIndex];
-    const sw = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex - 1] && [rowIndex + 1 , itemIndex - 1];
-    return [w, nw, n, ne, e, se, s, sw];
+    const w = grid[rowIndex] && grid[rowIndex][itemIndex - 1] && [ rowIndex, itemIndex - 1 ];
+    const nw = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex - 1] && [ rowIndex - 1, itemIndex - 1 ];
+    const n = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex] && [ rowIndex - 1, itemIndex ];
+    const ne = grid[rowIndex - 1] && grid[rowIndex - 1][itemIndex + 1] && [ rowIndex - 1, itemIndex + 1 ];
+    const e = grid[rowIndex] && grid[rowIndex][itemIndex + 1] && [ rowIndex, itemIndex + 1 ];
+    const se = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex + 1] && [ rowIndex + 1, itemIndex + 1 ];
+    const s = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex] && [ rowIndex + 1, itemIndex ];
+    const sw = grid[rowIndex + 1] && grid[rowIndex + 1][itemIndex - 1] && [ rowIndex + 1, itemIndex - 1 ];
+    return [ w, nw, n, ne, e, se, s, sw ];
 }
 
 function setToValue(obj, value, path) {
@@ -481,17 +504,33 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
     highlighted = false;
 
     this.draw = function () {
-        var nodeType = grids[currentGridIndex][rowIndex][itemIndex];
-        var isLetterInSearchTerm = __.includes(currentSearchTerm, letter.toUpperCase());
-        var nodeColor = [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1];
+        var isLetterInSearchTerm = false,
+            nearNodeLetters = [],
+            areNearbyNodesAlsoInSearchTerm = false,
+            shouldHightlightNode = false;
+        if (currentSearchTerm.length) {
+            const containsMultiLetterNode = __.includes(currentSearchTerm, 'QU');
+            isLetterInSearchTerm = __.includes(currentSearchTerm, letter.toUpperCase());
+            nearNodeLetters = _.map(_.compact(getNearGridOptions(playGrids[currentGridIndex], rowIndex, itemIndex)), function (nearNode) {
+                return playGrids[currentGridIndex][nearNode[0]][nearNode[1]];
+            });
+            areNearbyNodesAlsoInSearchTerm = containsMultiLetterNode ? 2 : 1 < currentSearchTerm.length && _.filter(nearNodeLetters, function (nearNodeLetter) {
+                if (__.includes(currentSearchTerm.replace(letter.toUpperCase(), ''), nearNodeLetter)) {
+                    return true;
+                }
+            }).length;
+            shouldHightlightNode = isLetterInSearchTerm && (currentSearchTerm.length < containsMultiLetterNode ? 3 : 2 || areNearbyNodesAlsoInSearchTerm);
+        }
+        const nodeType = grids[currentGridIndex][rowIndex][itemIndex];
+        const nodeColor = [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1];
+        const radiusXOffset = (letter === 'I') ? this.radius / 10 : (letter === 'Qu') ? this.radius / 1.7 : this.radius / 3;
         fill(gridLoading || gameOver ? (gameStarted ? colors.gray : colors.black) : nodeColor);
-        stroke(gridLoading || gameOver ? colors.black : isLetterInSearchTerm ? colors.yellow : nodeColor);
+        stroke(gridLoading || gameOver ? colors.black : shouldHightlightNode ? colors.yellow : nodeColor);
         strokeWeight(isLetterInSearchTerm ? 4 : 2);
         circle(x, y, this.radius);
         strokeWeight(1);
         textSize(currentGridIndex ? 30 : 46);
         fill(colors.black);
-        var radiusXOffset = (letter === 'I') ? this.radius / 10 : (letter === 'Qu') ? this.radius / 1.7 : this.radius / 3;
         text(letter, x - radiusXOffset, y + this.radius / 2.7);
     };
 
@@ -555,18 +594,34 @@ Scene = function () {
     };
 
     this.getNodeCoordinates = function (rowIndex, itemIndex) {
-        var nodeXPos = (gridSize * itemIndex) + nodeDiameter;
-        var nodeYPos = (gridSize * rowIndex) + nodeDiameter;
+        const nodeXPos = (gridSize * itemIndex) + nodeDiameter;
+        const nodeYPos = (gridSize * rowIndex) + nodeDiameter;
         return [ nodeXPos, nodeYPos ];
+    };
+
+    this.getNodeIndexesFromCoordinates = function (x, y) {
+        const rowIndex = __.floor(y / gridSize);
+        const itemIndex = __.floor(x / gridSize);
+        return [ rowIndex, itemIndex ];
+    };
+
+    this.getNodeFromCoordinates = function (x, y) {
+        return this.getNodeFromIndexes.apply(this, this.getNodeIndexesFromCoordinates(x, y));
+    };
+
+    this.getNodeFromIndexes = function (rowIndex, itemIndex) {
+        return _.first(_.filter(gridNodes, function (gridNode) {
+            return gridNode.getRowIndex() === rowIndex && gridNode.getItemIndex() === itemIndex;
+        }));
     };
 
     this.generateNodes = function () {
         gridNodes = [];
-        var grid = playGrids[currentGridIndex], _this = this;
+        const grid = playGrids[currentGridIndex], _this = this;
         _.each(grid, function (row, rowIndex) {
             _.each(row, function (item, itemIndex) {
                 if (item) {
-                    var coordinates = _this.getNodeCoordinates(rowIndex, itemIndex);
+                    const coordinates = _this.getNodeCoordinates(rowIndex, itemIndex);
                     gridNodes.push(new Node(coordinates[0], coordinates[1], item, rowIndex, itemIndex));
                 }
             });
@@ -574,7 +629,7 @@ Scene = function () {
     };
 
     this.generateNodeConnectors = function () {
-        var neighborNodes = {}, _this = this;
+        const neighborNodes = {}, _this = this;
         _.each(gridNodes, function (node) {
             const nodeKey = `${node.getRowIndex()},${node.getItemIndex()}`;
             const nearNodes = getNearGridOptions(playGrids[currentGridIndex], node.getRowIndex(), node.getItemIndex());
@@ -624,14 +679,14 @@ function drawNodes() {
 }
 
 function addWordsFoundToPanel() {
-    var wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
+    const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
     $('#wordpanel').html(_.map(wordsFound[currentGridIndex], function (word) {
-        var wordPoints = wordPointsDistribution[word.length - 3] || 400;
+        const wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
     }));
-    var wordsFoundCount = wordsFound[currentGridIndex].length;
+    const wordsFoundCount = wordsFound[currentGridIndex].length;
     $('#wordsfoundcount').text('(' + wordsFound[currentGridIndex].length + ') ' + __.round((wordsFoundCount / _.filter(gridSolutions[currentGridIndex], function (s) { return s.length > 2; }).length) * 100) + '%');
     playerScore = _.reduce(wordsFound, function (carry, wordsFoundGrid) {
         return carry += _.reduce(wordsFoundGrid, function (carry, word) {
@@ -646,8 +701,8 @@ function addWordsFoundToPanel() {
 }
 
 function addSolutionsToWordPanel() {
-    var wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
-    var solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
+    const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
+    const solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
         return s.length > 2 && !_.contains(wordsFound[currentGridIndex], s);
     }).sort(); // could also sort by word length
     if (!solutions.length) {
@@ -657,7 +712,7 @@ function addSolutionsToWordPanel() {
         $('#wordpanel').append($('<hr/>', { 'id': 'wordpaneldivider' }));
     }
     $('#wordpanel').append(_.map(solutions, function (word) {
-        var wordPoints = wordPointsDistribution[word.length - 3] || 400;
+        const wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
@@ -683,6 +738,29 @@ function doFoundWordEffect() {
     }, 500);
 }
 
+function submitWord() {
+    if (!currentSearchTerm.length) {
+        return;
+    }
+    if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
+        if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
+            wordsFound[currentGridIndex].unshift(currentSearchTerm);
+            doFoundWordEffect();
+        } else {
+            showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
+        }
+    } else if (currentSearchTerm.length < 3) {
+        showGameToastAlert('Words Must Be 3 Characters Or Longer!');
+    } else if (searchTrie(currentSearchTerm)) {
+        showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
+    } else {
+        showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
+    }
+    currentSearchTerm = '';
+    addWordsFoundToPanel();
+    $('#searchterm').text(currentSearchTerm);
+}
+
 keyUp = function (e) {
     if (gameOver && _.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
         startGame();
@@ -694,32 +772,22 @@ keyUp = function (e) {
     }
     if (keycode.getKeyCode(e) === keys.BACKSPACE) {
         currentSearchTerm = currentSearchTerm.slice(0, -1);
+        $('#searchterm').text(currentSearchTerm);
     } else if (_.contains([ keys.ENTER, keys.RETURN ], keycode.getKeyCode(e))) {
-        if (!currentSearchTerm.length) {
-            return;
-        }
-        if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
-            if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
-                wordsFound[currentGridIndex].unshift(currentSearchTerm);
-                doFoundWordEffect();
-            } else {
-                showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
-            }
-        } else if (currentSearchTerm.length < 3) {
-            showGameToastAlert('Words Must Be 3 Characters Or Longer!');
-        } else if (searchTrie(currentSearchTerm)) {
-            showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
-        } else {
-            showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
-        }
-        currentSearchTerm = '';
-        addWordsFoundToPanel();
+        submitWord();
     } else {
         var letter = (keycode.getValueByEvent(e) || '').toUpperCase().replace(/[^a-zA-Z]/g, '');
         letter = letter.length === 1 ? letter : '';
         currentSearchTerm += letter;
+        $('#searchterm').text(currentSearchTerm);
     }
-    $('#searchterm').text(currentSearchTerm);
+};
+
+mouseClicked = function () {
+    if (!gridLoading && !gameOver && gameStarted) {
+        currentSearchTerm += mainScene.getNodeFromCoordinates(mouseX, mouseY).getLetter().toUpperCase();
+        $('#searchterm').text(currentSearchTerm);
+    }
 };
 
 windowResized = function () {
@@ -796,6 +864,10 @@ function positionScorePanel() {
         'top': (parseInt($div.css('top')) - titleHeight) + 'px'
     }).show();
 }
+
+$(document).ready(function () {
+    $('#searchterm').on('click', submitWord);
+});
 
 window.onload = function () {
     window.canvas = new Canvas(document.getElementById('canvas1'));
