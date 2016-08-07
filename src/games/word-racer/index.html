@@ -681,9 +681,11 @@ function updateProgressInfo() {
 }
 
 function drawCanvas() {
-    mainScene && mainScene.draw();
-    drawNodeConnectors();
-    drawNodes();
+    if (loopStarted) {
+        mainScene && mainScene.draw();
+        drawNodeConnectors();
+        drawNodes();
+    }
 }
 
 function drawNodeConnectors() {
