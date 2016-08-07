@@ -442,6 +442,7 @@ function preBeginningOfRound() {
     if (gameStarted) {
         addSolutionsToWordPanel();
     }
+    drawCanvas();
 }
 
 function startCountdownToBeginningOfRound() {
@@ -480,6 +481,7 @@ function endOfRoundCallback() {
     }
     currentSearchTerm = '';
     $('#searchterm').text(currentSearchTerm);
+    drawCanvas();
     clearTimeout(countdownToEndOfRoundTimeoutId);
     countdownToEndOfRoundTimeoutId = 0;
 }
