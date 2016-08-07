@@ -31,6 +31,12 @@ body {
     padding: 0;
 }
 
+.clearfix:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
 .disable-user-select,
 .disable-user-select:focus {
     cursor: default;
@@ -178,7 +184,7 @@ body {
     font-weight: bold;
     letter-spacing: 6px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 20px;
     position: absolute;
     width: 210px;
@@ -200,23 +206,24 @@ body {
     text-align: right;
 }
 
+#wordpaneldividercontainer {
+    display: none;
+    margin-top: 38px;
+}
+
 hr#wordpaneldivider {
     border: none;
     border-top: medium double #fff;
-    clear: both;
     color: #fff;
-    margin-top: 70px;
-    padding: 0;
     text-align: center;
 }
 
 hr#wordpaneldivider:after {
     content: '§';
     display: inline-block;
-    font-size: 1.5em;
-    padding: 0 0.25em;
+    font-size: 30px;
     position: relative;
-    top: -0.7em;
+    top: -20px;
 }
 </style>
 </head>
@@ -236,7 +243,11 @@ hr#wordpaneldivider:after {
     <div id="scorepaneltitle">Points</div>
     <div id="scorepanel"></div>
     <div id="wordpaneltitle">Words Found <span id="wordsfoundcount"></span></div>
-    <div id="wordpanel"></div>
+    <div id="wordpanel">
+        <div id="wordsfound" class="clearfix"></div>
+        <div id="wordpaneldividercontainer" class="clearfix"><hr id="wordpaneldivider" /></div>
+        <div id="solutions" class="clearfix"></div>
+    </div>
 </div>
 <script>
 const trie = {};
@@ -504,34 +515,41 @@ Node = function (x, y, letter, rowIndex, itemIndex) {
     highlighted = false;
 
     this.draw = function () {
-        var isLetterInSearchTerm = false,
-            nearNodeLetters = [],
-            areNearbyNodesAlsoInSearchTerm = false,
-            shouldHightlightNode = false;
-        if (currentSearchTerm.length) {
-            const containsMultiLetterNode = __.includes(currentSearchTerm, 'QU');
-            isLetterInSearchTerm = __.includes(currentSearchTerm, letter.toUpperCase());
-            nearNodeLetters = _.map(_.compact(getNearGridOptions(playGrids[currentGridIndex], rowIndex, itemIndex)), function (nearNode) {
-                return playGrids[currentGridIndex][nearNode[0]][nearNode[1]];
-            });
-            areNearbyNodesAlsoInSearchTerm = (containsMultiLetterNode ? 2 : 1) < currentSearchTerm.length && _.filter(nearNodeLetters, function (nearNodeLetter) {
-                if (__.includes(currentSearchTerm.replace(letter.toUpperCase(), ''), nearNodeLetter)) {
-                    return true;
-                }
-            }).length;
-            shouldHightlightNode = isLetterInSearchTerm && (currentSearchTerm.length < (containsMultiLetterNode ? 3 : 2) || areNearbyNodesAlsoInSearchTerm);
-        }
+        const shouldHighlightNode = this.shouldHighlightNode();
         const nodeType = grids[currentGridIndex][rowIndex][itemIndex];
         const nodeColor = [ colors.ghostwhite, colors.carolinablue, colors.lightpink ][nodeType - 1];
         const radiusXOffset = (letter === 'I') ? this.radius / 10 : (letter === 'Qu') ? this.radius / 1.7 : this.radius / 3;
         fill(gridLoading || gameOver ? (gameStarted ? colors.gray : colors.black) : nodeColor);
-        stroke(gridLoading || gameOver ? colors.black : shouldHightlightNode ? colors.yellow : nodeColor);
-        strokeWeight(isLetterInSearchTerm ? 4 : 2);
+        stroke(gridLoading || gameOver ? colors.black : (shouldHighlightNode ? colors.yellow : nodeColor));
+        strokeWeight(shouldHighlightNode ? 4 : 2);
         circle(x, y, this.radius);
         strokeWeight(1);
         textSize(currentGridIndex ? 30 : 46);
         fill(colors.black);
         text(letter, x - radiusXOffset, y + this.radius / 2.7);
+    };
+
+    this.areNearbyNodesAlsoInSearchTerm = function () {
+        const currentSearchTermMinusNodeLetter = currentSearchTerm.replace(letter.toUpperCase(), '');
+        const nearbyNodeLetters = _.map(_.compact(getNearGridOptions(playGrids[currentGridIndex], rowIndex, itemIndex)), function (nearbyNode) {
+            return playGrids[currentGridIndex][nearbyNode[0]][nearbyNode[1]].toUpperCase();
+        });
+        return _.filter(nearbyNodeLetters, function (nearbyNodeLetter) {
+            return __.includes(currentSearchTermMinusNodeLetter, nearbyNodeLetter);
+        }).length;
+    };
+
+    this.shouldHighlightNode = function () {
+        var isLetterInSearchTerm = false,
+            areNearbyNodesAlsoInSearchTerm = false,
+            shouldCheckNearbyNodes = false;
+        if (currentSearchTerm.length) {
+            const containsMultiLetterNode = __.includes(currentSearchTerm, 'QU');
+            isLetterInSearchTerm = __.includes(currentSearchTerm, letter.toUpperCase());
+            areNearbyNodesAlsoInSearchTerm = this.areNearbyNodesAlsoInSearchTerm();
+            shouldCheckNearbyNodes = 0 < currentSearchTerm.length - (containsMultiLetterNode ? 2 : 1);
+        }
+        return isLetterInSearchTerm && (!shouldCheckNearbyNodes || (shouldCheckNearbyNodes && areNearbyNodesAlsoInSearchTerm));
     };
 
     this.setX = function (newX) { x = newX; };
@@ -556,34 +574,11 @@ Scene = function () {
         this.calculateNodeRadius();
         this.generateNodes();
         this.generateNodeConnectors();
+        drawCanvas();
     };
 
     this.draw = function () {
         background(color(130, 170, 230));
-        this.updateProgressInfo();
-    };
-
-    this.updateProgressInfo = function () {
-        var countdownTimeString = '';
-        if (!gameOver) {
-            $('#countdownlabel').text(gridLoading ? 'Starts in:' : 'Time:');
-            var secondsRemaining = 0;
-            if (gridLoading) {
-                if (gameStarted) {
-                    $('#roundnumber').text(currentGridIndex + 2);
-                } else {
-                    $('#roundnumber').text(currentGridIndex + 1);
-                }
-                secondsRemaining = __.round((roundIntermissionStartTime + roundIntermissionInSeconds) - timeSeconds());
-            } else {
-                $('#roundnumber').text(currentGridIndex + 1);
-                secondsRemaining = __.round((roundStartTime + roundTimeLimitInSeconds) - timeSeconds());
-            }
-            countdownTimeString = new Date(secondsRemaining * 1E3).toISOString().substr(15, 4);
-        } else {
-            countdownTimeString = 'Game Over';
-        }
-        $('#countdowntime').text(countdownTimeString);
     };
 
     this.calculateNodeRadius = function () {
@@ -658,11 +653,36 @@ var setup = function () {
     positionElements();
 };
 
-var draw = function () {
+setInterval(updateProgressInfo, 500);
+
+function updateProgressInfo() {
+    var countdownTimeString = '';
+    if (!gameOver) {
+        $('#countdownlabel').text(gridLoading ? 'Starts in:' : 'Time:');
+        var secondsRemaining = 0;
+        if (gridLoading) {
+            if (gameStarted) {
+                $('#roundnumber').text(currentGridIndex + 2);
+            } else {
+                $('#roundnumber').text(currentGridIndex + 1);
+            }
+            secondsRemaining = __.round((roundIntermissionStartTime + roundIntermissionInSeconds) - timeSeconds());
+        } else {
+            $('#roundnumber').text(currentGridIndex + 1);
+            secondsRemaining = __.round((roundStartTime + roundTimeLimitInSeconds) - timeSeconds());
+        }
+        countdownTimeString = new Date(secondsRemaining * 1E3).toISOString().substr(15, 4);
+    } else {
+        countdownTimeString = 'Game Over';
+    }
+    $('#countdowntime').text(countdownTimeString);
+}
+
+function drawCanvas() {
     mainScene && mainScene.draw();
     drawNodeConnectors();
     drawNodes();
-};
+}
 
 function drawNodeConnectors() {
     stroke(gameOver ? colors.white : colors.black);
@@ -680,7 +700,7 @@ function drawNodes() {
 
 function addWordsFoundToPanel() {
     const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
-    $('#wordpanel').html(_.map(wordsFound[currentGridIndex], function (word) {
+    $('#wordsfound').html(_.map(wordsFound[currentGridIndex], function (word) {
         const wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
@@ -698,6 +718,10 @@ function addWordsFoundToPanel() {
             .append($('<div/>', { 'class': 'scorepanelrowtext' }).text('You'))
             .append($('<div/>', { 'class': 'scorepanelrowpoints' }).text(playerScore))
     );
+    $('#solutions').empty();
+    if (!wordsFound[currentGridIndex].length || !solutions.length) {
+        $('#wordpaneldividercontainer').hide();
+    }
 }
 
 function addSolutionsToWordPanel() {
@@ -705,13 +729,12 @@ function addSolutionsToWordPanel() {
     const solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
         return s.length > 2 && !_.contains(wordsFound[currentGridIndex], s);
     }).sort(); // could also sort by word length
-    if (!solutions.length) {
-        return;
+    if (!wordsFound[currentGridIndex].length || !solutions.length) {
+        $('#wordpaneldividercontainer').hide();
+    } else {
+        $('#wordpaneldividercontainer').show();
     }
-    if (wordsFound[currentGridIndex].length) {
-        $('#wordpanel').append($('<hr/>', { 'id': 'wordpaneldivider' }));
-    }
-    $('#wordpanel').append(_.map(solutions, function (word) {
+    $('#solutions').html(_.map(solutions, function (word) {
         const wordPoints = wordPointsDistribution[word.length - 3] || 400;
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
@@ -759,6 +782,7 @@ function submitWord() {
     currentSearchTerm = '';
     addWordsFoundToPanel();
     $('#searchterm').text(currentSearchTerm);
+    drawCanvas();
 }
 
 keyUp = function (e) {
@@ -781,12 +805,14 @@ keyUp = function (e) {
         currentSearchTerm += letter;
         $('#searchterm').text(currentSearchTerm);
     }
+    drawCanvas();
 };
 
 mouseClicked = function () {
     if (!gridLoading && !gameOver && gameStarted) {
         currentSearchTerm += mainScene.getNodeFromCoordinates(mouseX, mouseY).getLetter().toUpperCase();
         $('#searchterm').text(currentSearchTerm);
+        drawCanvas();
     }
 };
 
@@ -873,7 +899,6 @@ window.onload = function () {
     window.canvas = new Canvas(document.getElementById('canvas1'));
     window.ctx = canvas.ctx;
     canvas.setup = window.setup;
-    canvas.draw = window.draw;
     canvas.run();
 };
 
