@@ -346,9 +346,9 @@ function resetSettings() {
 }
 
 function setJSONArrays() {
-    gridSolutions = Array(grids.length).fill([]);
-    pathTree = Array(grids.length).fill({});
-    wordsFound = Array(grids.length).fill([]);
+    gridSolutions = Array(grids.length).fill(null).map(() => { return []; });
+    pathTree = Array(grids.length).fill(null).map(() => { return {}; });
+    wordsFound = Array(grids.length).fill(null).map(() => { return []; });
 }
 
 function generateLetterDistribution() {
