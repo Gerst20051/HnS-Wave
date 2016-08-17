@@ -32,6 +32,13 @@
     width: 400px;
 }
 
+#loginContent .formHeader,
+#signupContent .formHeader {
+    color: rgb(63, 81, 181);
+    margin: 0 auto 30px;
+    width: 300px;
+}
+
 #loginContent div,
 #signupContent div {
     display: block;
@@ -53,4 +60,10 @@
     height: 60px;
     margin: 30px auto 0;
     width: 300px;
+}
+
+#loginContent #createAnAccountLinkContent,
+#signupContent #alreadyHaveAnAccountLinkContent {
+    margin-top: 50px;
+    text-align: center;
 }

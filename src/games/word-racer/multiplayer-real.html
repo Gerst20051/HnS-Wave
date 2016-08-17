@@ -24,6 +24,9 @@
 <script>__ = _.noConflict()</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.4.1/bluebird.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://cdn.rawgit.com/marcuswestin/store.js/master/store.min.js"></script>
 <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
 <script src="../canvasengine.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -41,6 +44,7 @@
             <button id="signupSelectBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Signup</button>
         </div>
         <div id="loginContent">
+            <h2 class="formHeader">Login</h1>
             <form id="loginForm" action="#">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="formInput mdl-textfield__input" type="text" id="email-username-login-input">
@@ -52,8 +56,12 @@
                 </div>
                 <button id="loginBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Login</button>
             </form>
+            <div id="createAnAccountLinkContent">
+                <a id="createAnAccountLink" href="">Create An Account</a> | <a id="forgotPasswordLink" href="">Forgot My Password</a>
+            </div>
         </div>
         <div id="signupContent">
+            <h2 class="formHeader">Register</h1>
             <form id="signupForm" action="#">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="formInput mdl-textfield__input" type="text" id="username-signup-input">
@@ -69,6 +77,9 @@
                 </div>
                 <button id="signupBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Signup</button>
             </form>
+            <div id="alreadyHaveAnAccountLinkContent">
+                <a id="alreadyHaveAnAccountLink" href="">I Already Have An Account</a>
+            </div>
         </div>
     </div>
     <div id="restrictedContent">
