@@ -30,9 +30,11 @@
 <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
 <script src="../canvasengine.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
 <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
 <link rel="stylesheet" href="style.base.css" />
 <link rel="stylesheet" href="style.canvas.css" />
+<link rel="stylesheet" href="style.interface.css" />
 <link rel="stylesheet" href="style.registration.css" />
 </head>
 <body>
@@ -40,8 +42,8 @@
     <div id="registrationContent">
         <div id="registrationTitle">Word Racer</div>
         <div id="selectionContent">
-            <button id="loginSelectBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Login</button>
-            <button id="signupSelectBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Signup</button>
+            <button id="loginSelectBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Login</button>
+            <button id="signupSelectBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Signup</button>
         </div>
         <div id="loginContent">
             <h2 class="formHeader">Login</h1>
@@ -54,7 +56,7 @@
                     <input class="formInput mdl-textfield__input" type="password" id="password-login-input">
                     <label class="formInputLabel mdl-textfield__label" for="password-login-input">Password</label>
                 </div>
-                <button id="loginBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Login</button>
+                <button id="loginBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Login</button>
             </form>
             <div id="createAnAccountLinkContent">
                 <a id="createAnAccountLink" href="">Create An Account</a> | <a id="forgotPasswordLink" href="">Forgot My Password</a>
@@ -75,7 +77,7 @@
                     <input class="formInput mdl-textfield__input" type="password" id="password-signup-input">
                     <label class="formInputLabel mdl-textfield__label" for="password-signup-input">Password</label>
                 </div>
-                <button id="signupBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Signup</button>
+                <button id="signupBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Signup</button>
             </form>
             <div id="alreadyHaveAnAccountLinkContent">
                 <a id="alreadyHaveAnAccountLink" href="">I Already Have An Account</a>
@@ -89,24 +91,37 @@
                     <span class="mdl-layout-title">Word Racer</span>
                 </div>
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-                    <a href="#fixed-tab-1" class="mdl-layout__tab">Create Game Room</a>
-                    <a href="#fixed-tab-2" class="mdl-layout__tab is-active">Browse Game Rooms</a>
-                    <a href="#fixed-tab-3" class="mdl-layout__tab">Word Racer Game</a>
+                    <a id="createGameRoomTab" href="#fixed-tab-1" class="mdl-layout__tab">Create Game Room</a>
+                    <a id="browseGameRoomsTab" href="#fixed-tab-2" class="mdl-layout__tab is-active">Browse Game Rooms</a>
+                    <a id="wordRacerGameTab" href="#fixed-tab-3" class="mdl-layout__tab">Word Racer Game</a>
                 </div>
             </header>
             <main class="mdl-layout__content">
                 <section class="mdl-layout__tab-panel" id="fixed-tab-1">
                     <div class="page-content">
-                        Create Room (Form)
+                        <button id="createRoomBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Create New Lobby</button>
                     </div>
                 </section>
                 <section class="mdl-layout__tab-panel is-active" id="fixed-tab-2">
                     <div class="page-content">
-                        Browse Rooms
+                        <div id="loadingGameRoomsContent">
+                            <div id="loadingGameRoomsProgressBar" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+                            <h5>Loading Game Rooms...</h5>
+                        </div>
+                        <div id="noGameRoomsAvailable">
+                            <h3>No Game Rooms Available</h3>
+                            <button id="goToCreateRoomTabBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Create A Room</button>
+                        </div>
+                        <div id="gameRoomsListContent">
+                            <ul id="gameRoomList"></ul>
+                        </div>
                     </div>
                 </section>
                 <section class="mdl-layout__tab-panel" id="fixed-tab-3">
                     <div class="page-content">
+                        <div id="noGameContent">
+                            <button id="browseRoomsBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Browse Game Rooms</button>
+                        </div>
                         <div id="canvasContent">
                             <div id="canvaspane">
                                 <canvas id="canvas1" height="100" width="100"></canvas>

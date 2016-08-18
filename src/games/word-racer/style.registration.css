@@ -18,6 +18,7 @@
     font-size: 50px;
     height: 250px;
     margin: 125px auto;
+    max-width: 80%;
     text-transform: none;
     width: 720px;
 }

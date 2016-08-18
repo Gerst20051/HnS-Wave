@@ -2,6 +2,10 @@
     margin: 0 auto;
 }
 
+#canvasContent {
+    display: none;
+}
+
 #canvaspane {
     cursor: pointer;
 }

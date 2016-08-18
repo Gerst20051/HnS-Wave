@@ -11,6 +11,7 @@ var storeWithExpiration = {
 };
 
 var isLoggedIn = false;
+var currentGameRoomId = null;
 
 function getApiUrl(route) {
     var url = 'http://' + window.location.hostname + ':' + 8000;
@@ -20,12 +21,19 @@ function getApiUrl(route) {
     return url;
 }
 
+function getBaseApiParams() {
+    var userId = store.get('sessionUserId');
+    var token = storeWithExpiration.get('sessionToken');
+    if (userId && token) return { sessionUserId: userId, sessionToken: token };
+    return {};
+}
+
 function checkUserSession() {
     return new Promise(function (resolve, reject) {
         var userId = store.get('sessionUserId');
         var token = storeWithExpiration.get('sessionToken');
         if (userId && token) {
-            $.getJSON(getApiUrl('checksession'), { userId: userId, sessionToken: token }).done(function (response) {
+            $.getJSON(getApiUrl('checksession'), { sessionUserId: userId, sessionToken: token }).done(function (response) {
                 if (response.success) {
                     isLoggedIn = true;
                 }
@@ -43,6 +51,7 @@ function showCorrectContent() {
     $(isLoggedIn ? '#restrictedContent' : '#registrationContent').show();
     if (isLoggedIn) {
         initSockets();
+        loadGameRooms();
     }
 }
 
@@ -89,6 +98,44 @@ function setRegistrationFormHandlers() {
         showLoginContent();
         e.preventDefault();
     });
+    $('#createRoomBtn').on('click', function (e) {
+        createRoom();
+    });
+    $('#goToCreateRoomTabBtn').on('click', function (e) {
+        $('#createGameRoomTab > span').click();
+    });
+    $('#browseRoomsBtn').on('click', function (e) {
+        $('#browseGameRoomsTab > span').click();
+    });
+    $('#createGameRoomTab').on('click', 'span', function (e) {
+        showingCreateGameRoomTab();
+    });
+    $('#browseGameRoomsTab').on('click', 'span', function (e) {
+        showingGameRoomsListTab();
+    });
+    $('#wordRacerGameTab').on('click', 'span', function (e) {
+        showingWordRacerGameTab();
+    });
+}
+
+function showingCreateGameRoomTab() {
+    console.log('HERE 1');
+}
+
+function showingGameRoomsListTab() {
+    console.log('HERE 2');
+    loadGameRooms();
+}
+
+function showingWordRacerGameTab() {
+    console.log('HERE 3');
+    if (currentGameRoomId) {
+        $('#noGameContent').hide();
+        $('#canvasContent').show();
+    } else {
+        $('#canvasContent').hide();
+        $('#noGameContent').show();
+    }
 }
 
 function postRawJSON(url, data, cb) {
@@ -155,6 +202,30 @@ function initSockets() {
             hello: 'server'
         });
     }, 1E3);
+}
+
+function createRoom() {
+    postRawJSON(getApiUrl('createroom'), getBaseApiParams(), function (response) {
+        currentGameRoomId = response._id;
+        $('#wordRacerGameTab > span').click();
+    });
+}
+
+function loadGameRooms() {
+    $.getJSON(getApiUrl('rooms'), getBaseApiParams()).done(function (response) {
+        $('#loadingGameRoomsContent').hide();
+        if (response.length) {
+            var gameRoomListItems = _.map(response, function (room) {
+                return '<li data-room-id="' + room._id + '"><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + room.ownerId + ' Players</div></div></li>';
+            });
+            $('#gameRoomList').html(gameRoomListItems);
+            $('#noGameRoomsAvailable').hide();
+            $('#gameRoomsListContent').show();
+        } else {
+            $('#gameRoomsListContent').hide();
+            $('#noGameRoomsAvailable').show();
+        }
+    });
 }
 
 $(document).ready(function () {
