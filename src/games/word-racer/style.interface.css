@@ -49,6 +49,11 @@ ul#gameRoomList li:hover {
     background-color: #f6f6f6;
 }
 
+ul#gameRoomList li.currentGameRoom {
+    background-color: rgb(255, 251, 230);
+    border: 1px solid #000;
+}
+
 ul#gameRoomList li .roomTitle {
     font-size: 20px;
 }

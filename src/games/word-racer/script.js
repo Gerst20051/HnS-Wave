@@ -21,11 +21,12 @@ function getApiUrl(route) {
     return url;
 }
 
-function getBaseApiParams() {
+function getBaseApiParams(params) {
     var userId = store.get('sessionUserId');
     var token = storeWithExpiration.get('sessionToken');
-    if (userId && token) return { sessionUserId: userId, sessionToken: token };
-    return {};
+    params = params || {};
+    if (userId && token) return _.extend({}, { sessionUserId: userId, sessionToken: token }, params);
+    return params;
 }
 
 function checkUserSession() {
@@ -116,22 +117,25 @@ function setRegistrationFormHandlers() {
     $('#wordRacerGameTab').on('click', 'span', function (e) {
         showingWordRacerGameTab();
     });
+    $('#gameRoomList').on('click', 'li', function (e) {
+        currentGameRoomId = $(this).attr('data-room-id');
+        $('#wordRacerGameTab > span').click();
+    });
 }
 
 function showingCreateGameRoomTab() {
-    console.log('HERE 1');
+
 }
 
 function showingGameRoomsListTab() {
-    console.log('HERE 2');
     loadGameRooms();
 }
 
 function showingWordRacerGameTab() {
-    console.log('HERE 3');
     if (currentGameRoomId) {
         $('#noGameContent').hide();
         $('#canvasContent').show();
+        loadGameRoomData();
     } else {
         $('#canvasContent').hide();
         $('#noGameContent').show();
@@ -193,15 +197,20 @@ function submitRegisterForm() {
 }
 
 function initSockets() {
-    window.socket = io.connect(getApiUrl());
-    socket.on('data', function (data) {
-        console.log('data from server', data);
+    window.socket = io.connect(getApiUrl(), {
+        query: $.param({
+            sessionUserId: store.get('sessionUserId')
+        })
     });
-    setTimeout(function () {
-        socket.emit('data', {
-            hello: 'server'
-        });
-    }, 1E3);
+    socket.on('PlayerJoined', function (data) {
+        console.log('Player Joined', data);
+    });
+    socket.on('PlayerLeft', function (data) {
+        console.log('Player Left', data);
+    });
+    socket.on('GameStarted', function (data) {
+        console.log('Game Started', data);
+    });
 }
 
 function createRoom() {
@@ -216,7 +225,8 @@ function loadGameRooms() {
         $('#loadingGameRoomsContent').hide();
         if (response.length) {
             var gameRoomListItems = _.map(response, function (room) {
-                return '<li data-room-id="' + room._id + '"><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + room.ownerId + ' Players</div></div></li>';
+                var gameRoomListItemClass = currentGameRoomId === room._id ? ' class="currentGameRoom"' : '';
+                return '<li data-room-id="' + room._id + '"' + gameRoomListItemClass + '><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + room.ownerId + ' Players</div></div></li>';
             });
             $('#gameRoomList').html(gameRoomListItems);
             $('#noGameRoomsAvailable').hide();
@@ -225,6 +235,18 @@ function loadGameRooms() {
             $('#gameRoomsListContent').hide();
             $('#noGameRoomsAvailable').show();
         }
+    });
+}
+
+function loadGameRoomData() {
+    $.getJSON(getApiUrl('room'), getBaseApiParams({ roomId: currentGameRoomId, join: true })).done(function (response) {
+
+    });
+}
+
+function startGame() {
+    socket.emit('StartGame', {
+        hello: 'server'
     });
 }
 
