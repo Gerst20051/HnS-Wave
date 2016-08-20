@@ -1,13 +1,14 @@
-var playGrids = [];
 var Node,
     Scene,
     mainScene,
     currentSearchTerm = '',
     currentGridIndex = 0,
-    countdownToBeginningOfRoundTimeoutId = 0,
-    countdownToEndOfRoundTimeoutId = 0,
     gameAlertTimeoutId = 0,
     foundWordTimeoutId = 0,
+    currentGridSolutionsCount = 0,
+    grids = [],
+    gridSolutions = [],
+    playGrids = [],
     gridNodes = [],
     nodeConnectors = [],
     wordsFound = [],
@@ -16,8 +17,8 @@ var Node,
     gameOver = false,
     roundStartTime = 0,
     roundIntermissionStartTime = 0,
-    roundTimeLimitInSeconds = 80,
-    roundIntermissionInSeconds = 12,
+    roundTimeLimitInSeconds = 0,
+    roundIntermissionInSeconds = 0,
     playerScore = 0,
     doFullScreen = false,
     centeredCanvas = true,
@@ -27,20 +28,28 @@ var Node,
         width: (doFullScreen) ? maxWidth : canvasDimension
     };
 
+loadRoundGridsFile();
+
+function loadRoundGridsFile() {
+    const jsonPath = 'https://raw.githubusercontent.com/Gerst20051/HnS-Wave/wordracer/src/games/word-racer/';
+    $.getJSON(jsonPath + 'round-grids.json').done(function (gridJSON) {
+        grids = gridJSON;
+    });
+}
+
 function startGame() {
     resetSettings();
     setJSONArrays();
     generateScene();
-    startCountdownToBeginningOfRound();
+    preBeginningOfRound();
 }
 
 function resetSettings() {
     currentSearchTerm = '';
     currentGridIndex = 0;
-    countdownToBeginningOfRoundTimeoutId = 0;
-    countdownToEndOfRoundTimeoutId = 0;
     gameAlertTimeoutId = 0;
     foundWordTimeoutId = 0;
+    currentGridSolutionsCount = 0;
     gridNodes = [];
     nodeConnectors = [];
     wordsFound = [];
@@ -53,7 +62,8 @@ function resetSettings() {
 }
 
 function setJSONArrays() {
-    wordsFound = Array(grids.length).fill(null).map(() => { return []; });
+    gridSolutions = Array(playGrids.length).fill(null).map(() => { return []; });
+    wordsFound = Array(playGrids.length).fill(null).map(() => { return []; });
 }
 
 function getNearGridOptions(grid, rowIndex, itemIndex) {
@@ -73,62 +83,33 @@ function preBeginningOfRound() {
     roundStartTime = 0;
     gridLoading = true;
     if (gameStarted) {
-        addSolutionsToWordPanel();
+        // TODO: Need To Download Grid Solutions After Round Has Ended...
+        // addSolutionsToWordPanel();
     }
     drawCanvas();
 }
 
-function startCountdownToBeginningOfRound() {
-    preBeginningOfRound();
-    countdownToBeginningOfRoundTimeoutId = setTimeout(beginningOfRoundCallback, 1E3 * roundIntermissionInSeconds);
-}
-
-function beginningOfRoundCallback() {
+function beginningOfRound() {
     roundIntermissionStartTime = 0;
     roundStartTime = timeSeconds();
     gridLoading = false;
-    if (gameStarted) {
-        currentGridIndex++;
-    } else {
-        gameStarted = true;
-    }
-    startCountdownToEndOfRound();
+    gameStarted = true;
     generateScene();
     addWordsFoundToPanel();
-    clearTimeout(countdownToBeginningOfRoundTimeoutId);
-    countdownToBeginningOfRoundTimeoutId = 0;
 }
 
-function startCountdownToEndOfRound() {
-    countdownToEndOfRoundTimeoutId = setTimeout(endOfRoundCallback, 1E3 * roundTimeLimitInSeconds);
-}
-
-function endOfRoundCallback() {
-    if (currentGridIndex === gridSolutions.length - 1) {
+function endOfRound() {
+    if (currentGridIndex === playGrids.length - 1) {
         roundStartTime = 0;
         gameOver = true;
         toggleGameOverLabel();
         // TODO: use a keyboard shortcut or after 15 seconds show all words that have been found for each round in the word panel.
     } else {
-        startCountdownToBeginningOfRound();
+        preBeginningOfRound();
     }
     currentSearchTerm = '';
     $('#searchterm').text(currentSearchTerm);
     drawCanvas();
-    clearTimeout(countdownToEndOfRoundTimeoutId);
-    countdownToEndOfRoundTimeoutId = 0;
-}
-
-function nextRound() {
-    if (gameOver) {
-        return;
-    }
-    clearTimeout(countdownToBeginningOfRoundTimeoutId);
-    endOfRoundCallback();
-    if (currentGridIndex < gridSolutions.length - 1) {
-        preBeginningOfRound();
-        beginningOfRoundCallback();
-    }
 }
 
 function toggleGameOverLabel() {
@@ -344,7 +325,7 @@ function addWordsFoundToPanel() {
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
     }));
     const wordsFoundCount = wordsFound[currentGridIndex].length;
-    $('#wordsfoundcount').text('(' + wordsFound[currentGridIndex].length + ') ' + __.round((wordsFoundCount / _.filter(gridSolutions[currentGridIndex], function (s) { return s.length > 2; }).length) * 100) + '%');
+    $('#wordsfoundcount').text('(' + wordsFoundCount + ') ' + __.round((wordsFoundCount / currentGridSolutionsCount) * 100) + '%');
     playerScore = _.reduce(wordsFound, function (carry, wordsFoundGrid) {
         return carry += _.reduce(wordsFoundGrid, function (carry, word) {
             return carry += wordPointsDistribution[word.length - 3] || 400;
@@ -356,7 +337,7 @@ function addWordsFoundToPanel() {
             .append($('<div/>', { 'class': 'scorepanelrowpoints' }).text(playerScore))
     );
     $('#solutions').empty();
-    if (!wordsFound[currentGridIndex].length || !solutions.length) {
+    if (!wordsFoundCount || !solutions.length) {
         $('#wordpaneldividercontainer').hide();
     }
 }
@@ -364,7 +345,7 @@ function addWordsFoundToPanel() {
 function addSolutionsToWordPanel() {
     const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
     const solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
-        return s.length > 2 && !_.contains(wordsFound[currentGridIndex], s);
+        return !_.contains(wordsFound[currentGridIndex], s);
     }).sort(); // could also sort by word length
     if (!wordsFound[currentGridIndex].length || !solutions.length) {
         $('#wordpaneldividercontainer').hide();
@@ -402,20 +383,21 @@ function submitWord() {
     if (!currentSearchTerm.length) {
         return;
     }
-    if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
-        if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
-            wordsFound[currentGridIndex].unshift(currentSearchTerm);
-            doFoundWordEffect();
-        } else {
-            showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
-        }
-    } else if (currentSearchTerm.length < 3) {
-        showGameToastAlert('Words Must Be 3 Characters Or Longer!');
-    } else if (searchTrie(currentSearchTerm)) {
-        showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
-    } else {
-        showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
-    }
+    // TODO: API Call To CheckWord
+    // if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
+    //     if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
+    //         wordsFound[currentGridIndex].unshift(currentSearchTerm);
+    //         doFoundWordEffect();
+    //     } else {
+    //         showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
+    //     }
+    // } else if (currentSearchTerm.length < 3) {
+    //     showGameToastAlert('Words Must Be 3 Characters Or Longer!');
+    // } else if (searchTrie(currentSearchTerm)) {
+    //     showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
+    // } else {
+    //     showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
+    // }
     currentSearchTerm = '';
     addWordsFoundToPanel();
     $('#searchterm').text(currentSearchTerm);
@@ -424,8 +406,8 @@ function submitWord() {
 
 keyUp = function (e) {
     if (gameOver && _.contains([ keys.ENTER, keys.RETURN, keys.SPACE ], keycode.getKeyCode(e))) {
-        startGame();
-        toggleGameOverLabel();
+        // startGame(); // TODO: Would Need To Call createGame();
+        // toggleGameOverLabel();
         return;
     }
     if (gridLoading || gameOver) {
@@ -532,9 +514,14 @@ $(document).ready(function () {
     $('#searchterm').on('click', submitWord);
 });
 
-window.onload = function () {
+function setupCanvas() {
     window.canvas = new Canvas(document.getElementById('canvas1'));
     window.ctx = canvas.ctx;
     canvas.setup = window.setup;
     canvas.run();
-};
+}
+
+function destroyCanvas() {
+    if (typeof canvas !== 'undefined') canvas.destroy();
+    ctx = null;
+}

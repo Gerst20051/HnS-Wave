@@ -1017,6 +1017,33 @@ function Canvas(canvas){
 		addEvent(window, 'keypress', onKeyPressed);
 		addEvent(window, 'orientationchange', onOrientationChanged);
 	};
+
+	this.detachHandlers = function(detachCanvas, detachWindow){
+		if (detachCanvas) {
+			removeEvent(canvas, 'mousemove', onMouseMoved);
+			removeEvent(canvas, 'mousedown', onMousePressed);
+			removeEvent(canvas, 'mouseup', onMouseReleased);
+			removeEvent(canvas, 'click', onMouseClicked);
+			if (isTouchEnabled) {
+				removeEvent(canvas, 'touchmove', onTouchMoved);
+				removeEvent(canvas, 'touchstart', onTouchStart);
+				removeEvent(canvas, 'touchend', onTouchEnd);
+			}
+		}
+		if (detachWindow) {
+			removeEvent(window, 'keydown', onKeyDown);
+			removeEvent(window, 'keyup', onKeyUp);
+			removeEvent(window, 'keypress', onKeyPressed);
+			removeEvent(window, 'orientationchange', onOrientationChanged);
+		}
+	};
+
+	this.destroy = function(){
+		this.detachHandlers(true, true);
+		this.ctx = null;
+		this.setup = nop;
+		this.draw = nop;
+	};
 }
 
 var onMouseMoved = function(e){

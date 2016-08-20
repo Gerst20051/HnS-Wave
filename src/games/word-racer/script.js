@@ -15,7 +15,6 @@ var currentGameRoomId = null;
 var isGameInProgress = false;
 var thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1E3;
 
-var gameGrids = [];
 var gameId = null;
 var intermissionDuration = 0;
 var roundDuration = 0;
@@ -124,37 +123,39 @@ function setRegistrationFormHandlers() {
     $('#browseGameRoomsTab').on('click', 'span', function (e) {
         showingGameRoomsListTab();
     });
-    $('#wordRacerGameTab').on('click', 'span', function (e) {
-        showingWordRacerGameTab();
+    $('#wordRacerGameTab').on('click', 'span', function (e, isRoomDifferent) {
+        showingWordRacerGameTab(isRoomDifferent === 'changeRoom');
     });
     $('#gameRoomList').on('click', 'li', function (e) {
+        const isRoomDifferent = currentGameRoomId !== $(this).attr('data-room-id');
         currentGameRoomId = $(this).attr('data-room-id');
-        $('#wordRacerGameTab > span').click();
+        $('#wordRacerGameTab > span').trigger('click', isRoomDifferent ? 'changeRoom' : 'sameRoom');
     });
 }
 
 function showingCreateGameRoomTab() {
     $('body').removeClass('gameInProgress');
+    destroyCanvas();
 }
 
 function showingGameRoomsListTab() {
     $('body').removeClass('gameInProgress');
+    destroyCanvas();
     loadGameRooms();
 }
 
-function showingWordRacerGameTab() {
+function showingWordRacerGameTab(shouldLoadGameRoomData) {
     if (currentGameRoomId) {
         $('#noGameContent').hide();
-        if (isGameInProgress) {
-            $('#startGameContent').hide();
-            $('body').addClass('gameInProgress');
-            $('#canvasContent').show();
+        if (shouldLoadGameRoomData !== false) {
+            loadGameRoomData();
         } else {
-            $('#canvasContent').hide();
-            $('body').removeClass('gameInProgress');
-            $('#startGameContent').show();
+            if (isGameInProgress) {
+                showCanvasContent();
+            } else {
+                hideCanvasContent();
+            }
         }
-        loadGameRoomData();
     } else {
         $('#canvasContent').hide();
         $('#startGameContent').hide();
@@ -225,35 +226,74 @@ function initSockets() {
     });
     socket.on('PlayerJoined', function (data) {
         console.log('Player Joined', data);
+        // TODO: add player to players list
     });
     socket.on('PlayerLeft', function (data) {
         console.log('Player Left', data);
+        // TODO: remove player from players list
     });
     socket.on('GameStarted', function (data) {
         console.log('Game Started', data);
-        playGrids = data.gameGrids;
-        gameId = data.gameId;
-        intermissionDuration = data.intermissionDuration;
-        roundIntermissionInSeconds = data.intermissionDuration;
-        roundDuration = data.roundDuration;
-        roundTimeLimitInSeconds = data.roundDuration;
-        isGameInProgress = true;
-        $('#startGameContent').hide();
-        $('body').addClass('gameInProgress');
-        $('#canvasContent').show();
+        joinGame(data);
     });
     socket.on('StartRound', function (data) {
         console.log('Start Round', data);
         currentGridIndex = data.roundNumber - 1;
+        roundDuration = data.duration;
+        roundTimeLimitInSeconds = data.duration / 1E3;
+        currentGridSolutionsCount = data.solutionsCount;
+        beginningOfRound();
     });
     socket.on('StartIntermission', function (data) {
         console.log('Start Intermission', data);
-        currentGridIndex = data.roundNumber - 1;
+        currentGridIndex = data.roundNumber - 2;
+        intermissionDuration = data.duration;
+        roundIntermissionInSeconds = data.duration / 1E3;
+        gridSolutions[currentGridIndex] = data.solutions;
+        endOfRound();
     });
     socket.on('GameOver', function (data) {
         console.log('Game Over', data);
-        isGameInProgress = false;
+        gridSolutions[currentGridIndex] = data.solutions;
+        // setTimeout(resetGame, data.duration);
+        resetGame();
     });
+}
+
+function joinGame(data) {
+    // TODO: need to pull down list of players?
+    playGrids = data.gameGrids;
+    gameId = data.gameId;
+    intermissionDuration = data.intermissionDuration;
+    roundIntermissionInSeconds = data.intermissionDuration / 1E3;
+    roundDuration = data.roundDuration;
+    roundTimeLimitInSeconds = data.roundDuration / 1E3;
+    isGameInProgress = true;
+    showCanvasContent();
+    setupCanvas();
+    startGame();
+}
+
+function showCanvasContent() {
+    $('#startGameContent').hide();
+    $('body').addClass('gameInProgress');
+    $('#canvasContent').show();
+}
+
+function hideCanvasContent() {
+    $('#canvasContent').hide();
+    $('body').removeClass('gameInProgress');
+    $('#startGameContent').show();
+}
+
+function resetGame() {
+    isGameInProgress = false;
+    playGrids = [];
+    gameId = null;
+    intermissionDuration = 0;
+    roundIntermissionInSeconds = 0
+    roundDuration = 0;
+    roundTimeLimitInSeconds = 0;
 }
 
 function createRoom() {
@@ -284,7 +324,17 @@ function loadGameRooms() {
 
 function loadGameRoomData() {
     $.getJSON(getApiUrl('room'), getBaseApiParams({ roomId: currentGameRoomId, join: true })).done(function (response) {
-        // TODO: is game in progress??
+        if (response.gameId) {
+            isGameInProgress = true;
+            showCanvasContent(true);
+            setupCanvas();
+            joinGame(response);
+        } else {
+            isGameInProgress = false;
+            resetGame();
+            hideCanvasContent();
+            destroyCanvas();
+        }
     });
 }
 
