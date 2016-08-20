@@ -1,5 +1,6 @@
 #createRoomBtn,
-#browseRoomsBtn {
+#browseRoomsBtn,
+#startGameBtn {
     display: block;
     font-size: 50px;
     height: 250px;

@@ -4,6 +4,10 @@ body {
     padding: 0;
 }
 
+body.gameInProgress {
+    background-color: rgb(130, 170, 230);
+}
+
 .clearfix:after {
     clear: both;
     content: "";

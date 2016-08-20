@@ -12,6 +12,13 @@ var storeWithExpiration = {
 
 var isLoggedIn = false;
 var currentGameRoomId = null;
+var isGameInProgress = false;
+var thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1E3;
+
+var gameGrids = [];
+var gameId = null;
+var intermissionDuration = 0;
+var roundDuration = 0;
 
 function getApiUrl(route) {
     var url = 'http://' + window.location.hostname + ':' + 8000;
@@ -102,6 +109,9 @@ function setRegistrationFormHandlers() {
     $('#createRoomBtn').on('click', function (e) {
         createRoom();
     });
+    $('#startGameBtn').on('click', function (e) {
+        createGame();
+    });
     $('#goToCreateRoomTabBtn').on('click', function (e) {
         $('#createGameRoomTab > span').click();
     });
@@ -124,20 +134,31 @@ function setRegistrationFormHandlers() {
 }
 
 function showingCreateGameRoomTab() {
-
+    $('body').removeClass('gameInProgress');
 }
 
 function showingGameRoomsListTab() {
+    $('body').removeClass('gameInProgress');
     loadGameRooms();
 }
 
 function showingWordRacerGameTab() {
     if (currentGameRoomId) {
         $('#noGameContent').hide();
-        $('#canvasContent').show();
+        if (isGameInProgress) {
+            $('#startGameContent').hide();
+            $('body').addClass('gameInProgress');
+            $('#canvasContent').show();
+        } else {
+            $('#canvasContent').hide();
+            $('body').removeClass('gameInProgress');
+            $('#startGameContent').show();
+        }
         loadGameRoomData();
     } else {
         $('#canvasContent').hide();
+        $('#startGameContent').hide();
+        $('body').removeClass('gameInProgress');
         $('#noGameContent').show();
     }
 }
@@ -148,7 +169,7 @@ function postRawJSON(url, data, cb) {
         'data': JSON.stringify(data),
         'processData': false,
         'type': 'POST'
-    }).then(cb);
+    }).then(cb || $.noop);
 }
 
 function validateLoginForm() {
@@ -166,7 +187,7 @@ function submitLoginForm() {
         'pass': $('#password-login-input').val().trim()
     }, function (response) {
         store.set('sessionUserId', response.user._id);
-        storeWithExpiration.set('sessionToken', response.sessionToken, 30 * 24 * 60 * 60 * 1E3); // expires 30 days from now
+        storeWithExpiration.set('sessionToken', response.sessionToken, thirtyDaysInMilliseconds);
         isLoggedIn = true;
         clearLoginForm();
         showCorrectContent();
@@ -189,7 +210,7 @@ function submitRegisterForm() {
         'pass': $('#password-signup-input').val().trim()
     }, function (response) {
         store.set('sessionUserId', response.user._id);
-        storeWithExpiration.set('sessionToken', response.sessionToken, 30 * 24 * 60 * 60 * 1E3); // expires 30 days from now
+        storeWithExpiration.set('sessionToken', response.sessionToken, thirtyDaysInMilliseconds);
         isLoggedIn = true;
         clearRegisterForm();
         showCorrectContent();
@@ -210,6 +231,28 @@ function initSockets() {
     });
     socket.on('GameStarted', function (data) {
         console.log('Game Started', data);
+        playGrids = data.gameGrids;
+        gameId = data.gameId;
+        intermissionDuration = data.intermissionDuration;
+        roundIntermissionInSeconds = data.intermissionDuration;
+        roundDuration = data.roundDuration;
+        roundTimeLimitInSeconds = data.roundDuration;
+        isGameInProgress = true;
+        $('#startGameContent').hide();
+        $('body').addClass('gameInProgress');
+        $('#canvasContent').show();
+    });
+    socket.on('StartRound', function (data) {
+        console.log('Start Round', data);
+        currentGridIndex = data.roundNumber - 1;
+    });
+    socket.on('StartIntermission', function (data) {
+        console.log('Start Intermission', data);
+        currentGridIndex = data.roundNumber - 1;
+    });
+    socket.on('GameOver', function (data) {
+        console.log('Game Over', data);
+        isGameInProgress = false;
     });
 }
 
@@ -226,7 +269,8 @@ function loadGameRooms() {
         if (response.length) {
             var gameRoomListItems = _.map(response, function (room) {
                 var gameRoomListItemClass = currentGameRoomId === room._id ? ' class="currentGameRoom"' : '';
-                return '<li data-room-id="' + room._id + '"' + gameRoomListItemClass + '><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + room.ownerId + ' Players</div></div></li>';
+                var playerString = room.playerCount + ' Player' + (1 !== room.playerCount ? 's' : '');
+                return '<li data-room-id="' + room._id + '"' + gameRoomListItemClass + '><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + playerString + '</div></div></li>';
             });
             $('#gameRoomList').html(gameRoomListItems);
             $('#noGameRoomsAvailable').hide();
@@ -240,14 +284,12 @@ function loadGameRooms() {
 
 function loadGameRoomData() {
     $.getJSON(getApiUrl('room'), getBaseApiParams({ roomId: currentGameRoomId, join: true })).done(function (response) {
-
+        // TODO: is game in progress??
     });
 }
 
-function startGame() {
-    socket.emit('StartGame', {
-        hello: 'server'
-    });
+function createGame() {
+    postRawJSON(getApiUrl('creategame'), getBaseApiParams({ roomId: currentGameRoomId }));
 }
 
 $(document).ready(function () {
