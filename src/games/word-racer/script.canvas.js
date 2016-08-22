@@ -12,6 +12,7 @@ var Node,
     gridNodes = [],
     nodeConnectors = [],
     wordsFound = [],
+    playerScores = {},
     gridLoading = true,
     gameStarted = false,
     gameOver = false,
@@ -53,6 +54,7 @@ function resetSettings() {
     gridNodes = [];
     nodeConnectors = [];
     wordsFound = [];
+    playerScores = [];
     gridLoading = true;
     gameStarted = false;
     gameOver = false;
@@ -82,10 +84,6 @@ function preBeginningOfRound() {
     roundIntermissionStartTime = timeSeconds();
     roundStartTime = 0;
     gridLoading = true;
-    if (gameStarted) {
-        // TODO: Need To Download Grid Solutions After Round Has Ended...
-        // addSolutionsToWordPanel();
-    }
     drawCanvas();
 }
 
@@ -103,12 +101,14 @@ function endOfRound() {
         roundStartTime = 0;
         gameOver = true;
         toggleGameOverLabel();
+        $('#searchterm').text('Start Game');
         // TODO: use a keyboard shortcut or after 15 seconds show all words that have been found for each round in the word panel.
     } else {
         preBeginningOfRound();
+        $('#searchterm').text('');
     }
+    addSolutionsToWordPanel();
     currentSearchTerm = '';
-    $('#searchterm').text(currentSearchTerm);
     drawCanvas();
 }
 
@@ -317,43 +317,108 @@ function drawNodes() {
 }
 
 function addWordsFoundToPanel() {
-    const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
-    $('#wordsfound').html(_.map(wordsFound[currentGridIndex], function (word) {
-        const wordPoints = wordPointsDistribution[word.length - 3] || 400;
-        return $('<div/>', { 'class': 'wordpanelrow' })
-            .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
-            .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
-    }));
-    const wordsFoundCount = wordsFound[currentGridIndex].length;
-    $('#wordsfoundcount').text('(' + wordsFoundCount + ') ' + __.round((wordsFoundCount / currentGridSolutionsCount) * 100) + '%');
-    playerScore = _.reduce(wordsFound, function (carry, wordsFoundGrid) {
-        return carry += _.reduce(wordsFoundGrid, function (carry, word) {
-            return carry += wordPointsDistribution[word.length - 3] || 400;
-        }, 0);
-    }, 0);
-    $('#scorepanel').html(
-        $('<div/>', { 'class': 'scorepanelrow' })
-            .append($('<div/>', { 'class': 'scorepanelrowtext' }).text('You'))
-            .append($('<div/>', { 'class': 'scorepanelrowpoints' }).text(playerScore))
-    );
+    playerScores[currentGridIndex] = {};
+    _.each(Object.keys(gamePlayers), function (userId) {
+        playerScores[currentGridIndex][userId] = getPlayerScore(userId);
+    });
+    addPlayerWordsToPanel();
+    var playerWordsFoundCount = playerScores[currentGridIndex][store.get('sessionUserId')].count;
+    $('#wordsfoundcount').text('(' + playerWordsFoundCount + ') ' + __.round((playerWordsFoundCount / currentGridSolutionsCount) * 100) + '%');
+    addPlayerScoresToPanel();
     $('#solutions').empty();
-    if (!wordsFoundCount || !solutions.length) {
+    if (!playerWordsFoundCount) {
         $('#wordpaneldividercontainer').hide();
     }
 }
 
-function addSolutionsToWordPanel() {
+function addPlayerWordsToPanel() {
+    var content = [];
+    _.each(_.pairs(playerScores[currentGridIndex]), function (playerScore) { // TODO: Need To Add Username To Row
+        _.each(playerScore[0].words, function (wordObject) {
+            content.push(
+                $('<div/>', { 'class': 'wordpanelrow' })
+                    .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(wordObject.word))
+                    .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordObject.points))
+            );
+        });
+    });
+    $('#wordsfound').html(content);
+}
+
+function addPlayerScoresToPanel() {
+    var content = [];
+    var scores = {};
+    _.each(_.values(playerScores), function (roundScores) {
+        _.each(_.pairs(roundScores), function (playerScore) {
+            if (!scores[playerScore[0]]) {
+                scores[playerScore[0]] = {
+                    score: 0,
+                    username: gamePlayers[playerScore[0]].username
+                };
+            }
+            scores[playerScore[0]].score += playerScore[1].score;
+        });
+    });
+    _.each(Object.keys(scores), function (userId) {
+        content.push(
+            $('<div/>', { 'class': 'scorepanelrow' })
+                .append($('<div/>', { 'class': 'scorepanelrowtext' }).text(scores[userId].username))
+                .append($('<div/>', { 'class': 'scorepanelrowpoints' }).text(scores[userId].score))
+        );
+    });
+    $('#scorepanel').html(content);
+}
+
+function getPointsForWord(word) {
     const wordPointsDistribution = [ 10, 20, 40, 80, 120, 140, 220, 300 ];
+    return (wordPointsDistribution[word.length - 3] || 400) * getMultiplierForWord(word);
+}
+
+function getMultiplierForWord(word) {
+    return 1; // TODO: 2 and 3 multipliers
+}
+
+function getScoreForWords(words) {
+    return _.reduce(words, function (carry, word) {
+        return carry += word.points;
+    }, 0);
+}
+
+function getPlayerScore(userId) {
+    const words = [];
+    _.each(_.filter(wordsFound[currentGridIndex], function (wordsFoundObject) {
+        return wordsFoundObject.userId === userId;
+    }), function (wordsFoundObject) {
+        words.push({
+            points: getPointsForWord(wordsFoundObject.word),
+            word: wordsFoundObject.word
+        });
+    });
+    return {
+        count: words.length,
+        score: getScoreForWords(words),
+        words: words
+    };
+}
+
+function getWordsFoundByAllPlayers() {
+    return _.reduce(_.values(playerScores[currentGridIndex]), function (carry, playerScore) {
+        return carry.concat(playerScore.words);
+    }, []);
+}
+
+function addSolutionsToWordPanel() {
+    const wordsFound = getWordsFoundByAllPlayers();
     const solutions = _.filter(gridSolutions[currentGridIndex], function (s) {
-        return !_.contains(wordsFound[currentGridIndex], s);
+        return !_.contains(wordsFound, s);
     }).sort(); // could also sort by word length
-    if (!wordsFound[currentGridIndex].length || !solutions.length) {
+    if (!wordsFound.length || !solutions.length) {
         $('#wordpaneldividercontainer').hide();
     } else {
         $('#wordpaneldividercontainer').show();
     }
     $('#solutions').html(_.map(solutions, function (word) {
-        const wordPoints = wordPointsDistribution[word.length - 3] || 400;
+        const wordPoints = getPointsForWord(word);
         return $('<div/>', { 'class': 'wordpanelrow' })
             .append($('<div/>', { 'class': 'wordpanelrowtext' }).text(word))
             .append($('<div/>', { 'class': 'wordpanelrowpoints' }).text(wordPoints));
@@ -380,34 +445,32 @@ function doFoundWordEffect() {
 }
 
 function submitWord() {
+    if (gameOver) {
+        createGame();
+    }
     if (!currentSearchTerm.length) {
         return;
     }
-    // TODO: API Call To CheckWord
-    // if (currentSearchTerm.length > 2 && _.contains(gridSolutions[currentGridIndex], currentSearchTerm)) {
-    //     if (!_.contains(wordsFound[currentGridIndex], currentSearchTerm)) {
-    //         wordsFound[currentGridIndex].unshift(currentSearchTerm);
-    //         doFoundWordEffect();
-    //     } else {
-    //         showGameToastAlert('The Word \'' + currentSearchTerm + '\' Has Already Been Found!');
-    //     }
-    // } else if (currentSearchTerm.length < 3) {
-    //     showGameToastAlert('Words Must Be 3 Characters Or Longer!');
-    // } else if (searchTrie(currentSearchTerm)) {
-    //     showGameToastAlert('\'' + currentSearchTerm + '\' Is Not In The Grid!');
-    // } else {
-    //     showGameToastAlert('\'' + currentSearchTerm + '\' Is Not A Word!');
-    // }
+    if (currentSearchTerm.length < 3) {
+        showGameToastAlert('Words Must Be 3 Characters Or Longer!');
+        return;
+    }
+    postRawJSON(getApiUrl('checkword'), getBaseApiParams({
+        gameId: gameId,
+        searchTerm: currentSearchTerm
+    }), function (response) {
+        if (!response.exists && response.reason) {
+            showGameToastAlert(response.reason);
+        }
+    });
     currentSearchTerm = '';
-    addWordsFoundToPanel();
-    $('#searchterm').text(currentSearchTerm);
+    $('#searchterm').text('');
     drawCanvas();
 }
 
 keyUp = function (e) {
     if (gameOver && _.contains([ keys.ENTER, keys.RETURN, keys.SPACE ], keycode.getKeyCode(e))) {
-        // startGame(); // TODO: Would Need To Call createGame();
-        // toggleGameOverLabel();
+        createGame();
         return;
     }
     if (gridLoading || gameOver) {

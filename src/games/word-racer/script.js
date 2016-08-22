@@ -14,7 +14,7 @@ var isLoggedIn = false;
 var currentGameRoomId = null;
 var isGameInProgress = false;
 var thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1E3;
-
+var gamePlayers = [];
 var gameId = null;
 var intermissionDuration = 0;
 var roundDuration = 0;
@@ -226,14 +226,29 @@ function initSockets() {
     });
     socket.on('PlayerJoined', function (data) {
         console.log('Player Joined', data);
-        // TODO: add player to players list
+        gamePlayers[data.userId] = {
+            userId: data.userId,
+            username: data.username
+        };
     });
     socket.on('PlayerLeft', function (data) {
         console.log('Player Left', data);
-        // TODO: remove player from players list
+        delete gamePlayers[data.userId];
+    });
+    socket.on('WordFound', function (data) {
+        console.log('Word Found', data);
+        // TODO: Check gameId, roomId, and roundNumber
+        wordsFound[currentGridIndex].unshift({
+            userId: data.userId,
+            username: data.username,
+            word: data.word
+        });
+        addWordsFoundToPanel();
     });
     socket.on('GameStarted', function (data) {
         console.log('Game Started', data);
+        $('#searchterm').text('');
+        $('#progressinfo').removeClass('gameover');
         joinGame(data);
     });
     socket.on('StartRound', function (data) {
@@ -255,7 +270,7 @@ function initSockets() {
     socket.on('GameOver', function (data) {
         console.log('Game Over', data);
         gridSolutions[currentGridIndex] = data.solutions;
-        // setTimeout(resetGame, data.duration);
+        endOfRound();
         resetGame();
     });
 }
@@ -310,7 +325,18 @@ function loadGameRooms() {
             var gameRoomListItems = _.map(response, function (room) {
                 var gameRoomListItemClass = currentGameRoomId === room._id ? ' class="currentGameRoom"' : '';
                 var playerString = room.playerCount + ' Player' + (1 !== room.playerCount ? 's' : '');
-                return '<li data-room-id="' + room._id + '"' + gameRoomListItemClass + '><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + playerString + '</div></div></li>';
+                var gameStatusString = '';
+                if (!_.isNull(room.gameStatus)) {
+                    if (room.gameStatus.intermission) {
+                        gameStatusString = ' - Intermission Waiting For Round ' + (room.gameStatus.roundNumber + 1) + ' To Start';
+                    } else if (!room.gameStatus.started) {
+                        gameStatusString = ' - Waiting For Game To Begin';
+                    } else {
+                        gameStatusString = ' - Round ' + room.gameStatus.roundNumber;
+                    }
+                }
+                var roomSubTitle = playerString + gameStatusString;
+                return '<li data-room-id="' + room._id + '"' + gameRoomListItemClass + '><div><div class="roomTitle">' + room._id + '</div><div class="roomSubTitle">' + roomSubTitle + '</div></div></li>';
             });
             $('#gameRoomList').html(gameRoomListItems);
             $('#noGameRoomsAvailable').hide();
@@ -326,7 +352,7 @@ function loadGameRoomData() {
     $.getJSON(getApiUrl('room'), getBaseApiParams({ roomId: currentGameRoomId, join: true })).done(function (response) {
         if (response.gameId) {
             isGameInProgress = true;
-            showCanvasContent(true);
+            showCanvasContent();
             setupCanvas();
             joinGame(response);
         } else {
@@ -341,6 +367,8 @@ function loadGameRoomData() {
 function createGame() {
     postRawJSON(getApiUrl('creategame'), getBaseApiParams({ roomId: currentGameRoomId }));
 }
+
+setInterval(loadGameRooms, 5E3);
 
 $(document).ready(function () {
     checkUserSession().then(function () {
