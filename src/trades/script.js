@@ -1,11 +1,18 @@
+var tickers = [];
+
 $(document).ready(function () {
     $('#loadingDataHeaderContent, #loadingDataContent').show();
     loadData();
 });
 
+$('#logo').on('click', function () {
+    window.open('http://finviz.com/screener.ashx?v=211&t=' + tickers.join(',') + '&ta=0&o=ticker', '_blank');
+});
+
 $('#reload').on('click', loadData);
 
 function loadData() {
+    tickers = [];
     // $.getJSON('sample-data.json').done(function (data) {
     $.getJSON(document.location.origin + ':8002/accountdata').done(function (data) {
         $('#equityValue .rowSubTitle').text('$' + parseFloat(data.portfolio.equity));
@@ -16,6 +23,7 @@ function loadData() {
         $('#positionsListContent').toggle(!!data.positions.length);
         if (data.positions.length) {
             var rowItems = _.map(data.positions, function (position) {
+                tickers.push(position.symbol);
                 var quantity = parseInt(position.quantity);
                 var price = parseFloat(position.average_buy_price);
                 var equityValue = quantity * price;

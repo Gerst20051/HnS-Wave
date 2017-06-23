@@ -79,6 +79,7 @@ body {
     text-align: center;
 }
 
+#logo,
 #reload {
     cursor: pointer;
     -webkit-transition: background-color 0.5s ease;
@@ -88,6 +89,7 @@ body {
     transition: background-color 0.5s ease;
 }
 
+#logo:hover,
 #reload:hover {
     background-color: rgb(35, 224, 167);
 }
