@@ -6,7 +6,8 @@ $(document).ready(function () {
 });
 
 $('#logo').on('click', function () {
-    window.open('http://finviz.com/screener.ashx?v=211&t=' + tickers.join(',') + '&ta=0&o=ticker', '_blank');
+    window.open('https://finviz.com/screener.ashx?v=211&t=' + tickers.join(',') + '&ta=0&o=ticker', '_blank');
+    window.open('https://mobile.twitter.com/search/live?q=' + encodeURIComponent(tickers.map(function ($0) { return '"$' + $0 + '"'; }).join(' OR ')), '_blank');
 });
 
 $('#reload').on('click', loadData);
@@ -15,14 +16,15 @@ function loadData() {
     tickers = [];
     // $.getJSON('sample-data.json').done(function (data) {
     $.getJSON(document.location.origin + ':8002/accountdata').done(function (data) {
+        var positions = data.positions.sort(function ($0, $1) { return $0.symbol.localeCompare($1.symbol); });
         $('#equityValue .rowSubTitle').text('$' + parseFloat(data.portfolio.equity));
         $('#marketValue .rowSubTitle').text('$' + parseFloat(data.portfolio.market_value));
         $('#equityValueExtendedHours .rowSubTitle').text('$' + parseFloat(data.portfolio.extended_hours_equity));
         $('#marketValueExtendedHours .rowSubTitle').text('$' + parseFloat(data.portfolio.extended_hours_market_value));
-        $('#noOpenPositions').toggle(!data.positions.length);
-        $('#positionsListContent').toggle(!!data.positions.length);
-        if (data.positions.length) {
-            var rowItems = _.map(data.positions, function (position) {
+        $('#noOpenPositions').toggle(!positions.length);
+        $('#positionsListContent').toggle(!!positions.length);
+        if (positions.length) {
+            var rowItems = _.map(positions, function (position) {
                 tickers.push(position.symbol);
                 var quantity = parseInt(position.quantity);
                 var price = parseFloat(position.average_buy_price);
