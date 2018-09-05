@@ -1,0 +1,70 @@
+#registrationTitle {
+    color: rgb(63, 81, 181);
+    font-family: Helvetica;
+    font-size: 80px;
+    height: 200px;
+    line-height: 200px;
+    text-align: center;
+    width: 100%;
+}
+
+#selectionContent {
+    margin: 0 auto;
+}
+
+#loginSelectBtn,
+#signupSelectBtn {
+    display: block;
+    font-size: 50px;
+    height: 250px;
+    margin: 125px auto;
+    max-width: 80%;
+    text-transform: none;
+    width: 720px;
+}
+
+#loginContent,
+#signupContent {
+    background-color: #f5f5f5;
+    border: 1px solid rgb(63, 81, 181);
+    display: none;
+    margin: 0 auto;
+    padding: 50px;
+    width: 400px;
+}
+
+#loginContent .formHeader,
+#signupContent .formHeader {
+    color: rgb(63, 81, 181);
+    margin: 0 auto 30px;
+    width: 300px;
+}
+
+#loginContent div,
+#signupContent div {
+    display: block;
+    margin: 0 auto;
+}
+
+#registrationContent .formInput {
+    font-size: 30px;
+    height: 60px;
+}
+
+#registrationContent .formInputLabel {
+    font-size: 16px;
+}
+
+#loginBtn,
+#signupBtn {
+    display: block;
+    height: 60px;
+    margin: 30px auto 0;
+    width: 300px;
+}
+
+#loginContent #createAnAccountLinkContent,
+#signupContent #alreadyHaveAnAccountLinkContent {
+    margin-top: 50px;
+    text-align: center;
+}

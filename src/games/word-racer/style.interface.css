@@ -1,0 +1,85 @@
+#createRoomBtn,
+#browseRoomsBtn,
+#startGameBtn {
+    display: block;
+    font-size: 50px;
+    height: 250px;
+    margin: 125px auto;
+    max-width: 80%;
+    text-transform: none;
+    width: 720px;
+}
+
+#loadingGameRoomsContent {
+    text-align: center;
+}
+
+#loadingGameRoomsProgressBar {
+    height: 8px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+#noGameRoomsAvailable,
+#gameRoomsListContent {
+    display: none;
+}
+
+#noGameRoomsAvailable {
+    text-align: center;
+}
+
+ul#gameRoomList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul#gameRoomList li {
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    line-height: 40px;
+    -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+    transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+ul#gameRoomList li:hover {
+    background-color: #f6f6f6;
+}
+
+ul#gameRoomList li.currentGameRoom {
+    background-color: rgb(255, 251, 230);
+    border: 1px solid #000;
+}
+
+ul#gameRoomList li .roomTitle {
+    font-size: 20px;
+}
+
+ul#gameRoomList li:hover .roomTitle {
+    font-size: 26px;
+}
+
+ul#gameRoomList li .roomSubTitle {
+    font-size: 16px;
+}
+
+ul#gameRoomList li:hover .roomSubTitle {
+    font-size: 22px;
+}
+
+ul#gameRoomList li:last-child {
+    border: none;
+}
+
+ul#gameRoomList li > div {
+    margin-left: 20px;
+}
+
+ul#gameRoomList .roomTitle,
+ul#gameRoomList .roomSubTitle {
+
+}
