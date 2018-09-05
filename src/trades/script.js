@@ -1,3 +1,6 @@
+const isLocal = false;
+const host = isLocal ? 'http://127.0.0.1' : document.location.origin;
+
 var tickers = [];
 
 $(document).ready(function () {
@@ -15,7 +18,7 @@ $('#reload').on('click', loadData);
 function loadData() {
     tickers = [];
     // $.getJSON('sample-data.json').done(function (data) {
-    $.getJSON(document.location.origin + ':8002/accountdata').done(function (data) {
+    $.getJSON(`${host}:8002/stocks-portfolio`).done(function (data) {
         var positions = data.positions.sort(function ($0, $1) { return $0.symbol.localeCompare($1.symbol); });
         $('#equityValue .rowSubTitle').text('$' + parseFloat(data.portfolio.equity));
         $('#marketValue .rowSubTitle').text('$' + parseFloat(data.portfolio.market_value));
