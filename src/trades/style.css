@@ -1,0 +1,209 @@
+body {
+    background-color: rgb(244, 244, 244);
+    font-family: Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#content {
+    height: 100%;
+    width: 100%;
+}
+
+#loadingDataHeaderContent,
+#loadedDataHeaderContent,
+#loadingDataContent,
+#loadedDataContent,
+#noOpenPositions,
+#positionsListContent {
+    display: none;
+}
+
+#header {
+    background-color: rgb(34, 205, 153);
+    border-bottom: 3px solid rgb(53, 53, 53);
+    height: 270px;
+    width: 100%;
+}
+
+#loadingDataHeaderContent > div,
+#headerTitle {
+    color: rgb(53, 53, 53);
+    font-size: 60px;
+    font-weight: bold;
+    line-height: 140px;
+    text-align: center;
+    width: 100%;
+}
+
+#loadingDataHeaderContent > div {
+    height: 270px;
+    line-height: 270px;
+}
+
+#headerTitle {
+    height: 150px;
+    padding-top: 10px;
+}
+
+#headerContent {
+    display: table;
+    height: 110px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+#headerContentRow {
+    display: table-row;
+}
+
+#headerContentRow > div {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#headerContentRow .rowTitle {
+    color: rgb(233, 233, 233);
+    font-weight: bold;
+}
+
+#headerContentRow .rowSubTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 16px;
+}
+
+#logo,
+#reload {
+    text-align: center;
+}
+
+#logo,
+#reload {
+    cursor: pointer;
+    -webkit-transition: background-color 0.5s ease;
+    -moz-transition: background-color 0.5s ease;
+    -o-transition: background-color 0.5s ease;
+    -ms-transition: background-color 0.5s ease;
+    transition: background-color 0.5s ease;
+}
+
+#logo:hover,
+#reload:hover {
+    background-color: rgb(35, 224, 167);
+}
+
+#logo > img {
+    height: 100px;
+}
+
+#reload > img {
+    height: 70px;
+}
+
+#loadingDataContent,
+#noOpenPositions {
+    font-size: 40px;
+    line-height: 300px;
+    height: 300px;
+    text-align: center;
+}
+
+ul#positionsList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul#positionsList li {
+    background-color: rgb(233, 233, 233);
+    border-bottom: 1px solid #ccc;
+    color: rgb(53, 53, 53);
+    cursor: pointer;
+    line-height: 40px;
+    -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+    transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+ul#positionsList li:hover {
+    background-color: rgb(250, 250, 250);
+}
+
+ul#positionsList li .rowTitle {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+ul#positionsList li:hover .rowTitle {
+    font-size: 24px;
+}
+
+ul#positionsList li .rowSubTitle {
+    font-size: 16px;
+}
+
+ul#positionsList li:hover .rowSubTitle {
+    font-size: 20px;
+}
+
+ul#positionsList li:last-child {
+    border: none;
+}
+
+ul#positionsList .rowTitle,
+ul#positionsList .rowSubTitle {
+    margin-left: 20px;
+}
+
+.rowLeftSection {
+    float: left;
+    width: 50%;
+}
+
+.rowRightSection {
+    float: right;
+    padding-top: 20px;
+    text-align: right;
+    width: 50%;
+}
+
+.rowBubble {
+    background-color: rgb(34, 205, 153);
+    border-radius: 20px;
+    color: #fff;
+    margin-right: 20px;
+    padding: 12px 20px;
+}
+
+.marketValue,
+.lastTradePriceExtendedHours {
+    background-color: rgb(255, 78, 45);
+}
+
+.clearfix:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.disable-user-select,
+.disable-user-select:focus {
+    cursor: default;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.disable-user-select::-moz-selection,
+.disable-user-select::selection {
+    background: transparent;
+}
