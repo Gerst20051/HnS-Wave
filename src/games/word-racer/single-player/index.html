@@ -291,7 +291,8 @@ function log(key, value) {
 loadJSONFiles();
 
 function loadJSONFiles() {
-    const jsonPath = 'https://rawgit.com/Gerst20051/HnS-Wave/master/src/games/word-racer';
+    // const jsonPath = 'https://rawgit.com/Gerst20051/HnS-Wave/master/src/games/word-racer';
+    const jsonPath = 'https://raw.githubusercontent.com/Gerst20051/HnS-Wave/master/src/games/word-racer';
     const getDictionaries = $.getJSON(`${jsonPath}/single-player/dictionary.json`);
     const getFrequencies = $.getJSON(`${jsonPath}/single-player/frequencies.json`);
     const getGrids = $.getJSON(`${jsonPath}/round-grids.json`);
