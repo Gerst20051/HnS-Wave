@@ -32,8 +32,8 @@ var Node,
 loadRoundGridsFile();
 
 function loadRoundGridsFile() {
-    const jsonPath = 'https://raw.githubusercontent.com/Gerst20051/HnS-Wave/wordracer/src/games/word-racer/';
-    $.getJSON(jsonPath + 'round-grids.json').done(function (gridJSON) {
+    const jsonPath = 'https://rawgit.com/Gerst20051/HnS-Wave/master/src/games/word-racer';
+    $.getJSON(`${jsonPath}/round-grids.json`).done(function (gridJSON) {
         grids = gridJSON;
     });
 }
