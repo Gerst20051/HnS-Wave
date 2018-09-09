@@ -379,6 +379,7 @@ styleBorderTop,
 looping = 0,
 doLoop = true,
 loopStarted = false,
+noop = function(){},
 nop = function(){},
 debug = function(){
 	if ("console" in window) return function(msg){
