@@ -719,14 +719,17 @@ floor = function(num){ // return floor of number
 ceil = function(num){ // return ceil of number
 	return Math.ceil(num);
 },
-round = function(num){ // return ronud of number
+round = function(num){ // return round of number
 	return Math.round(num);
 },
 dist = function(x1, y1, x2, y2){ // calculates the distance between two points
 	var xs = x2 - x1, ys = y2 - y1;
 	return Math.sqrt(xs * xs + ys * ys);
 },
-diff = function(num1, num2){
+lineDistance = function(p1, p2) { // calculates the distance between two points
+	return dist(p1.x, p1.y, p2.x, p2.y);
+},
+diff = function(num1, num2){ // calculates the difference between two numbers
 	return num2 - num1;
 },
 abs = function(num){ // take the absolute value of a number
@@ -738,7 +741,7 @@ log = function(num){ // take the logarithm of a number
 pow = function(num, exponent){ // raise a number to an exponent
 	return Math.pow(num, exponent);
 },
-cos = function(deg){ // cake the cosine of an angle
+cos = function(deg){ // take the cosine of an angle
 	return Math.cos(deg);
 },
 sin = function(deg){ // take the sin of an angle
@@ -761,6 +764,13 @@ minute = function(){ // return current minute
 },
 second = function(){ // return current second
 	return new Date().getSeconds();
+},
+isPointInPoly = function(poly, point){ // return boolean for if a point is inside a polygon path
+	for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+		((poly[i].y <= point.y && point.y < poly[j].y) || (poly[j].y <= point.y && point.y < poly[i].y))
+		&& (point.x < (poly[j].x - poly[i].x) * (point.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
+		&& (c = !c);
+	return c;
 },
 /* Coloring */
 background = function(r, g, b, a){ // set the background color
@@ -962,6 +972,9 @@ gridCoordinates = function(interval){ // return the coordinates of each line int
 },
 cloneArray = function(array){ // return a copy of the supplied array
 	return array.slice(0);
+},
+last = function(array){
+	return array[array.length - 1];
 };
 
 function Canvas(canvas){
