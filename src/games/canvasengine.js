@@ -881,7 +881,7 @@ randomValueForColor = function(){ // random color value using arc4random
 	return (Math.random() * 4294967296) % 256.0;
 },
 randomColor = function(){ // store a random color in a variable
-	return color(random(0, 255), random(0, 255), random(0, 255));
+	return color(randomValueForColor(0, 255), randomValueForColor(0, 255), randomValueForColor(0, 255));
 },
 naiveRandomColor = function(){ // store a naive random color in a variable
 	return color(naiveRandomValueForColor(), naiveRandomValueForColor(), naiveRandomValueForColor());
