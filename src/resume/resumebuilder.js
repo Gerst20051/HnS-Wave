@@ -85,7 +85,7 @@ ResumeBuilder.prototype.parseData = function(){
 	if (data.name || data.title || data.address || data.location || data.number || data.email || data.url || data.statement) {
 		this.modules.push('title');
 	}
-	if (data.skills && data.skills.length) {
+	if ((data.skills && data.skills.length) || (data.main_skills && data.main_skills.length)) {
 		this.modules.push('skills');
 	}
 	if (data.certifications && data.certifications.length) {
@@ -153,12 +153,28 @@ ResumeBuilder.prototype.addTitleModule = function(){
 		html.push('<div>' + data.email + '</div>');
 	}
 	if (data.url && data.url.length) {
-		html.push('<div>' + data.url + '</div>');
+		if (typeof data.url === 'string') {
+			html.push('<div>' + data.url + '</div>');
+		} else {
+			data.url.forEach(url => {
+				html.push('<div>' + url + '</div>');
+			});
+		}
 	}
 	html.push('</div>');
 	html.push('</div>');
 	if (data.statement && data.statement.length) {
-		html.push('<div id="statement" class="clear">' + data.statement + '</div>');
+		var isStatementString = typeof data.statement === 'string';
+		var statementId = isStatementString ? 'statementString' : 'statementList';
+		html.push('<div id="' + statementId + '" class="clear">');
+		if (isStatementString) {
+			html.push(data.statement);
+		} else {
+			html.push('<ul>');
+			html.push('<li>' + data.statement.join('</li><li>') + '</li>');
+			html.push('</ul>');
+		}
+		html.push('</div>');
 	}
 	html.push('</div>');
 	this.output.push(bbcode(html.join('')));
@@ -168,9 +184,20 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 	var html = [];
 	html.push('<div id="skillsModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Skills</div></div>');
-	html.push('<div class="rightcol"><b>Like: </b>');
-	html.push(this.data.skills.join(', '));
-	html.push('</div>');
+	var hasMainSkills = this.data.main_skills && this.data.main_skills.length;
+	if (hasMainSkills) {
+		html.push('<div class="rightcol"><b>Main: </b>');
+		html.push(this.data.main_skills.join(', '));
+		html.push('</div>');
+	}
+	if (this.data.skills && this.data.skills.length) {
+		if (hasMainSkills) {
+			html.push('<br>');
+		}
+		html.push('<div class="rightcol"><b>Like: </b>');
+		html.push(this.data.skills.join(', '));
+		html.push('</div>');
+	}
 	html.push('</div>');
 	this.output.push(bbcode(html.join('')));
 };
@@ -191,12 +218,26 @@ ResumeBuilder.prototype.addExperienceModule = function(){
 	html.push('<div class="rightcol">');
 	for (i = 0; i < experience.length; i++) {
 		html.push('<div class="experiencecontainer">');
-		html.push('<div><b>' + experience[i].title + '</b> – ' + experience[i].organization + '<span class="datespan">' + experience[i].startDate + ' - ' + experience[i].endDate + '</span></div>');
+		html.push('<div>');
+		html.push('<b>' + experience[i].title + '</b>');
+		if (experience[i].organization) {
+			html.push(' – ' + experience[i].organization);
+		}
+		html.push('<span class="datespan">' + experience[i].startDate + ' - ' + experience[i].endDate + '</span>');
+		html.push('</div>');
 		if (experience[i].technologies && experience[i].technologies.length) {
 			html.push('<div>' + experience[i].technologies.join(', ') + '</div>');
 		}
 		if (experience[i].responsibilities && experience[i].responsibilities.length) {
-			html.push('<div class="responsibilities">' + experience[i].responsibilities + '</div>');
+			html.push('<div class="responsibilities">');
+			if (typeof experience[i].responsibilities === 'string') {
+				html.push(experience[i].responsibilities);
+			} else {
+				html.push('<ul>');
+				html.push('<li>' + experience[i].responsibilities.join('</li><li>') + '</li>');
+				html.push('</ul>');
+			}
+			html.push('</div>');
 		}
 		html.push('</div>');
 	}

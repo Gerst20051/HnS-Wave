@@ -95,7 +95,7 @@ body {
 	margin-top:2px;
 }
 
-#titleModule #statement {
+#titleModule #statementString {
 	color:#666;
 	font-size:16px;
 	font-weight:bold;
@@ -104,6 +104,16 @@ body {
 	padding-bottom:20px;
 	text-align:justify;
 	width:720px;
+}
+
+#titleModule #statementList {
+	color:#666;
+	font-size:16px;
+	font-weight:bold;
+	line-height:1.4em;
+	margin:0 auto;
+	text-align:justify;
+	width:800px;
 }
 
 #titleModule #contact {
@@ -134,10 +144,6 @@ body {
 .resumemodule .desc {
 	margin-top:6px;
 	text-align:justify;
-}
-
-#skillsModule b {
-	margin-right:30px;
 }
 
 #experienceModule .experiencecontainer,
