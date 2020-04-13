@@ -3,13 +3,9 @@
   "title": "Senior Software Engineer",
   "number": "[url=tel:+17047408492]704-740-8492[/url]",
   "email": "[url=mailto:gerst20051@gmail.com]gerst20051@gmail.com[/url]",
-  "url": [
-    "[url=https://github.com/Gerst20051]https://github.com/Gerst20051[/url]",
-    "[url=https://www.linkedin.com/in/andrewgerst]https://www.linkedin.com/in/andrewgerst[/url]"
-  ],
   "statement": [
     "I am looking for something exceptional!",
-    "I was Passport's 12th employee! Now 300+ and acquired 3 companies!",
+    "I was Passport's 12th employee!",
     "I would love to learn about your team's culture and challenges!",
     "Feel free to reach out if you have any questions!",
     "Let’s discuss what you are looking for to see if I would be an excellent fit!"
@@ -138,20 +134,20 @@
       "startDate": "December 2013",
       "endDate": "April 2020",
       "responsibilities": [
-        "Developed the legacy monolith system using python, php, and mysql",
-        "Developed the legacy mobile apps using titanium and java",
-        "Developed the legacy web apps using jquery and gwt/java",
-        "Developed the legacy strings system to handle internationalization",
+        "Developed legacy monolith system using python, php, mysql",
+        "Developed legacy mobile apps using titanium and java",
+        "Developed legacy web apps using jquery and gwt/java",
+        "Developed legacy strings system to handle internationalization",
         "Rewrote the ios parking app in native swift",
         "Created the ios transit app in native swift",
         "Maintained the ios swift apps through multiple swift versions",
-        "Created the legacy local dev environment makefile",
-        "Created the vagrant dev environment using ansible which helped automate the configuration for production",
-        "Created the whitelabel apps on android, titanium, swift, web platforms",
+        "Created legacy local dev environment makefile",
+        "Created vagrant dev environment using ansible which helped automate the configuration for production",
+        "Created whitelabel apps on android, titanium, swift, web platforms",
         "Documented all of the systems and processes to make onboarding more efficient",
         "Created internal tools and scripts to make all developers more efficient",
         "Created an ansible playbook to make setting up and maintaining macbooks more efficient",
-        "Maintained the legacy python rate engine",
+        "Maintained legacy python rate engine",
         "Created the modern rate engine on aws lambda using node and dynamodb",
         "Mentored peers and junior engineers that has helped them develop and advance their careers",
         "Evaluated candidate programming challenge submissions",
@@ -179,7 +175,7 @@
   ],
   "education": [
     {
-      "degree": "Bachelor of Science (B.S.) Computer Science",
+      "degree": "Bachelor of Arts (B.A.) Computer Science",
       "university": "University of North Carolina at Chapel Hill",
       "startYear": 2011,
       "endYear": 2013,
