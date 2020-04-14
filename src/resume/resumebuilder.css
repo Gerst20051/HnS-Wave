@@ -52,6 +52,10 @@ body {
 	#titleModule {
 		margin-top:0;
 	}
+
+	#fullSkillsList {
+		display:none;
+	}
 }
 
 .resumemodule {

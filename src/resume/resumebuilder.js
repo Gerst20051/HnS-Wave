@@ -75,6 +75,7 @@ var ResumeBuilder = function(){
 		this.parseData();
 		this.addModules();
 		this.printResume();
+		this.addClickHandlers();
 	};
 };
 
@@ -85,7 +86,7 @@ ResumeBuilder.prototype.parseData = function(){
 	if (data.name || data.title || data.address || data.location || data.number || data.email || data.url || data.statement) {
 		this.modules.push('title');
 	}
-	if ((data.skills && data.skills.length) || (data.main_skills && data.main_skills.length)) {
+	if ((data.skills && (data.skills.length || Object.key(data.skills).length)) || (data.main_skills && data.main_skills.length)) {
 		this.modules.push('skills');
 	}
 	if (data.certifications && data.certifications.length) {
@@ -184,19 +185,33 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 	var html = [];
 	html.push('<div id="skillsModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Skills</div></div>');
-	var hasMainSkills = this.data.main_skills && this.data.main_skills.length;
-	if (hasMainSkills) {
-		html.push('<div class="rightcol"><b>Main: </b>');
-		html.push(this.data.main_skills.join(', '));
-		html.push('</div>');
-	}
-	if (this.data.skills && this.data.skills.length) {
-		if (hasMainSkills) {
-			html.push('<br>');
+	var isSkillsAnArray = this.data.skills && this.data.skills.length;
+	var isSkillsAnArrayOfObjects = isSkillsAnArray && typeof this.data.skills === 'object';
+	if (isSkillsAnArrayOfObjects) {
+		var hasFullSkillsList = !!this.data.skills.find(skill => skill.show === false && skill.full === true);
+		this.data.skills.filter(skill => skill.show).forEach(skill => {
+			html.push('<div class="rightcol"><b>' + skill.name + ': </b>');
+			html.push(skill.list.join(', '));
+			html.push('</div>');
+		});
+		if (hasFullSkillsList) {
+			html.push('<div id="fullSkillsList" class="rightcol"><br><a id="showFullSkillsList" href="#">Show Full Skills List</a></div>');
 		}
-		html.push('<div class="rightcol"><b>Like: </b>');
-		html.push(this.data.skills.join(', '));
-		html.push('</div>');
+	} else {
+		var hasMainSkills = this.data.main_skills && this.data.main_skills.length;
+		if (hasMainSkills) {
+			html.push('<div class="rightcol"><b>Main: </b>');
+			html.push(this.data.main_skills.join(', '));
+			html.push('</div>');
+		}
+		if (isSkillsAnArray) {
+			if (hasMainSkills) {
+				html.push('<br>');
+			}
+			html.push('<div class="rightcol"><b>Like: </b>');
+			html.push(this.data.skills.join(', '));
+			html.push('</div>');
+		}
 	}
 	html.push('</div>');
 	this.output.push(bbcode(html.join('')));
@@ -289,8 +304,19 @@ ResumeBuilder.prototype.addProjectsModule = function(){
 };
 
 ResumeBuilder.prototype.printResume = function(){
-	_this = this;
+	var _this = this;
 	$(this.selector).html(function(){
 		return _this.output.join('');
+	});
+};
+
+ResumeBuilder.prototype.addClickHandlers = function(){
+	var _this = this;
+	$(this.selector).find('#skillsModule').on('click', '#showFullSkillsList', function(e){
+		e.preventDefault();
+		var fullSkills = _this.data.skills.find(skill => skill.show === false && skill.full === true);
+		if (fullSkills && fullSkills.list && fullSkills.list.length) {
+			$('#fullSkillsList').html('<br>' + fullSkills.list.join(', '));
+		}
 	});
 };
