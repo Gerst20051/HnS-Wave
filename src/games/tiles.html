@@ -1,0 +1,114 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::                               
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:                           
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+                                
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:                                 
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+                                  
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#                           
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###                                  
+
+
+
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: :::::::::::
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Tiles (via Canvas Engine)</title>
+<script src="canvasengine.js"></script>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#canvaspane {
+  cursor: default;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+</div>
+<script>
+// [$]> rsync -zarvh src/games/tiles.html droplet:www/games
+// https://ggorlen.github.io
+// https://github.com/ggorlen/ggorlen.github.io/blob/5cb89ab09c4d7bb0348ba4de4c770cb53abb646a/index.html#L81-L127
+
+const makeTilePattern = (w, h, shrink = 6, min = 6) => {
+  const r = (x, y, w, h, d = 0) => {
+    if (d > 2 && (w < min || h < min || Math.random() > 0.95 || d > 10)) {
+      return true;
+    }
+    if (randomBoolean()) {
+      const xLine = Math.random() * (w - shrink * 2) + x + shrink;
+      if (
+        r(x, y, xLine - x, h, d + 1) ||
+        r(xLine, y, w - (xLine - x), h, d + 1)
+      ) {
+        res.push({ x, y, w, h, d });
+      }
+    } else {
+      const yLine = Math.random() * (h - shrink * 2) + y + shrink;
+      if (
+        r(x, y, w, yLine - y, d + 1) ||
+        r(x, yLine, w, h - (yLine - y), d + 1)
+      ) {
+        res.push({ x, y, w, h, d });
+      }
+    }
+  }
+  const res = [];
+  r(0, 0, w, h);
+  return res;
+};
+
+var setup = function(){
+  fullScreen();
+  // size(maxWidth, maxHeight);
+  canvas.width = maxWidth - 2;
+  canvas.height = maxHeight - 2;
+  translate(1, 1);
+  strokeWeight(2);
+  ctx.lineWidth = 2;
+  drawTiles();
+};
+
+var draw = function(){};
+
+function drawTiles() {
+  const tiles = makeTilePattern(canvas.width, canvas.height).reverse();
+  for (const { x, y, w, h, d } of tiles) {
+    ctx.fillStyle = `hsl(250, 0%, ${Math.random() * 60 + 20}%`;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeRect(x, y, w, h);
+  }
+}
+
+setInterval(drawTiles, 3E3);
+
+window.onload = function(){
+  window.canvas = new Canvas(document.getElementById("canvas1"));
+  window.ctx = canvas.ctx;
+  canvas.setup = window.setup;
+  canvas.draw = window.draw;
+  canvas.run();
+};
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>

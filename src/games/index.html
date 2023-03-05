@@ -39,6 +39,8 @@ body {
 <body>
 <div id="content"></div>
 <script>
+// [$]> rsync -zarvh src/games/index.html droplet:www/games
+
 function Game(name, hasEpilepsyWarning, notes) {
 	this.getHTML = function () {
 		let link = `${name}.html`;
@@ -88,6 +90,7 @@ const games = [
 	new Game('snake', true, 'use array keys to move, f: fullscreen, p: pause/play'),
 	new Game('sounds'),
 	new Game('tictactoe', true),
+	new Game('tiles'),
 	new Game('trianglesplitter'),
 	new Game('word-racer/index'),
 	new Game('word-racer/single-player/index'),
