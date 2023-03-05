@@ -2,16 +2,28 @@
 
 # update the index
 
+rsync -zarvh src/index.html droplet:www
+
+# update the games index
+
 rsync -zarvh src/games/index.html droplet:www/games
 
-# update the asset files
+# update the cdn asset files
 
 rsync -zarvh src/cdn/ droplet:www/cdn
+
+# update the mastery book files
+
+rsync -zarvh src/mastery/init.js droplet:www/mastery
+rsync -zarvh src/mastery/mastery.js droplet:www/mastery
+
+# update the game asset files
+
 rsync -zarvh src/games/audio/ droplet:www/games/audio
 rsync -zarvh src/games/fonts/ droplet:www/games/fonts
 rsync -zarvh src/games/images/ droplet:www/games/images
 
-# update the source files
+# update the engine source files
 
 rsync -zarvh src/games/canvasengine.js droplet:www/games
 rsync -zarvh src/games/imageengine.js droplet:www/games

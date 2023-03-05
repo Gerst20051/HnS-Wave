@@ -19,11 +19,10 @@
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <title>Pong (via Canvas Engine)</title>
-<!-- TODO: fix broken url http://alexgorbatchev.com -->
-<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
-<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js"></script>
+<script src="../cdn/syntaxhighlighter/shCore.js"></script>
+<script src="../cdn/syntaxhighlighter/shAutoloader.js"></script>
 <script src="canvasengine.js"></script>
-<link href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" rel="stylesheet" type="text/css">
+<link href="../cdn/syntaxhighlighter/shThemeDefault.css" rel="stylesheet" type="text/css">
 <style>
 body {
 	margin: 0;
@@ -205,12 +204,15 @@ window.onload = function(){
 	highlightSyntax();
 };
 
+// TODO: host syntax highlighter brushes on my cdn
+// https://codecrunch.comp.nus.edu.sg/js/syntaxhighlighter
+
 function highlightSyntax(){
         var path = function(){
                 var args = arguments, result = [], i;
 
                 for (i = 0; i < args.length; i++) {
-                        result.push(args[i].replace('@', 'http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/'));
+                        result.push(args[i].replace('@', 'http://hnswave.co/cdn/syntaxhighlighter/brushes/'));
                 }
 
                 return result;

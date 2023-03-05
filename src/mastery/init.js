@@ -1,4 +1,4 @@
-// TODO: fix broken url http://alexgorbatchev.com
+// TODO: replace "http://cdn.hnswave.co/cdn/" with "http://cdn.hnswave.co/"
 
 (function(){
 	var $w = window,
@@ -11,8 +11,8 @@
 		f = "getElementsByTagName",
 		g = $w.navigator.userAgent,
 		h = g.indexOf("Firefox") !== -1 || g.indexOf("Opera") !== -1 ? true : false,
-		i = ["http://getbootstrap.com/2.3.2/assets/css/bootstrap.css", "http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css", "mastery.css"],
-		j = ["http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js", "http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js", "http://cdn.hnswave.co/echo.js", "http://cdn.hnswave.co/print_r.js", "mastery.js"],
+		i = ["http://hnswave.co/cdn/css/bootstrap.css", "http://hnswave.co/cdn/syntaxhighlighter/shThemeDefault.css", "mastery.css"],
+		j = ["http://hnswave.co/cdn/syntaxhighlighter/shCore.js", "http://hnswave.co/cdn/syntaxhighlighter/shAutoloader.js", "http://hnswave.co/cdn/echo.js", "http://hnswave.co/cdn/print_r.js", "mastery.js"],
 		l = 0,
 		n,
 		m;

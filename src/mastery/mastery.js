@@ -26,12 +26,15 @@ function printData(){
 	document.writeln(name + " -> " + print_r(obj, true).trim() + "\n");
 }
 
+// TODO: host syntax highlighter brushes on my cdn
+// https://codecrunch.comp.nus.edu.sg/js/syntaxhighlighter
+
 function highlightSyntax(){
 	var path = function(){
 		var args = arguments, result = [], i;
 
 		for (i = 0; i < args.length; i++) {
-			result.push(args[i].replace('@', 'http://agorbatchev.typepad.com/pub/sh/3_0_83/scripts/'));
+			result.push(args[i].replace('@', 'http://hnswave.co/cdn/syntaxhighlighter/brushes/'));
 		}
 
 		return result;
