@@ -235,6 +235,10 @@ var colors = {
 	yellowgreen: "#9acd32"
 };
 
+var digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
 var keycode = {
 	getKeyCode: function(e){
 		var keycode = null;
@@ -318,7 +322,9 @@ keys = {
 	DOWN: 40,
 	A: 65,
 	D: 68,
+	F: 70,
 	P: 80,
+	R: 82,
 	S: 83,
 	W: 87,
 	F1: 112,
@@ -367,6 +373,7 @@ mouseIsPressed = false,
 screenIsTouched = false,
 numberOfTouches = 0,
 touchesList = [],
+activeMousePath = [],
 keyCode = 0,
 keyIsPressed = false,
 keyCodeList = [],
@@ -419,6 +426,20 @@ size = function(w, h){
 fullScreen = function(){ // adjust size of canvas to be fullscreen
 	c.fullScreen = true;
 	size(maxWidth, maxHeight);
+},
+requestFullscreen = function(){ // make the browser fullscreen
+	var elem = document.documentElement;
+	try {
+		if (elem.requestFullscreen) {
+			elem.requestFullscreen();
+		} else if (elem.msRequestFullscreen) {
+			elem.msRequestFullscreen();
+		} else if (elem.mozRequestFullScreen) {
+			elem.mozRequestFullScreen();
+		} else if (elem.webkitRequestFullscreen) {
+			elem.webkitRequestFullscreen();
+		}
+	} catch (err) {}
 },
 engage = function(){
 	ctx.globalAlpha = c.globalAlpha;
@@ -577,6 +598,7 @@ pathOffset = function(x, y){
 },
 path = function(steps){
 	var length = steps.length, i;
+	if (length < 2) return;
 	engage();
 	ctx.moveTo(steps[0].x, steps[0].y);
 	for (i = 1; i < length; i++) {
@@ -692,8 +714,23 @@ randomDouble = function(low, high){ // generate a random double
 randomBoolean = function(){ // generate a random boolean
 	return Math.random() < 0.5;
 },
-randomElement = function(array){ // return a random element from an array
+randomElement = function(array){ // return a random element from an array or arguments
+	if (1 < arguments.length) {
+		array = [].slice.call(arguments);
+	}
 	return array[random(0, array.length - 1)];
+},
+randomDigit = function(){ // return a random digit between 0 and 9
+	return digits[random(0, digits.length - 1)];
+},
+randomLetter = function(){ // return a random letter
+	return letters[random(0, letters.length - 1)];
+},
+first = function(array){ // return the first element in an array
+	return array[0];
+},
+last = function(array){ // return the last element in an array
+	return array[array.length - 1];
 },
 min = function(array){ // return min element from an array or arguments
 	if (1 < arguments.length) {
@@ -719,14 +756,26 @@ floor = function(num){ // return floor of number
 ceil = function(num){ // return ceil of number
 	return Math.ceil(num);
 },
-round = function(num){ // return ronud of number
+round = function(num){ // return round of number
 	return Math.round(num);
+},
+between = function (num, lower, upper, exclusive){ // return boolean for if number is between two values
+	return exclusive ? num > lower && num < upper : num >= lower && num <= upper;
+},
+clamp = function(num, min, max){ // clamp a number between two values
+	return Math.min(Math.max(num, min), max);
 },
 dist = function(x1, y1, x2, y2){ // calculates the distance between two points
 	var xs = x2 - x1, ys = y2 - y1;
 	return Math.sqrt(xs * xs + ys * ys);
 },
-diff = function(num1, num2){
+midpoint = function(x1, y1, x2, y2){ // calculates the midpoint between two points
+	return [(x1 + x2) / 2, (y1 + y2) / 2];
+},
+slope = function(x1, y1, x2, y2){ // calculates the slope between two points
+	return (y2 - y1) / (x2 - x1);
+},
+diff = function(num1, num2){ // calculates the difference between two numbers
 	return num2 - num1;
 },
 abs = function(num){ // take the absolute value of a number
@@ -738,14 +787,20 @@ log = function(num){ // take the logarithm of a number
 pow = function(num, exponent){ // raise a number to an exponent
 	return Math.pow(num, exponent);
 },
-cos = function(deg){ // cake the cosine of an angle
-	return Math.cos(deg);
+cos = function(radians){ // take the cosine of an angle in radians
+	return Math.cos(radians);
 },
-sin = function(deg){ // take the sin of an angle
-	return Math.sin(deg);
+sin = function(radians){ // take the sin of an angle in radians
+	return Math.sin(radians);
 },
-tan = function(deg){ // take the tangent of an angle
-	return Math.tan(deg);
+tan = function(radians){ // take the tangent of an angle in radians
+	return Math.tan(radians);
+},
+degreesToRadians = function(degrees){ // convert degrees into radians
+	return degrees * PI / 180;
+},
+createCoordinate = function(x, y){ // convert x and y arguments into an object
+	return { x, y };
 },
 time = function(){ // return current time in milliseconds
 	return 1 * new Date();
@@ -763,10 +818,10 @@ second = function(){ // return current second
 	return new Date().getSeconds();
 },
 /* Coloring */
-background = function(r, g, b, a){ // set the background color
+background = function(r, g, b, a = 1){ // set the background color
 	var oldFillStyle = c.fillStyle;
 	if (1 < arguments.length) {
-		c.background = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+		c.background = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 	} else {
 		c.background = r;
 	}
@@ -776,10 +831,10 @@ background = function(r, g, b, a){ // set the background color
 	paint();
 	c.fillStyle = oldFillStyle;
 },
-fill = function(r, g, b, a){ // fill color for shapes / text color
+fill = function(r, g, b, a = 1){ // fill color for shapes / text color
 	c.doFill = true;
 	if (1 < arguments.length) {
-		c.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+		c.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 	} else {
 		c.fillStyle = r;
 	}
@@ -787,10 +842,10 @@ fill = function(r, g, b, a){ // fill color for shapes / text color
 noFill = function(){ // no fill for shapes
 	c.doFill = false;
 },
-stroke = function(r, g, b, a){ // outline color for shapes / text color
+stroke = function(r, g, b, a = 1){ // outline color for shapes / text color
 	c.doStroke = true;
 	if (1 < arguments.length) {
-		c.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", 1)";
+		c.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 	} else {
 		c.strokeStyle = r;
 	}
@@ -803,9 +858,9 @@ strokeWeight = function(thickness){ // outline width for shapes
 noStroke = function(){ // no outline for shapes
 	c.doStroke = false;
 },
-color = function(r, g, b, a){ // store a color in a variable
+color = function(r, g, b, a = 1){ // store a color in a variable
 	if (1 < arguments.length) {
-		return "rgba(" + r + ", " + g + ", " + b + ", 1)";
+		return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 	} else {
 		return r;
 	}
@@ -960,8 +1015,42 @@ gridCoordinates = function(interval){ // return the coordinates of each line int
 	}
 	return coordinates;
 },
+/* Array */
+chunkArray = function(array, chunk_size){ // split an array into an array of smaller arrays
+	return Array(Math.ceil(array.length / chunk_size))
+		.fill()
+		.map((_, index) => index * chunk_size)
+		.map(begin => array.slice(begin, begin + chunk_size));
+},
 cloneArray = function(array){ // return a copy of the supplied array
 	return array.slice(0);
+},
+fillArray = function(length, value){ // return an array of length filled with value or result from function
+	if (value instanceof Function) {
+		return Array(length).fill().map(value);
+	}
+	return new Array(length).fill(value);
+},
+rotate = function(array, delay){ // rotate the values in an array at the provided interval
+	const intervalId = setInterval(function(){
+		array.push(array.shift());
+	}, delay);
+	return () => {
+		clearInterval(intervalId);
+	};
+},
+/* Function */
+debounce = function(func, timeout = 1E3){ // only call a function once within the timeout if called multiple times
+	let timer;
+	return (...args) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => { func.apply(this, args); }, timeout);
+	};
+},
+times = function(num, func){ // call a function the provided num of times
+	for (let i = 0; i < num; i++) {
+		func(i);
+	}
 };
 
 function Canvas(canvas){
@@ -1055,11 +1144,13 @@ var onMouseMoved = function(e){
 var onMousePressed = function(e){
 	mouseIsPressed = true;
 	mousePressed(e);
+	activeMousePath = [];
 };
 
 var onMouseReleased = function(e){
 	mouseIsPressed = false;
 	mouseReleased(e);
+	activeMousePath = [];
 };
 
 var onMouseClicked = function(e){
