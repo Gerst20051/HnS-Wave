@@ -11,7 +11,7 @@ Function.prototype.curry = function(){
 	};
 };
 
-var myImage,
+var myImageEngine,
 	canvasImage = image || nop,
 	image = nop, // display image
 	loadCollection = nop,
@@ -20,7 +20,7 @@ var myImage,
 	this.pathToImages = 'images/';
 	this.imageCollections = {
 		'duckhunt': [
-			['duckhuntbackground','.png'],
+			['background','.png'],
 			['crosshair','.png'],
 			['flare','.png'],
 			['ink_splatter','.png'],
@@ -129,7 +129,7 @@ var myImage,
 			return;
 		}
 		if (imagename.indexOf('.')) {
-			canvasImage.call([].slice.call(arguments));
+			canvasImage.apply(this, [].slice.call(arguments));
 		} else {
 			var imageArray = this.getImageArray(imagename), image;
 			if (imageArray) {
@@ -148,7 +148,7 @@ var myImage,
 		var imageArrayAndCollection = this.getImageArray(imagename, true), imageArray, audio;
 		if (imageArrayAndCollection && imageArrayAndCollection.length === 2 && imageArrayAndCollection[0]) {
 			imageArray = imageArrayAndCollection[0];
-			image = this.getImageFromArray(audioArray);
+			image = this.getImageFromArray(imageArray);
 			collection = imageArrayAndCollection[1];
 			if (image && image.canplay === false) {
 				image.callback = this.playImage.curry(audio, duration);

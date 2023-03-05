@@ -11,7 +11,7 @@ Function.prototype.curry = function(){
 	};
 };
 
-var mySound,
+var mySoundEngine,
 	sound = nop, // play sound
 	noSound = nop, // pause sound and reset to beginning
 	pauseSound = nop, // pause sound

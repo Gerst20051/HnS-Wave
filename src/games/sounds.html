@@ -45,9 +45,11 @@ var doFullScreen = true,
 		height: (doFullScreen) ? maxHeight : 400,
 		width: (doFullScreen) ? maxWidth : 400
 	},
-	isPaused = false,
+	isPaused = true,
 	sounds = getSoundList(),
 	soundIndex = -1;
+
+// TODO: figure out why this isn't working on ios mobile safari
 
 function getSoundList(){
 	var sounds = mySoundEngine.soundCollections, soundList = [], collection;
@@ -66,18 +68,35 @@ function loopThroughSounds(){
 var setup = function(){
 	fullScreen();
 	textSize(40);
-	loopThroughSounds();
 };
 
 var draw = function(){
 	background(colors.aqua);
-	text(sounds[soundIndex], 200, 200);
+	if (isPaused) {
+		text('Click, Tap, Or Press "P" To Play Sounds', 200, 200);
+	} else {
+		text(sounds[soundIndex], 200, 200);
+	}
 };
 
 var keyDown = function(){
 	if (keyCodeList[keys.P] === true) {
-		playPause();
+		if (isPaused) {
+			playPause();
+			loopThroughSounds();
+		}
 	}
+};
+
+var mouseClicked = function () {
+	if (isPaused) {
+		playPause();
+		loopThroughSounds();
+	}
+};
+
+var touchEnd = function () {
+	mouseClicked();
 };
 
 function playPause(){

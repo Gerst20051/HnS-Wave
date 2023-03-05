@@ -118,6 +118,7 @@ function Board(boardDimensions, numBombs) {
     };
 
     this.setBlockTextColors = function () {
+        // TODO: update to use fillArray
         for (let i = 0; i < BLOCK_TEXT_COLORS.length; i++) {
             BLOCK_TEXT_COLORS[i] = randomPastelColor();
         }

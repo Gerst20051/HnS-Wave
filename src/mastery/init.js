@@ -1,3 +1,5 @@
+// TODO: fix broken url http://alexgorbatchev.com
+
 (function(){
 	var $w = window,
 		$d = document,
