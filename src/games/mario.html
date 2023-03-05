@@ -173,7 +173,7 @@ Bullet.prototype = new GameObject();
 
 var Shell = function(parent){
 	this.parent = parent;
-	this.size = 10;
+	this.size = (parent.sizey * parent.scale) / 10;
 	this.x = parent.x;
 	this.y = parent.y;
 	this.dir = parent.dir;
@@ -188,7 +188,7 @@ var Shell = function(parent){
 	};
 
 	this.draw = function(){
-		var xoffset = (0 < this.dir) ? parent.scale : (parent.scale + parent.sizex * parent.scale) * this.dir;
+		var xoffset = this.dir === 1 ? parent.scale : -2 * (parent.sizex * parent.scale) - parent.scale;
 		if (parent.active) {
 			this.move();
 		}
@@ -197,7 +197,7 @@ var Shell = function(parent){
 		strokeWeight(1);
 		circle(
 			this.x + xoffset,
-			this.y - parent.sizey - (this.size * 2),
+			this.y - (parent.sizey * parent.scale) + parent.scale * 10 + (this.size / 2),
 			this.size
 		);
 	};
@@ -205,6 +205,7 @@ var Shell = function(parent){
 
 Shell.prototype = new GameObject();
 
+// TODO: what was the Player object for? it's a white triangle like the enemies that can shoot...
 var Player = function(x, y){
 	this.size = 25;
 	this.x = x || gameSize.width / 2;
@@ -290,7 +291,7 @@ var Player = function(x, y){
 Player.prototype = new GameObject();
 
 var Mario = function(x, y){
-	this.scale = 8;
+	this.scale = random(1, 50);
 	this.sizex = 12;
 	this.sizey = 16;
 	this.x = x || gameSize.width / 2;
@@ -359,28 +360,28 @@ var Mario = function(x, y){
 	this.draw = function(){
 		alpha(1);
 		noStroke();
-		/*
-		pathOffset(
-			this.x - (this.sizex * this.scale) + this.dir * this.scale,
-			this.y - (this.sizey * this.scale) + this.dir * this.scale
-		);
-		*/
+
+		// TODO: play around with pathOffset
+		// pathOffset(
+		// 	this.x - (this.sizex * this.scale) + this.dir * this.scale,
+		// 	this.y - (this.sizey * this.scale) + this.dir * this.scale
+		// );
+
+		// unscaled hat from origin
+		// path([
+		// 	{x: 3, y: 0},
+		// 	{x: 8, y: 0},
+		// 	{x: 8, y: 1},
+		// 	{x: 11, y: 1},
+		// 	{x: 11, y: 2},
+		// 	{x: 2, y: 2},
+		// 	{x: 2, y: 1},
+		// 	{x: 3, y: 1},
+		// 	{x: 3, y: 0}
+		// ]);
+
 		// hat
 		fill(colors.mariored);
-		/*
-		path([
-			{x: 3, y: 0},
-			{x: 8, y: 0},
-			{x: 8, y: 1},
-			{x: 11, y: 1},
-			{x: 11, y: 2},
-			{x: 2, y: 2},
-			{x: 2, y: 1},
-			{x: 3, y: 1},
-			{x: 3, y: 0}
-		]);
-		*/
-
 		path([
 			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 3, y: this.y - (this.sizey * this.scale) + this.scale * 0},
 			{x: this.x - (this.sizex * this.scale) + this.dir * this.scale * 8, y: this.y - (this.sizey * this.scale) + this.scale * 0},
@@ -450,11 +451,17 @@ var Mario = function(x, y){
 		]);
 
 		// eyes
+		fill(colors.black);
 		rect(this.x - (this.sizex * this.scale) + this.dir * this.scale * 7, this.y - (this.sizey * this.scale) + this.scale * 2, this.scale * 1, this.scale * 2);
 
-		// body
-		fill(colors.mario);
-		rect(this.x - (this.sizex * this.scale) + this.scale * 0, this.y - (this.sizey * this.scale) + this.scale * 10, this.scale * 12, this.scale * 3);
+		// body (subtracting 1 from the y position and the width makes it look better...)
+		fill(colors.mariobrown);
+		rect(
+			this.x - (this.sizex * this.scale) + (this.dir === -1 ? this.dir * this.scale * this.sizex : 0), // x
+			this.y - (this.sizey * this.scale) + this.scale * 10 - 1, // y
+			this.scale * 12 - 1, // width
+			this.scale * 3 // height
+		);
 
 		// shirt
 		fill(colors.mariobrown);
