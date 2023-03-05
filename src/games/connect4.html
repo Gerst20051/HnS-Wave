@@ -1,0 +1,600 @@
+<!--
+ ::::::::  :::::::::  ::::::::::     ::: ::::::::::: :::::::::: :::::::::       :::::::::  :::   :::
+:+:    :+: :+:    :+: :+:          :+: :+:   :+:     :+:        :+:    :+:      :+:    :+: :+:   :+: :+:
++:+        +:+    +:+ +:+         +:+   +:+  +:+     +:+        +:+    +:+      +:+    +:+  +:+ +:+
++#+        +#++:++#:  +#++:++#   +#++:++#++: +#+     +#++:++#   +#+    +:+      +#++:++#+    +#++:
++#+        +#+    +#+ +#+        +#+     +#+ +#+     +#+        +#+    +#+      +#+    +#+    +#+
+#+#    #+# #+#    #+# #+#        #+#     #+# #+#     #+#        #+#    #+#      #+#    #+#    #+#    #+#
+ ########  ###    ### ########## ###     ### ###     ########## #########       #########     ###
+
+
+
+    :::     ::::    ::: :::::::::  :::::::::  :::::::::: :::       :::       ::::::::  :::::::::: :::::::::   :::::::: :::::::::::
+  :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: :+:        :+:       :+:      :+:    :+: :+:        :+:    :+: :+:    :+:    :+:
+ +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+    +:+ +:+        +:+       +:+      +:+        +:+        +:+    +:+ +:+           +:+
++#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#:  +#++:++#   +#+  +:+  +#+      :#:        +#++:++#   +#++:++#:  +#++:++#++    +#+
++#+     +#+ +#+  +#+#+# +#+    +#+ +#+    +#+ +#+        +#+ +#+#+ +#+      +#+   +#+# +#+        +#+    +#+        +#+    +#+
+#+#     #+# #+#   #+#+# #+#    #+# #+#    #+# #+#         #+#+# #+#+#       #+#    #+# #+#        #+#    #+# #+#    #+#    #+#
+###     ### ###    #### #########  ###    ### ##########   ###   ###         ########  ########## ###    ###  ########     ###
+-->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Connect 4 (via Canvas Engine)</title>
+<script src="canvasengine.js"></script>
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+#canvaspane {
+    cursor: default;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<div id="canvaspane">
+<canvas id="canvas1" width="100" height="100"></canvas>
+</div>
+</div>
+<script>
+'use strict';
+
+var doFullScreenCanvas = true,
+    doFullScreenBoard = false,
+    canvasSize,
+    boardSize,
+    gameObjects = [],
+    numColumns = 7,
+    numRows = 6,
+    winLength = 4;
+
+function GameObject() {
+    this.destroy = function () {
+        this.destroyed = true;
+    };
+
+    this.setIntervalSeconds = function (seconds) {
+        if (this.interval && !this.intervalId) {
+            this.intervalId = setInterval(this.interval.bind(this), seconds * 1E3);
+        }
+    };
+
+    this.setPosition = function (newX, newY) {
+        this.x = newX;
+        this.y = newY;
+    };
+}
+
+GameObject.prototype = {
+    active: false,
+    destroyed: false,
+    draw: noop,
+    init: noop,
+    run: noop,
+    x: 0,
+    y: 0,
+};
+
+function GameBackground() {
+    this.color = randomPastelColor();
+
+    this.draw = function () {
+        background(this.color);
+    };
+}
+
+GameBackground.prototype = new GameObject;
+
+function Board() {
+    this.active = true;
+    this.blocks = [];
+    this.gameDraw = false;
+    this.gameOver = false;
+    this.gameWon = false;
+    this.isAiActive = false;
+    this.isPlayerFirstMove = true;
+    this.isPlayerTurn = true;
+
+    this.init = function () {
+        this.setColor();
+        this.setGridLinesColor();
+        this.setGridLinesStrokeWeight();
+        this.setBlockStrokeWeight();
+        this.setBlockPaddingPercentage();
+        this.setBlockDimensions();
+        this.setBoardMargins();
+        this.clearBlocks();
+        this.test();
+    };
+
+    this.test = function () {
+        // this.parseJsonBlocks('[{"column":0,"row":0,"index":0,"playerType":1},{"column":3,"row":0,"index":1,"playerType":2},{"column":0,"row":1,"index":2,"playerType":1},{"column":3,"row":1,"index":3,"playerType":2},{"column":0,"row":2,"index":4,"playerType":1},{"column":4,"row":0,"index":5,"playerType":2},{"column":4,"row":1,"index":6,"playerType":1},{"column":3,"row":2,"index":7,"playerType":2},{"column":3,"row":3,"index":8,"playerType":1},{"column":6,"row":0,"index":9,"playerType":2},{"column":5,"row":0,"index":10,"playerType":1},{"column":5,"row":1,"index":11,"playerType":2},{"column":4,"row":2,"index":12,"playerType":1},{"column":2,"row":0,"index":13,"playerType":2},{"column":5,"row":2,"index":14,"playerType":1},{"column":6,"row":1,"index":15,"playerType":2},{"column":1,"row":0,"index":16,"playerType":1},{"column":5,"row":3,"index":17,"playerType":2},{"column":2,"row":1,"index":18,"playerType":1},{"column":1,"row":1,"index":19,"playerType":2},{"column":6,"row":2,"index":20,"playerType":1},{"column":5,"row":4,"index":21,"playerType":2},{"column":2,"row":2,"index":22,"playerType":1},{"column":2,"row":3,"index":23,"playerType":2},{"column":1,"row":2,"index":24,"playerType":1},{"column":2,"row":4,"index":25,"playerType":2},{"column":3,"row":4,"index":26,"playerType":1},{"column":3,"row":5,"index":27,"playerType":2},{"column":2,"row":5,"index":28,"playerType":1},{"column":0,"row":3,"index":29,"playerType":2},{"column":1,"row":3,"index":30,"playerType":1},{"column":4,"row":3,"index":31,"playerType":2},{"column":4,"row":4,"index":32,"playerType":1},{"column":6,"row":3,"index":33,"playerType":2},{"column":6,"row":4,"index":34,"playerType":1},{"column":0,"row":4,"index":35,"playerType":2},{"column":1,"row":4,"index":36,"playerType":1},{"column":5,"row":5,"index":37,"playerType":2},{"column":4,"row":5,"index":38,"playerType":1},{"column":6,"row":5,"index":39,"playerType":2},{"column":1,"row":5,"index":40,"playerType":1},{"column":0,"row":5,"index":41,"playerType":2}]');
+        // this.parseJsonBlocks('[{"column":0,"row":0,"index":0,"playerType":1},{"column":3,"row":0,"index":1,"playerType":2},{"column":0,"row":1,"index":2,"playerType":1},{"column":3,"row":1,"index":3,"playerType":2},{"column":0,"row":2,"index":4,"playerType":1},{"column":4,"row":0,"index":5,"playerType":2},{"column":4,"row":1,"index":6,"playerType":1},{"column":3,"row":2,"index":7,"playerType":2},{"column":3,"row":3,"index":8,"playerType":1},{"column":6,"row":0,"index":9,"playerType":2},{"column":5,"row":0,"index":10,"playerType":1},{"column":5,"row":1,"index":11,"playerType":2},{"column":4,"row":2,"index":12,"playerType":1},{"column":2,"row":0,"index":13,"playerType":2},{"column":5,"row":2,"index":14,"playerType":1},{"column":6,"row":1,"index":15,"playerType":2},{"column":1,"row":0,"index":16,"playerType":1},{"column":5,"row":3,"index":17,"playerType":2},{"column":2,"row":1,"index":18,"playerType":1},{"column":1,"row":1,"index":19,"playerType":2},{"column":6,"row":2,"index":20,"playerType":1},{"column":5,"row":4,"index":21,"playerType":2},{"column":2,"row":2,"index":22,"playerType":1},{"column":2,"row":3,"index":23,"playerType":2},{"column":1,"row":2,"index":24,"playerType":1},{"column":2,"row":4,"index":25,"playerType":2},{"column":3,"row":4,"index":26,"playerType":1},{"column":3,"row":5,"index":27,"playerType":2},{"column":2,"row":5,"index":28,"playerType":1},{"column":0,"row":3,"index":29,"playerType":2},{"column":1,"row":3,"index":30,"playerType":1},{"column":4,"row":3,"index":31,"playerType":2},{"column":4,"row":4,"index":32,"playerType":1},{"column":6,"row":3,"index":33,"playerType":2},{"column":6,"row":4,"index":34,"playerType":1},{"column":0,"row":4,"index":35,"playerType":2},{"column":1,"row":4,"index":36,"playerType":1},{"column":5,"row":5,"index":37,"playerType":2},{"column":4,"row":5,"index":38,"playerType":1},{"column":6,"row":5,"index":39,"playerType":2},{"column":1,"row":5,"index":40,"playerType":1}]');
+        // this.parseJsonBlocks('[{"column":0,"row":0,"index":0,"playerType":1},{"column":3,"row":0,"index":1,"playerType":2},{"column":0,"row":1,"index":2,"playerType":1},{"column":3,"row":1,"index":3,"playerType":2},{"column":0,"row":2,"index":4,"playerType":1},{"column":4,"row":0,"index":5,"playerType":2},{"column":4,"row":1,"index":6,"playerType":1},{"column":3,"row":2,"index":7,"playerType":2},{"column":3,"row":3,"index":8,"playerType":1},{"column":6,"row":0,"index":9,"playerType":2},{"column":5,"row":0,"index":10,"playerType":1},{"column":5,"row":1,"index":11,"playerType":2},{"column":4,"row":2,"index":12,"playerType":1},{"column":2,"row":0,"index":13,"playerType":2},{"column":5,"row":2,"index":14,"playerType":1},{"column":6,"row":1,"index":15,"playerType":2},{"column":1,"row":0,"index":16,"playerType":1},{"column":5,"row":3,"index":17,"playerType":2},{"column":2,"row":1,"index":18,"playerType":1},{"column":1,"row":1,"index":19,"playerType":2},{"column":6,"row":2,"index":20,"playerType":1},{"column":5,"row":4,"index":21,"playerType":2},{"column":2,"row":2,"index":22,"playerType":1},{"column":2,"row":3,"index":23,"playerType":2},{"column":1,"row":2,"index":24,"playerType":1},{"column":2,"row":4,"index":25,"playerType":2},{"column":3,"row":4,"index":26,"playerType":1},{"column":3,"row":5,"index":27,"playerType":2},{"column":2,"row":5,"index":28,"playerType":1},{"column":0,"row":3,"index":29,"playerType":2},{"column":1,"row":3,"index":30,"playerType":1},{"column":4,"row":3,"index":31,"playerType":2},{"column":4,"row":4,"index":32,"playerType":1},{"column":6,"row":3,"index":33,"playerType":2},{"column":6,"row":4,"index":34,"playerType":1},{"column":0,"row":4,"index":35,"playerType":2},{"column":1,"row":4,"index":36,"playerType":1},{"column":5,"row":5,"index":37,"playerType":2},{"column":4,"row":5,"index":38,"playerType":1},{"column":6,"row":5,"index":39,"playerType":2}]');
+        // this.parseJsonBlocks('[{"column":2,"row":0,"index":0,"playerType":2},{"column":0,"row":0,"index":1,"playerType":1},{"column":2,"row":1,"index":2,"playerType":2},{"column":6,"row":0,"index":3,"playerType":1},{"column":0,"row":1,"index":4,"playerType":2},{"column":5,"row":0,"index":5,"playerType":1},{"column":6,"row":1,"index":6,"playerType":2},{"column":6,"row":2,"index":7,"playerType":1},{"column":5,"row":1,"index":8,"playerType":2},{"column":6,"row":3,"index":9,"playerType":1},{"column":5,"row":2,"index":10,"playerType":2},{"column":6,"row":4,"index":11,"playerType":1},{"column":5,"row":3,"index":12,"playerType":2},{"column":4,"row":0,"index":13,"playerType":1},{"column":0,"row":2,"index":14,"playerType":2},{"column":4,"row":1,"index":15,"playerType":1},{"column":2,"row":2,"index":16,"playerType":2},{"column":4,"row":2,"index":17,"playerType":1},{"column":6,"row":5,"index":18,"playerType":2},{"column":1,"row":0,"index":19,"playerType":1},{"column":2,"row":3,"index":20,"playerType":2}]');
+        // this.debugBlocks();
+        // this.checkWinningPatterns();
+    };
+
+    this.debugBlocks = function () {
+        this.blocks.push(new Block(this, 0, 3, this.blocks.length));
+        this.blocks.push(new Block(this, 1, 2, this.blocks.length));
+        this.blocks.push(new Block(this, 2, 1, this.blocks.length));
+        this.blocks.push(new Block(this, 3, 0, this.blocks.length));
+        this.blocks.push(new Block(this, 1, 5, this.blocks.length));
+        this.blocks.push(new Block(this, 1, 4, this.blocks.length));
+        this.blocks.push(new Block(this, 1, 3, this.blocks.length));
+        this.blocks.push(new Block(this, 1, 2, this.blocks.length));
+        this.checkWinningPatterns();
+    };
+
+    this.parseJsonBlocks = function (json) {
+        const jsonBlocks = JSON.parse(json);
+        for (let i = 0; i < jsonBlocks.length; i++) {
+            const block = jsonBlocks[i];
+            this.isPlayerTurn = block.playerType === PLAYER_TYPE.HUMAN;
+            this.blocks.push(new Block(this, block.column, block.row, block.index));
+        }
+        this.isPlayerTurn = true;
+    };
+
+    this.restartGame = function () {
+        this.init();
+        this.gameDraw = false;
+        this.gameOver = false;
+        this.gameWon = false;
+        this.alternatePlayerFirstMove();
+        this.isPlayerTurn = this.isPlayerFirstMove;
+    };
+
+    this.drawGame = function () {
+        this.gameDraw = true;
+    };
+
+    this.endGame = function () {
+        this.gameOver = true;
+    };
+
+    this.wonGame = function () {
+        this.gameWon = true;
+    };
+
+    this.toggleAiActive = function () {
+        this.isAiActive = !this.isAiActive;
+    };
+
+    this.alternatePlayerTurn = function () {
+        this.isPlayerTurn = !this.isPlayerTurn;
+    };
+
+    this.alternatePlayerFirstMove = function () {
+        this.isPlayerFirstMove = !this.isPlayerFirstMove;
+    };
+
+    this.setColor = function () {
+        this.color = randomPastelColor();
+    };
+
+    this.setGridLinesColor = function () {
+        this.gridLinesColor = randomPastelColor();
+    };
+
+    this.setGridLinesStrokeWeight = function () {
+        this.gridLinesStrokeWeight = 1;
+    };
+
+    this.setBlockStrokeWeight = function () {
+        this.blockStrokeWeight = 3;
+    };
+
+    this.setBlockPaddingPercentage = function () {
+        this.blockPaddingPercentage = .01;
+    };
+
+    this.setBlockDimensions = function () {
+        this.blockDimensions = {
+            height: floor(boardSize.height / numRows), // 6 rows
+            width: floor(boardSize.height / numColumns), // 7 columns
+        };
+        this.blockDimensions.padding = min(this.blockDimensions.height, this.blockDimensions.width) * this.blockPaddingPercentage,
+        this.boardDimensions = {
+            vertical: floor(boardSize.height / this.blockDimensions.height),
+            horizontal: floor(boardSize.width / this.blockDimensions.width),
+        };
+        this.numBlocks = this.boardDimensions.vertical * this.boardDimensions.horizontal;
+        this.blockDimensions.height -= this.boardDimensions.vertical * (2 * this.blockStrokeWeight);
+        this.blockDimensions.width -= this.boardDimensions.horizontal * (2 * this.blockStrokeWeight);
+    };
+
+    this.setBoardMargins = function () {
+        this.leftMargin = canvasSize.width > canvasSize.height ? (canvasSize.width - boardSize.width) / 2 : 0;
+        if (this.leftMargin === 0) {
+            this.leftMarginAdjustment = (boardSize.width - this.boardDimensions.horizontal * this.blockDimensions.width) / 2;
+        } else {
+            this.leftMarginAdjustment = 0;
+        }
+        this.topMargin = canvasSize.height > canvasSize.width ? (canvasSize.height - boardSize.height) / 2 : 0;
+        if (this.topMargin === 0) {
+            this.topMarginAdjustment = (boardSize.height - this.boardDimensions.vertical * this.blockDimensions.height) / 2;
+        } else {
+            this.topMarginAdjustment = 0;
+        }
+    };
+
+    this.clearBlocks = function () {
+        this.blocks = [];
+    };
+
+    this.addBlockToBoardColumn = function (column) {
+        const blocksInColumn = this.getCountOfBlocksInColumn(column);
+        this.blocks.push(new Block(this, column, blocksInColumn, this.blocks.length));
+    };
+
+    this.getBoardColumnFromCoordinates = function (x, y) {
+        const boardStartXCoord = this.leftMargin + this.leftMarginAdjustment;
+        const boardEndXCoord = this.leftMargin + this.leftMarginAdjustment + boardSize.width - (this.leftMarginAdjustment * 2);
+        if (between(x, boardStartXCoord, boardEndXCoord)) {
+            const insideBoardXCoord = x - boardStartXCoord;
+            const verticalLineSpacing = (boardEndXCoord - boardStartXCoord) / this.boardDimensions.horizontal;
+            return floor(insideBoardXCoord / verticalLineSpacing);
+        }
+        return undef;
+    };
+
+    this.areCoordsInside = function (x, y) {
+        const xCoordInside = between(x, this.leftMargin, this.leftMargin + boardSize.width);
+        const yCoordInside = between(y, this.topMargin, this.topMargin + boardSize.height);
+        return xCoordInside && yCoordInside;
+    };
+
+    this.drawBoard = function (isEnabled) {
+        if (!isEnabled) return;
+        noStroke();
+        fill(this.color);
+        rect(
+            this.leftMargin + this.leftMarginAdjustment,
+            this.topMargin + this.topMarginAdjustment,
+            boardSize.width - (this.leftMarginAdjustment * 2),
+            boardSize.height - (this.topMarginAdjustment * 2),
+        );
+    };
+
+    this.getBoardCorners = function () {
+        // top left
+        // top right
+        // bottom left
+        // bottom right
+        return [
+            [this.leftMargin + this.leftMarginAdjustment, this.topMargin + this.topMarginAdjustment], // top left
+            [this.leftMargin + this.leftMarginAdjustment + boardSize.width - (this.leftMarginAdjustment * 2), this.topMargin + this.topMarginAdjustment], // top right
+            [this.leftMargin + this.leftMarginAdjustment, this.topMargin + this.topMarginAdjustment + boardSize.height - (this.topMarginAdjustment * 2)], // bottom left
+            // [this.leftMargin + this.leftMarginAdjustment, canvasSize.height - this.topMargin - this.topMarginAdjustment], // bottom left
+            [this.leftMargin + this.leftMarginAdjustment + boardSize.width - (this.leftMarginAdjustment * 2), this.topMargin + this.topMarginAdjustment + boardSize.height - (this.topMarginAdjustment * 2)], // bottom right
+        ];
+    };
+
+    this.drawGridLines = function () {
+        const boardCorners = this.getBoardCorners();
+        const verticalLineSpacing = (boardCorners[1][0] - boardCorners[0][0]) / this.boardDimensions.horizontal;
+        const horizontalLineSpacing = (boardCorners[2][1] - boardCorners[0][1]) / this.boardDimensions.vertical;
+        strokeWeight(this.gridLinesStrokeWeight);
+        stroke(this.gridLinesColor);
+        // board border
+        line(boardCorners[0][0], boardCorners[0][1], boardCorners[1][0], boardCorners[1][1]); // top board border
+        line(boardCorners[0][0], boardCorners[0][1], boardCorners[2][0], boardCorners[2][1]); // left board border
+        line(boardCorners[2][0], boardCorners[2][1], boardCorners[3][0], boardCorners[3][1]); // bottom board border
+        line(boardCorners[3][0], boardCorners[3][1], boardCorners[1][0], boardCorners[1][1]); // right board border
+        // vertical lines
+        for (let i = 1; i < this.boardDimensions.horizontal; i++) {
+            const xOffset = i * verticalLineSpacing;
+            line(boardCorners[0][0] + xOffset, boardCorners[0][1], boardCorners[2][0] + xOffset, boardCorners[2][1]); // left board border
+        }
+        // horizontal lines
+        for (let i = 1; i < this.boardDimensions.vertical; i++) {
+            const yOffset = i * horizontalLineSpacing;
+            line(boardCorners[0][0], boardCorners[0][1] + yOffset, boardCorners[1][0], boardCorners[1][1] + yOffset); // top board border
+        }
+    };
+
+    this.drawBlocks = function () {
+        this.blocks.forEach(block => block.draw());
+    };
+
+    this.draw = function () {
+        this.setBlockDimensions();
+        this.setBoardMargins();
+        if (this.gameDraw) this.setColor();
+        this.drawBoard(true);
+        // this.drawBoard(false);
+        this.drawGridLines();
+        this.drawBlocks();
+    };
+
+    this.run = function () {
+        if (this.gameDraw || this.gameOver || this.gameWon) return;
+        if (this.isAiActive && !this.aiClickTimeoutId && !this.isPlayerTurn && !this.gameDraw && !this.gameOver && !this.gameWon) {
+            this.aiClickTimeoutId = setTimeout(this.aiClickHandler.bind(this), 1.5E3);
+        }
+    };
+
+    this.aiClickHandler = function () {
+        let selectedColumn = random(0, numColumns - 1);
+        let columnCount = this.getCountOfBlocksInColumn(selectedColumn);
+        do {
+            selectedColumn = random(0, numColumns - 1);
+            columnCount = this.getCountOfBlocksInColumn(selectedColumn);
+        } while (columnCount >= this.boardDimensions.vertical);
+        this.addBlockToBoardColumn(selectedColumn);
+        this.checkWinningPatterns();
+        this.alternatePlayerTurn();
+        this.aiClickTimeoutId = undef;
+    };
+
+    this.getCountOfBlocksInColumn = function (column) {
+        return this.blocks.filter(block => block.column === column).length;
+    };
+
+    this.getBlocksForPlayerType = function (playerType) {
+        return this.blocks.filter(block => block.playerType === playerType);
+    };
+
+    this.calculateAdjacentBlocksDirection = function (blockA, blockB) {
+        const x1 = blockA.column;
+        const y1 = blockA.row;
+        const x2 = blockB.column;
+        const y2 = blockB.row;
+        const dx = Math.abs(x1 - x2);
+        const dy = Math.abs(y1 - y2);
+        return { dx, dy };
+    }
+
+    this.areAdjacentBlocks = function (blockA, blockB) {
+        const { dx, dy } = this.calculateAdjacentBlocksDirection(blockA, blockB);
+        return dx + dy === 1;
+    };
+
+    this.areDiagonalBlocks = function (blockA, blockB) {
+        const { dx, dy } = this.calculateAdjacentBlocksDirection(blockA, blockB);
+        return dx === 1 && dy === 1;
+    };
+
+    this.isMatchingSlope = function (blockSlope, blockA, blockB) {
+        return blockSlope === slope(blockA.column, blockA.row, blockB.column, blockB.row);
+    };
+
+    this.getSlopeForBlockIndexes = function (blocks, blockIndexes) {
+        if (blockIndexes.length >= 2) {
+            const blockA = blocks.find(block => block.index === blockIndexes[0]);
+            const blockB = blocks.find(block => block.index === blockIndexes[1]);
+            return slope(blockA.column, blockA.row, blockB.column, blockB.row);
+        }
+    };
+
+    this.calculateMaxAdjacentBlocks = function (blocks, adjacentBlocks, visitedBlockIndexes) {
+        const blockSlope = this.getSlopeForBlockIndexes(blocks, visitedBlockIndexes);
+        const unvisitedAdjacentBlocks = adjacentBlocks.filter(adjacentBlock => !visitedBlockIndexes.includes(adjacentBlock.index));
+        if (!unvisitedAdjacentBlocks.length) return visitedBlockIndexes;
+        const adjacentBlockIndexes = [];
+        for (let i = 0; i < unvisitedAdjacentBlocks.length; i++) {
+            const originBlock = blocks.find(block => block.index === visitedBlockIndexes[0]);
+            if (blockSlope !== undef) {
+                const matchingSlopeA = this.isMatchingSlope(blockSlope, originBlock, unvisitedAdjacentBlocks[i]);
+                const matchingSlopeB = this.isMatchingSlope(blockSlope, unvisitedAdjacentBlocks[i], originBlock);
+                if (!matchingSlopeA && !matchingSlopeB) continue;
+            }
+            const blockIndexes = this.calculateMaxAdjacentBlocks(
+                blocks,
+                blocks.filter(block => this.areAdjacentBlocks(unvisitedAdjacentBlocks[i], block) || this.areDiagonalBlocks(unvisitedAdjacentBlocks[i], block)),
+                [...visitedBlockIndexes, unvisitedAdjacentBlocks[i].index]
+            );
+            adjacentBlockIndexes.push(blockIndexes);
+        }
+        if (!adjacentBlockIndexes.length) return visitedBlockIndexes;
+        const adjacentBlockMaxIndex = adjacentBlockIndexes.reduce((maxArrayIndex, array, index) => array.length > adjacentBlockIndexes[maxArrayIndex].length ? index : maxArrayIndex, 0);
+        return adjacentBlockIndexes[adjacentBlockMaxIndex];
+    };
+
+    this.hasWinningPattern = function (blocks) {
+        for (let i = 0; i < blocks.length; i++) {
+            const adjacentAndDiagonalBlocks = blocks.filter(block => this.areAdjacentBlocks(blocks[i], block) || this.areDiagonalBlocks(blocks[i], block));
+            const maxAdjacentBlocks = this.calculateMaxAdjacentBlocks(blocks, adjacentAndDiagonalBlocks, [blocks[i].index]);
+            if (maxAdjacentBlocks.length >= winLength) return true;
+        }
+        return false;
+    };
+
+    this.isEmpty = function () {
+        return this.blocks.length === 0;
+    };
+
+    this.isFull = function () {
+        return this.blocks.length === numColumns * numRows;
+    };
+
+    this.checkWinningPatterns = function () {
+        const playerBlocks = this.getBlocksForPlayerType(PLAYER_TYPE.HUMAN);
+        if (this.hasWinningPattern(playerBlocks)) {
+            this.wonGame();
+            return;
+        }
+        const aiBlocks = this.getBlocksForPlayerType(PLAYER_TYPE.AI);
+        if (this.hasWinningPattern(aiBlocks)) {
+            this.endGame();
+            return;
+        }
+        if (this.isFull()) {
+            this.drawGame();
+        }
+    };
+
+    this.debug = function () {
+        //> gameObjects.find(obj => obj instanceof Board).debug()
+        console.log(JSON.stringify(this.blocks.map(block => ({
+            column: block.column,
+            row: block.row,
+            index: block.index,
+            playerType: block.playerType,
+        }))));
+    };
+
+    this.init();
+}
+
+Board.prototype = new GameObject;
+
+const PLAYER_TYPE = {
+    HUMAN: 1,
+    AI: 2,
+};
+
+function Block(board, column, row, index) {
+    this.board = board;
+    this.column = column;
+    this.row = row;
+    this.index = index;
+    this.playerType = this.board.isPlayerTurn ? PLAYER_TYPE.HUMAN : PLAYER_TYPE.AI;
+    this.animating = true;
+
+    this.init = function () {
+        this.setIntervalSeconds(.001);
+        this.interval();
+    };
+
+    this.interval = function () {
+        const boardCorners = this.board.getBoardCorners();
+        const horizontalLineSpacing = (boardCorners[2][1] - boardCorners[0][1]) / this.board.boardDimensions.vertical;
+
+        if (!this.y) this.y = boardCorners[0][1];
+
+        const rowAdjustment = this.row * horizontalLineSpacing;
+        const finalY = boardCorners[2][1] - rowAdjustment - (horizontalLineSpacing / 2);
+
+        if (this.y < finalY) {
+            this.y += 5;
+        } else {
+            this.y = finalY;
+            this.animating = false;
+        }
+    };
+
+    this.draw = function () {
+        this.radius = this.board.blockDimensions.width / 3;
+        const primaryColor = colors.red;
+        const secondaryColor = colors.green;
+        strokeWeight(this.board.blockStrokeWeight);
+        if (this.playerType === PLAYER_TYPE.HUMAN) {
+            stroke(secondaryColor);
+            fill(this.board.gameWon ? randomPastelColor() : secondaryColor);
+        }
+        if (this.playerType === PLAYER_TYPE.AI) {
+            stroke(primaryColor);
+            fill(this.board.gameOver ? randomPastelColor() : primaryColor);
+        }
+        const boardCorners = this.board.getBoardCorners();
+        const verticalLineSpacing = (boardCorners[1][0] - boardCorners[0][0]) / this.board.boardDimensions.horizontal;
+        const horizontalLineSpacing = (boardCorners[2][1] - boardCorners[0][1]) / this.board.boardDimensions.vertical;
+        this.x = this.column * verticalLineSpacing;
+        circle(boardCorners[0][0] + this.x + verticalLineSpacing / 2, this.y, this.radius);
+    };
+
+    this.init();
+}
+
+Block.prototype = new GameObject;
+
+function determineCanvasAndBoardSize() {
+    canvasSize = {
+        height: doFullScreenCanvas ? maxHeight : 900,
+        width: doFullScreenCanvas ? maxWidth : 900,
+    };
+    boardSize = {
+        height: doFullScreenBoard ? canvasSize.height : min(canvasSize.height, canvasSize.width),
+        width: doFullScreenBoard ? canvasSize.width : min(canvasSize.height, canvasSize.width),
+    };
+}
+
+var setup = function () {
+    determineCanvasAndBoardSize()
+    if (doFullScreenCanvas) {
+        fullScreen();
+    } else {
+        size(canvasSize.width, canvasSize.height);
+    }
+    gameObjects.push(new GameBackground());
+    gameObjects.push(new Board());
+};
+
+var draw = function () {
+    determineCanvasAndBoardSize()
+    gameObjects.forEach(obj => {
+        obj.active && obj.run && obj.run();
+        !obj.destroyed && obj.draw && obj.draw();
+    });
+};
+
+var windowResized = function () {
+    determineCanvasAndBoardSize();
+};
+
+var orientationChanged = function () {
+    windowResized();
+};
+
+var keyUp = function (e) {
+    const board = gameObjects.find(obj => obj instanceof Board);
+    if ((board.gameDraw || board.gameOver || board.gameWon) && [ keys.ENTER, keys.RETURN, keys.SPACE ].includes(keycode.getKeyCode(e))) {
+        board.restartGame();
+        return;
+    }
+    if (board.isEmpty() && keycode.getKeyCode(e) === keys.A) {
+        board.toggleAiActive();
+        return;
+    }
+    if (keycode.getKeyCode(e) === keys.R) {
+        board.restartGame();
+        return;
+    }
+};
+
+var mouseClicked = function () {
+    const board = gameObjects.find(obj => obj instanceof Board);
+    if (board.gameDraw || board.gameOver || board.gameWon) {
+        board.restartGame();
+        return;
+    }
+    if (board.isAiActive && !board.isPlayerTurn) return;
+    const clickedBoard = board.areCoordsInside(mouseX, mouseY);
+    if (clickedBoard) {
+        if (board.blocks.find(block => block.animating)) {
+            return;
+        }
+        const columnClicked = board.getBoardColumnFromCoordinates(mouseX, mouseY);
+        const columnCount = board.getCountOfBlocksInColumn(columnClicked);
+        if (columnClicked !== undef && columnCount < board.boardDimensions.vertical) {
+            board.addBlockToBoardColumn(columnClicked);
+            board.checkWinningPatterns();
+            board.alternatePlayerTurn();
+        }
+    }
+};
+
+window.onload = function () {
+    window.canvas = new Canvas(document.getElementById('canvas1'));
+    window.ctx = canvas.ctx;
+    canvas.setup = window.setup;
+    canvas.draw = window.draw;
+    canvas.run();
+};
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
