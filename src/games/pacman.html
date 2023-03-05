@@ -490,10 +490,11 @@ var Ghost = function (ghostType) {
     this.x = spawnCoordinate[0];
     this.y = spawnCoordinate[1];
 
-    if (ghostType === RED) {
-        this.x = ;
-        this.y = ;
-    }
+    // TODO: fix this what was it for?
+    // if (ghostType === RED) {
+    //     this.x = ;
+    //     this.y = ;
+    // }
 
     this.prevDir = NO_DIRECTION;
     this.type = GHOST;
@@ -567,9 +568,10 @@ var Ghost = function (ghostType) {
     this.chooseRandomDirection = function () {
         var possibleDirections = [LEFT, UP, RIGHT, DOWN],
             newDirection = NO_DIRECTION;
-        do {
-             newDirection = randomElement(possibleDirections);
-        } while (newDirection === this.prevDir && ); // TODO
+        newDirection = randomElement(possibleDirections);
+        // do {
+        //      newDirection = randomElement(possibleDirections);
+        // } while (newDirection === this.prevDir && ); // TODO
         this.dir = newDirection;
         this.prevDir = newDirection;
     };
