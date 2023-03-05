@@ -423,7 +423,8 @@ size = function(w, h){
 	}
 	canvas.size(w, h);
 },
-fullScreen = function(){ // adjust size of canvas to be fullscreen
+fullScreenCanvas = function(){ // adjust size of canvas to be fullscreen
+	// we can't use just "fullScreen" because firefox defines this as a variable
 	c.fullScreen = true;
 	size(maxWidth, maxHeight);
 },

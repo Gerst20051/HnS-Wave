@@ -346,7 +346,7 @@ function Scene() {
 }
 
 var setup = () => {
-  fullScreen();
+  fullScreenCanvas();
   noStroke();
 };
 

@@ -91,7 +91,7 @@ var setup = function(){
 };
 
 var draw = function(){
-	fullScreen();
+	fullScreenCanvas();
 	canvasObjects.forEach(function(obj){
 		obj.active && obj.run && obj.run();
 		obj.draw && obj.draw();

@@ -262,7 +262,7 @@ Scene = function () {
 
 var setup = function () {
     if (doFullScreen) {
-        fullScreen();
+        fullScreenCanvas();
     } else {
         size(canvasSize.width, canvasSize.height);
     }

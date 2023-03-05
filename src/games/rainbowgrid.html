@@ -207,7 +207,7 @@ var setup = function(){
 };
 
 var draw = function(){
-	fullScreen();
+	fullScreenCanvas();
 	canvasObjects.forEach(function(obj){
 		obj.draw && obj.draw();
 	});
