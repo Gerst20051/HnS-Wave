@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>UTC Converter</title>
+<style>
+body {
+  font-family: monospace;
+  line-height: 1.7;
+}
+
+#content {
+  margin: 0 auto;
+  max-width: 90%;
+  text-align: center;
+  width: 980px;
+}
+
+#title {
+  color: #dbcdf0;
+}
+
+input[type='text'] {
+  border: 0 none;
+  font-family: Consolas, 'courier new', courier, monospace;
+  font-size: 16px;
+  margin: 5px;
+  max-width: 80%;
+  outline: 1px solid #dbcdf0;
+  padding: 5px;
+  text-align: center;
+  width: 970px;
+}
+
+pre {
+  font-weight: bold;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div id="content">
+<br>
+<h1 id="title">UTC Converter</h1>
+<br>
+<input type="text" id="utcDate">
+</div>
+<br>
+<pre>
+</pre>
+<script>
+const utcDateString = new Date().toISOString().split('.')[0] + 'Z';
+const inputElementId = 'utcDate';
+const inputElement = document.getElementById(inputElementId);
+const outputElement = document.querySelector('pre');
+
+inputElement.placeholder = utcDateString;
+inputElement.value = utcDateString;
+resetOutputText();
+
+function resetOutputText() {
+  outputElement.innerText = new Date(utcDateString);
+}
+
+inputElement.addEventListener('input', event => {
+  if (!!event.target.value) {
+    outputElement.innerText = new Date(event.target.value);
+  } else {
+    resetOutputText();
+  }
+});
+</script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
