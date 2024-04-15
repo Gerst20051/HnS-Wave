@@ -330,7 +330,7 @@
         "Improved Developer Productivity": [
           "Created a platform that reduced the effort to create screenings from months to days",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
-          "Created scripts to setup and run multiple services in local dev environment",
+          "Created scripts to set up and run multiple services in local dev environment",
           "Ensured a smooth transition from intel to arm based macbook architecture",
           "Created scripts automating workflows that required manual interactions",
           "Created scripts to ease the administration of our kubernetes clusters",
