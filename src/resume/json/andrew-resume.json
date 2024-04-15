@@ -4,8 +4,8 @@
   "number": "[url=tel:+17047408492]704-740-8492[/url]",
   "email": "[url=mailto:gerst20051@gmail.com]gerst20051@gmail.com[/url]",
   "url": [
-    "[url=https://github.com/Gerst20051]https://github.com/Gerst20051[/url]",
-    "[url=https://linkedin.com/in/andrewgerst]https://linkedin.com/in/andrewgerst[/url]"
+    "[url]https://github.com/Gerst20051[/url]",
+    "[url]https://linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
     "I am looking for an opportunity where I can make a big impact while continuing to grow my career!",
@@ -19,9 +19,11 @@
         "list": [
             "ruby",
             "mysql",
+            "postgres",
             "node",
             "react",
-            "python"
+            "python",
+            "go"
         ]
     },
     {
@@ -326,7 +328,21 @@
       "endDate": "April 2024",
       "highlights": {
         "Improved Developer Productivity": [
-          "Reduced the time 50+ engineers spent onboarding from weeks down to hours"
+          "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
+          "Created scripts to setup and run multiple services in local dev environment",
+          "Ensured a smooth transition from intel to arm based macbook architecture",
+          "Created scripts automating workflows that required manual interactions",
+          "Created scripts to ease the administration of our kubernetes clusters",
+          "Created thor scripts that automated various oncall support tasks"
+        ],
+        "Major Product Improvements": [
+          "Implemented amplitude analytics to significally improve product insights",
+          "Implemented multiple new screenings to expand our product offerings",
+          "Reduced developer frustration and product complexity by unifying two products into one",
+          "Improved candidate experience by removing the need to print and fill out pdf documents",
+          "Improved screening TAT by creating a job that monitored and resolved stuck workflows",
+          "Created datadog monitors and snowflake dashboards to improve observability",
+          "Mentored and lead the project for a team of our summer interns"
         ]
       }
     },
