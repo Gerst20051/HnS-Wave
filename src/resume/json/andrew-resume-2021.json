@@ -6,21 +6,31 @@
   "email": "[url=mailto:gerst20051@gmail.com]gerst20051@gmail.com[/url]",
   "url": [
     "[url=https://github.com/Gerst20051]https://github.com/Gerst20051[/url]",
-    "[url=https://linkedin.com/in/andrewgerst]https://linkedin.com/in/andrewgerst[/url]"
+    "[url=https://www.linkedin.com/in/andrewgerst]https://www.linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
-    "I am looking for something exceptional!"
+    "I am looking for something exceptional!",
+    "I was Passport's 12th employee (5th engineer)! Now 300+ and acquired 3 companies!",
+    "I created Passport's modern platform using aws node lambdas and react frontends!",
+    "I would love to learn about your team's culture and challenges!",
+    "Feel free to reach out if you have any questions!",
+    "Let’s discuss what you are looking for to see if I would be an excellent fit!"
   ],
   "skills": [
     {
         "name": "Main",
         "show": true,
         "list": [
-            "ruby",
+            "dynamodb",
+            "javascript",
+            "jest",
+            "lambda",
             "mysql",
             "node",
+            "php",
             "react",
-            "python"
+            "python",
+            "swift"
         ]
     },
     {
@@ -320,56 +330,60 @@
   "experience": [
     {
       "title": "Senior Software Engineer",
-      "organization": "[url=https://www.checkr.com]Checkr[/url] | Background Check Platform",
-      "startDate": "February 2021",
-      "endDate": "April 2024",
-      "responsibilities": [
-        "Automated the dev macbook environment setup with a single command using ansible"
-      ]
-    },
-    {
-      "title": "Senior Software Engineer",
-      "organization": "[url=https://www.brainbase.com]Brainbase[/url] | Intellectual Property Platform",
+      "organization": "[url=https://www.brainbase.com/]Brainbase[/url] | Intellectual Property Platform",
       "startDate": "May 2020",
       "endDate": "September 2020",
       "responsibilities": [
-        "Created a docker environment for local development and fixed various frontend and backend bugs"
+        "Fixed various frontend and backend bugs",
+        "Automated the dev docker setup with a single command",
+        "Automated the dev macbook environment setup with a single command using ansible",
+        "Refactored contracts workflow to use dimensions module for properties, categories, and territories"
       ]
     },
     {
       "title": "Senior Software Engineer",
-      "organization": "[url=https://www.passportinc.com]Passport[/url] | Mobility Software Platform",
+      "organization": "[url=https://www.passportinc.com/]Passport[/url] | Mobility Software Platform",
       "startDate": "December 2013",
       "endDate": "April 2020",
-      "highlights": {
-        "Modernized Architecture": [
-            "Migrated our legacy monolith system to AWS microservices",
-            "Migrated our database from MySQL to DynamoDB",
-            "Migrated our web apps to React",
-            "Migrated our iOS apps to Swift",
-            "Created a public platform for our API"
-        ],
-        "Promoted A High-Performance Culture": [
-            "Interviewed candidates for roles up to VP of Engineering",
-            "Streamlined our onboarding process via documentation and automation",
-            "Mentored peers and was a highly available, trusted source for advice",
-            "Created many tools enabling new ways for engineers to work more efficiently"
-        ],
-        "Core Business Expertise": [
-            "Lead maintainer of our Python rate engine, a critical component for facilitating payments",
-            "Built custom mobile and web apps for 20+ of our high-volume clients in a scalable way",
-            "Implemented third-party integrations to satisfy RFP requirements to win new clients",
-            "Added i18n support in our apps so that we could expand to markets internationally",
-            "Built integrations with our in-house PCI-compliant payment gateway service"
-        ]
-      }
+      "responsibilities": [
+        "Developed the legacy monolith system using python, php, and mysql",
+        "Developed the legacy mobile apps using titanium and java",
+        "Developed the legacy web apps using jquery and gwt/java",
+        "Developed the legacy strings system to handle internationalization",
+        "Rewrote the ios parking app in native swift",
+        "Created the ios transit app in native swift",
+        "Maintained the ios swift apps through multiple swift versions",
+        "Created the legacy local dev environment makefile",
+        "Created the vagrant dev environment using ansible which helped automate the configuration for production",
+        "Created the whitelabel apps on android, titanium, swift, and web platforms",
+        "Documented all of the systems and processes to make onboarding more efficient",
+        "Created internal tools and scripts to make all developers more efficient",
+        "Created an ansible playbook to make setting up and maintaining macbooks more efficient",
+        "Maintained the legacy python rate engine",
+        "Created the modern rate engine on aws lambda using node and dynamodb",
+        "Mentored peers and junior engineers that has helped them develop and advance their careers",
+        "Evaluated candidate programming challenge submissions",
+        "Interviewed candidates for roles of all levels including the vp of engineering",
+        "Created database migrations repo, process, and scripts",
+        "Automated the build and archive process for ios app store releases",
+        "Analyzed data and created visualizations for various metrics",
+        "Transformed and imported the zone, rate, and restriction data for multiple operators",
+        "Created the swagger api schema repo",
+        "Created various shared npm packages to use in multiple microservices",
+        "Created node microservices from scratch to migrate the monolith into a scalable architecture",
+        "Created the fleet admin portal in react",
+        "Load and stress tested the apis to measure performance metrics",
+        "Created various comparison scripts to ensure backwards compatibility when updating services",
+        "Created the api integration testing scripts that are used to verify things are working after deployments",
+        "Various other things..."
+      ]
     },
     {
       "title": "Computer Programmer",
-      "organization": "[url=https://cs.unc.edu]UNC Chapel Hill Computer Science Department[/url]",
+      "organization": "[url=https://cs.unc.edu/]UNC Chapel Hill Computer Science Department[/url]",
       "startDate": "November 2011",
       "endDate": "June 2012",
-      "responsibilities": "I built a YouTube app for people with disabilities who access their computers via 2 switches."
+      "responsibilities": "Accessible YouTube is an interface to YouTube designed for people who access their computers via either 2 switches for children with disabilities or a mouse."
     }
   ],
   "education": [
@@ -378,14 +392,14 @@
       "university": "University of North Carolina at Chapel Hill",
       "startYear": 2011,
       "endYear": 2013,
-      "achievements": "I placed in multiple programming competitions and hackathons both individually and with teammates."
+      "achievements": "Won second place in a programming competition hosted by the founders of Passport Parking. I was a first year undergraduate student competing against mostly graduate students. My team and I placed third out of eight teams in Facebook's 2012 North Carolina Hackathon hosted at Duke University."
     }
   ],
   "projects": [
     {
-      "name": "My Games",
-      "url": "[url]http://games.hnswave.co[/url]",
-      "desc": "I enjoy building browser-based games in my free time using a game engine I wrote from scratch."
+      "name": "Log Reader",
+      "url": "[url]https://github.com/Gerst20051/log-reader[/url]",
+      "desc": "Tool for streaming server logs to the browser for filtering, highlighting, excluding, color-coding, and adding syntax highlighting to json objects and mysql queries."
     }
   ]
 }

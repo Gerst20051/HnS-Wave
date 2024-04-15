@@ -31,14 +31,20 @@ var myresume = new ResumeBuilder();
 myresume.config("#doc");
 
 var resumename = 'andrew';
+var yearpath = '';
+
 if (window.location.hash) {
-    var hash = window.location.hash.slice(1);
-    if (-1 === ['andrewgerst', 'andrew', 'gerst', 'agerst'].indexOf(hash)) {
+    var hash = window.location.hash.slice(1).replace(/\d/g, '');
+    if (hash.length && -1 === ['andrewgerst', 'andrew', 'gerst', 'agerst'].indexOf(hash)) {
         resumename = hash;
+    }
+    var year = window.location.hash.slice(1).replace(/\D/g, '');
+    if (year) {
+        yearpath = '-' + year;
     }
 }
 
-$.getJSON('json/' + resumename + '-resume.json', function (resume) {
+$.getJSON('json/' + resumename + '-resume' + yearpath + '.json', function (resume) {
     myresume.updateData(resume);
 });
 

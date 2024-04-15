@@ -243,6 +243,18 @@ ResumeBuilder.prototype.addExperienceModule = function(){
 		if (experience[i].technologies && experience[i].technologies.length) {
 			html.push('<div>' + experience[i].technologies.join(', ') + '</div>');
 		}
+		if (experience[i].highlights) {
+			html.push('<div id="highlightscontainer">');
+			Object.keys(experience[i].highlights).forEach(highlight => {
+				html.push('<div class="highlight">');
+				html.push('<b>' + highlight + '</b>');
+				html.push('<ul>');
+				html.push('<li>' + experience[i].highlights[highlight].join('</li><li>') + '</li>');
+				html.push('</ul>');
+				html.push('</div>');
+			});
+			html.push('</div>');
+		}
 		if (experience[i].responsibilities && experience[i].responsibilities.length) {
 			html.push('<div class="responsibilities">');
 			if (typeof experience[i].responsibilities === 'string') {

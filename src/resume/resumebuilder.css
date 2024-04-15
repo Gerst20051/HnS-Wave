@@ -143,6 +143,14 @@ body {
 	font-style:italic;
 }
 
+.resumemodule #highlightscontainer {
+	margin-top:15px;
+}
+
+.resumemodule .highlight {
+	margin-left:20px;
+}
+
 .resumemodule .responsibilities,
 .resumemodule .achievements,
 .resumemodule .desc {
