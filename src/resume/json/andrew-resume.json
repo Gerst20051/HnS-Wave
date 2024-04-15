@@ -1,4 +1,3 @@
-
 {
   "name": "Andrew Anthony Gerst",
   "title": "Senior Full-Stack Software Engineer",
@@ -9,7 +8,9 @@
     "[url=https://linkedin.com/in/andrewgerst]https://linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
-    "I am looking for something exceptional!"
+    "I am looking for an opportunity where I can make a big impact while continuing to grow my career!",
+    "I was Passport's 12th employee (5th engineer) and we grew to 300+ and acquired 3 companies!",
+    "I was the 5th member of Checkr's International team and helped our team scale to 30 strong!"
   ],
   "skills": [
     {
@@ -323,18 +324,18 @@
       "organization": "[url=https://www.checkr.com]Checkr[/url] | Background Check Platform",
       "startDate": "February 2021",
       "endDate": "April 2024",
-      "responsibilities": [
-        "Automated the dev macbook environment setup with a single command using ansible"
-      ]
+      "highlights": {
+        "Improved Developer Productivity": [
+          "Reduced the time 50+ engineers spent onboarding from weeks down to hours"
+        ]
+      }
     },
     {
       "title": "Senior Software Engineer",
       "organization": "[url=https://www.brainbase.com]Brainbase[/url] | Intellectual Property Platform",
       "startDate": "May 2020",
       "endDate": "September 2020",
-      "responsibilities": [
-        "Created a docker environment for local development and fixed various frontend and backend bugs"
-      ]
+      "responsibilities": "Created a docker environment for local development and fixed various frontend and backend bugs"
     },
     {
       "title": "Senior Software Engineer",
@@ -343,24 +344,24 @@
       "endDate": "April 2020",
       "highlights": {
         "Modernized Architecture": [
-            "Migrated our legacy monolith system to AWS microservices",
-            "Migrated our database from MySQL to DynamoDB",
-            "Migrated our web apps to React",
-            "Migrated our iOS apps to Swift",
-            "Created a public platform for our API"
+          "Migrated our legacy monolith system to AWS microservices",
+          "Migrated our database from MySQL to DynamoDB",
+          "Migrated our web apps to React",
+          "Migrated our iOS apps to Swift",
+          "Created a public platform for our API"
         ],
         "Promoted A High-Performance Culture": [
-            "Interviewed candidates for roles up to VP of Engineering",
-            "Streamlined our onboarding process via documentation and automation",
-            "Mentored peers and was a highly available, trusted source for advice",
-            "Created many tools enabling new ways for engineers to work more efficiently"
+          "Interviewed candidates for roles up to VP of Engineering",
+          "Streamlined our onboarding process via documentation and automation",
+          "Mentored peers and was a highly available, trusted source for advice",
+          "Created many tools enabling new ways for engineers to work more efficiently"
         ],
         "Core Business Expertise": [
-            "Lead maintainer of our Python rate engine, a critical component for facilitating payments",
-            "Built custom mobile and web apps for 20+ of our high-volume clients in a scalable way",
-            "Implemented third-party integrations to satisfy RFP requirements to win new clients",
-            "Added i18n support in our apps so that we could expand to markets internationally",
-            "Built integrations with our in-house PCI-compliant payment gateway service"
+          "Lead maintainer of our Python rate engine, a critical component for facilitating payments",
+          "Built custom mobile and web apps for 20+ of our high-volume clients in a scalable way",
+          "Implemented third-party integrations to satisfy RFP requirements to win new clients",
+          "Added i18n support in our apps so that we could expand to markets internationally",
+          "Built integrations with our in-house PCI-compliant payment gateway service"
         ]
       }
     },
