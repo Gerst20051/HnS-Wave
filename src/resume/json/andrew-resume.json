@@ -328,6 +328,7 @@
       "endDate": "April 2024",
       "highlights": {
         "Improved Developer Productivity": [
+          "Created a platform that reduced the effort to create screenings from months to days",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
           "Created scripts to setup and run multiple services in local dev environment",
           "Ensured a smooth transition from intel to arm based macbook architecture",
@@ -361,9 +362,8 @@
       "highlights": {
         "Modernized Architecture": [
           "Migrated our legacy monolith system to AWS microservices",
-          "Migrated our database from MySQL to DynamoDB",
-          "Migrated our web apps to React",
-          "Migrated our iOS apps to Swift",
+          "Migrated our web apps to React and our iOS apps to Swift",
+          "Migrated our databases from MySQL to DynamoDB",
           "Created a public platform for our API"
         ],
         "Promoted A High-Performance Culture": [
