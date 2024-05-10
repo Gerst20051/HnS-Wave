@@ -37,6 +37,7 @@ rsync -zarvh src/games/animatedrainbow.html droplet:www/games
 rsync -zarvh src/games/animatedrandomrainbow.html droplet:www/games
 rsync -zarvh src/games/breakout.html droplet:www/games
 rsync -zarvh src/games/canvasenginedemo.html droplet:www/games
+rsync -zarvh src/games/checkers.html droplet:www/games
 rsync -zarvh src/games/clock.html droplet:www/games
 rsync -zarvh src/games/cone.html droplet:www/games
 rsync -zarvh src/games/cone.original.html droplet:www/games
@@ -62,6 +63,7 @@ rsync -zarvh src/games/rotatingcube.html droplet:www/games
 rsync -zarvh src/games/rotatingcubes.html droplet:www/games
 rsync -zarvh src/games/snake.html droplet:www/games
 rsync -zarvh src/games/sounds.html droplet:www/games
+rsync -zarvh src/games/stratego.html droplet:www/games
 rsync -zarvh src/games/tictactoe.html droplet:www/games
 rsync -zarvh src/games/tiles.html droplet:www/games
 rsync -zarvh src/games/trianglesplitter.html droplet:www/games
