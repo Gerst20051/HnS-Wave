@@ -235,6 +235,10 @@ var colors = {
 	yellowgreen: "#9acd32"
 };
 
+var fonts = {
+	arial: "Arial",
+};
+
 var digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -359,9 +363,9 @@ c = {
 	doStroke: true,
 	doClosePath: false,
 	color: [0, 0, 0, 0],
-	font: "12px Arial",
+	font: "12px " + fonts.arial,
 	fontSize: 12,
-	fontStyle: "Arial",
+	fontStyle: fonts.arial,
 	pathOffsetX: 0,
 	pathOffsetY: 0
 },
@@ -760,6 +764,9 @@ ceil = function(num){ // return ceil of number
 round = function(num){ // return round of number
 	return Math.round(num);
 },
+precisionFloat = function(num, precision){ // return float with specifed decimal precision
+	return parseFloat(num.toFixed(precision));
+},
 between = function (num, lower, upper, exclusive){ // return boolean for if number is between two values
 	return exclusive ? num > lower && num < upper : num >= lower && num <= upper;
 },
@@ -866,6 +873,10 @@ color = function(r, g, b, a = 1){ // store a color in a variable
 		return r;
 	}
 },
+colorWithAlpha = function(originalColor, a = 1){ // store a color with specified alpha in a variable
+	var rgb = [...originalColor.matchAll(/rgba\((\d+), (\d+), (\d+), (\d+)\)/g)][0];
+	return "rgba(" + rgb[1] + ", " + rgb[2] + ", " + rgb[3] + ", " + a + ")";
+},
 hexToRgb = function(hex){ // convert hex color code to rgb color code
 	var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 	hex = hex.replace(shorthandRegex, function(m, r, g, b) {
@@ -947,6 +958,12 @@ randomPastelColor = function(){ // store a random pastel color in a variable
 	var g = (Math.round(Math.random() * 127) + 127).toString(16);
 	var b = (Math.round(Math.random() * 127) + 127).toString(16);
 	return color('#' + r + g + b);
+},
+randomPastelColorAlpha = function(a = 1){ // store a random pastel color with alpha in a variable
+	var r = Math.round(Math.random() * 127) + 127;
+	var g = Math.round(Math.random() * 127) + 127;
+	var b = Math.round(Math.random() * 127) + 127;
+	return color(r, g, b, a);
 },
 randomGoldenRatioColor = function(){ // store a random color in a variable using the golden ratio
 	var goldenRatioConjugate = 0.618033988749895;
