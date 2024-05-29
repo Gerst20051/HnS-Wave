@@ -8,7 +8,7 @@
     "[url]https://linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
-    "I am looking for an opportunity where I can make a big impact while continuing to grow my career!",
+    "I am endorsed for Getting Shit Done on LinkedIn and I'm looking for an opportunity to do that!",
     "I was Passport's 12th employee (5th engineer) and we grew to 300+ and acquired 3 companies!",
     "I was the 5th member of Checkr's International team and helped our team scale to 30 strong!"
   ],
@@ -17,13 +17,18 @@
         "name": "Main",
         "show": true,
         "list": [
-            "ruby",
-            "mysql",
-            "postgres",
-            "node",
-            "react",
-            "python",
-            "go"
+            "Ruby",
+            "Node",
+            "TypeScript",
+            "React",
+            "Python",
+            "PHP",
+            "Go",
+            "MySQL",
+            "Postgres",
+            "Mongo",
+            "Redis",
+            "AWS"
         ]
     },
     {
@@ -328,22 +333,22 @@
       "endDate": "April 2024",
       "highlights": {
         "Improved Developer Productivity": [
-          "Created a platform that reduced the effort to create screenings from months to days",
+          "Created a platform that dramatically reduced the complexity of building new screenings",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
           "Created scripts to set up and run multiple services in local dev environment",
-          "Ensured a smooth transition from intel to arm based macbook architecture",
+          "Ensured a smooth transition from Intel to ARM based macbook architecture",
           "Created scripts automating workflows that required manual interactions",
           "Created scripts to ease the administration of our Kubernetes clusters",
-          "Created thor scripts that automated various on-call support tasks"
+          "Created Thor scripts that automated various on-call support tasks"
         ],
         "Major Product Enhancements": [
-          "Implemented amplitude analytics to significantly improve product insights",
-          "Implemented multiple new screenings to expand our product offerings",
+          "Implemented Amplitude analytics to significantly improve product insights",
+          "Led the creation of multiple new screenings that expanded our product capabilities",
           "Reduced developer frustration and product complexity by unifying two products into one",
           "Improved candidate experience by removing the need to print and fill out PDF documents",
           "Improved screening TAT by creating a job that monitored and resolved stuck workflows",
           "Created Datadog monitors and Snowflake dashboards to improve observability",
-          "Mentored and led the project for a team of our summer interns"
+          "Mentored our summer interns and helped lead their project to completion"
         ]
       }
     },
@@ -361,10 +366,10 @@
       "endDate": "April 2020",
       "highlights": {
         "Modernized Architecture": [
-          "Migrated our legacy monolith system to AWS microservices",
+          "Led the creation of a platform enabling integrations with our public API",
+          "Migrated our legacy monolith system to microservices using AWS Lambda",
           "Migrated our web apps to React and our iOS apps to Swift",
-          "Migrated our databases from MySQL to DynamoDB",
-          "Created a public platform for our API"
+          "Migrated our databases from MySQL to DynamoDB"
         ],
         "Promoted A High-Performance Culture": [
           "Interviewed candidates for roles up to VP of Engineering",
