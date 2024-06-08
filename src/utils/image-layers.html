@@ -1,0 +1,131 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Image Layers</title>
+<style>
+</style>
+</head>
+<body>
+<input type="button" value="Save" id="saveimage" />
+<input type="button" value="Move Down" id="moveimagedown" />
+<input type="button" value="Move Right" id="moveimageright" />
+<input type="button" value="Smaller Height" id="reduceimageheight" />
+<input type="button" value="Smaller Width" id="reduceimagewidth" />
+<input type="button" value="Move Down x100" id="moveimagedown100" />
+<input type="button" value="Move Right x100" id="moveimageright100" />
+<input type="button" value="Smaller Height x100" id="reduceimageheight100" />
+<input type="button" value="Smaller Width x100" id="reduceimagewidth100" />
+<input type="file" name="img" size="65" id="uploadimage" />
+<canvas id="canvas"></canvas>
+<script>
+var canvas = document.getElementsByTagName('canvas')[0];
+var ctx = canvas.getContext('2d');
+var images = [];
+
+function ImageWrapper(img) {
+  this.img = img;
+  this.x = 0;
+  this.y = 0;
+  this.height = img.height;
+  this.width = img.width;
+}
+
+var saveImage = document.getElementById('saveimage');
+
+saveImage.addEventListener('click', saveCanvas);
+
+function saveCanvas() {
+  var a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'download.png';
+  document.body.appendChild(a);
+  a.click();
+}
+
+document.getElementById('moveimagedown').addEventListener('click', function() {
+  images[images.length - 1].y += 1;
+  drawImages();
+});
+
+document.getElementById('moveimageright').addEventListener('click', function() {
+  images[images.length - 1].x += 1;
+  drawImages();
+});
+
+document.getElementById('reduceimageheight').addEventListener('click', function() {
+  images[images.length - 1].height -= 1;
+  drawImages();
+});
+
+document.getElementById('reduceimagewidth').addEventListener('click', function() {
+  images[images.length - 1].width -= 1;
+  drawImages();
+});
+
+document.getElementById('moveimagedown100').addEventListener('click', function() {
+  images[images.length - 1].y += 100;
+  drawImages();
+});
+
+document.getElementById('moveimageright100').addEventListener('click', function() {
+  images[images.length - 1].x += 100;
+  drawImages();
+});
+
+document.getElementById('reduceimageheight100').addEventListener('click', function() {
+  images[images.length - 1].height -= 100;
+  drawImages();
+});
+
+document.getElementById('reduceimagewidth100').addEventListener('click', function() {
+  images[images.length - 1].width -= 100;
+  drawImages();
+});
+
+function drawImages() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (image of images) {
+    ctx.drawImage(image.img, image.x, image.y, image.width, image.height);
+  }
+}
+
+var uploadImage = document.getElementById('uploadimage');
+
+function drawImage(resizeCanvas) {
+  var img = new Image(),
+      file = uploadImage.files[0],
+      url = window.URL || window.webkitURL,
+      src = url.createObjectURL(file);
+
+  img.src = src;
+
+  img.onload = function() {
+    if (resizeCanvas) {
+      canvas.width = this.width;
+      canvas.height = this.height;
+    }
+    images.push(new ImageWrapper(img));
+    drawImages();
+    url.revokeObjectURL(src);
+  };
+}
+
+uploadImage.addEventListener('change', imageSelectedToUpload, false);
+
+function imageSelectedToUpload() {
+  var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  var isCanvasBlank = !data.some(channel => channel !== 0);
+  drawImage(isCanvasBlank);
+}
+</script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42786295-1', 'hnswave.co');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
