@@ -4,7 +4,7 @@ if (!String.prototype.trim) {
 	};
 }
 
-(function addLink(){
+var addLink = (function(){
 	window.links = [];
 	return function(text, callback){
 		document.write('<div class="link" onclick="window.links['+window.links.length+']();">'+text+'</div>');
