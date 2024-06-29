@@ -73,6 +73,7 @@ const games = [
 	new Game('connect3', true, 'a: enable ai player before starting game, r: restart'),
 	new Game('connect4', true, 'a: enable ai player before starting game, r: restart'),
 	new Game('connect5', true, 'a: enable ai player before starting game, r: restart'),
+	new Game('floatingbubbles'),
 	new Game('gameoflife'),
 	new Game('images'),
 	new Game('mario', false, 'space to shoot, arrow keys to move and jump'),
@@ -84,6 +85,7 @@ const games = [
 	new Game('paint-racer/single-player/index', false, 'arrow or wasd keys to move'),
 	new Game('particles', true, 'p: pause/play'),
 	new Game('pong', false, 'scroll down to view the source code'),
+	new Game('pulsingbubbles'),
 	new Game('rainbowgrid'),
 	new Game('raindrops', false, 'p: pause/play'),
 	new Game('rotatingcube', false, 'click to toggle a white cube border'),
@@ -103,14 +105,13 @@ window.onload = function(){
 	const content = document.getElementById('content');
 	games.forEach(game => content.innerHTML += game.getHTML());
 };
-
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-42786295-1', 'hnswave.co');
-ga('send', 'pageview');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-42786295-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-42786295-1');
 </script>
 </body>
 </html>

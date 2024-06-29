@@ -39,7 +39,7 @@ body {
 </div>
 <script>
 var setup = function(){
-	// This is Conway's game of life. Press 'p' to pause! 
+	// This is Conway's game of life. Press 'p' to pause!
 	stroke(224, 224, 224);
 };
 
@@ -87,7 +87,7 @@ var livesOn = function (x, y){
 		for (var j = -1; j <= 1; j += 1) {
 			var neighborX = (x + i + gridLength) % gridLength;
 			var neighborY = (y + j + gridLength) % gridLength;
-			
+
 			if (neighborX !== x || neighborY !== y) {
 				if (cells[neighborX][neighborY] === 1) {
 					numNeighbors += 1;
@@ -155,7 +155,7 @@ var mouseClicked = function(){
 	var x = floor(mouseX / squareSize);
 	var y = floor(mouseY / squareSize);
 	cells[x][y] = 1;
-	
+
 	// draw the new cell
 	fill(199, 0, 209);
 	rect(x * squareSize, y * squareSize, squareSize, squareSize);
@@ -186,14 +186,13 @@ window.onload = function(){
 	canvas.draw = window.draw;
 	canvas.run();
 };
-
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-42786295-1', 'hnswave.co');
-ga('send', 'pageview');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-42786295-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-42786295-1');
 </script>
 </body>
 </html>

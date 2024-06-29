@@ -12,11 +12,6 @@ rsync -zarvh src/games/index.html droplet:www/games
 
 rsync -zarvh src/cdn/ droplet:www/cdn
 
-# update the mastery book files
-
-rsync -zarvh src/mastery/init.js droplet:www/mastery
-rsync -zarvh src/mastery/mastery.js droplet:www/mastery
-
 # update the game asset files
 
 rsync -zarvh src/games/audio/ droplet:www/games/audio
@@ -44,6 +39,7 @@ rsync -zarvh src/games/cone.original.html droplet:www/games
 rsync -zarvh src/games/connect3.html droplet:www/games
 rsync -zarvh src/games/connect4.html droplet:www/games
 rsync -zarvh src/games/connect5.html droplet:www/games
+rsync -zarvh src/games/floatingbubbles.html droplet:www/games
 rsync -zarvh src/games/gameoflife.html droplet:www/games
 rsync -zarvh src/games/images.html droplet:www/games
 rsync -zarvh src/games/mario.html droplet:www/games
@@ -55,6 +51,7 @@ rsync -zarvh src/games/pacman.html droplet:www/games
 rsync -zarvh src/games/particles.html droplet:www/games
 rsync -zarvh src/games/pathfinding.html droplet:www/games
 rsync -zarvh src/games/pong.html droplet:www/games
+rsync -zarvh src/games/pulsingbubbles.html droplet:www/games
 rsync -zarvh src/games/rainbowgrid.html droplet:www/games
 rsync -zarvh src/games/raindrops.html droplet:www/games
 rsync -zarvh src/games/randommapgeneration.html droplet:www/games

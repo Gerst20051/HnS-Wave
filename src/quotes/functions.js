@@ -127,8 +127,8 @@ window.Hash = {
 	parse: function(){
 		var that = this;
 		this.getHash().replace(
-		    new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-		    function($0, $1, $2, $3) { that.query[$1] = $3; }
+			new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+			function($0, $1, $2, $3) { that.query[$1] = $3; }
 		);
 		return this.query;
 	},
@@ -147,8 +147,8 @@ function setHash(hash){ window.location.replace("#" + encodeURI(hash)); }
 function parseHash(){
 	var queryString = {};
 	getHash().replace(
-	    new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-	    function($0, $1, $2, $3) { queryString[$1] = $3; }
+		new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+		function($0, $1, $2, $3) { queryString[$1] = $3; }
 	);
 	return queryString;
 }
@@ -277,11 +277,3 @@ function bind(fnThis, fn){
 		return fn.apply(fnThis, arguments);
 	};
 }
-
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-42786295-1', 'hnswave.co');
-ga('send', 'pageview');
