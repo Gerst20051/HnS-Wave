@@ -19,6 +19,7 @@
         "list": [
             "Ruby",
             "Node",
+            "JavaScript",
             "TypeScript",
             "React",
             "Python",
@@ -333,22 +334,22 @@
       "endDate": "April 2024",
       "highlights": {
         "Improved Developer Productivity": [
-          "Created a platform that dramatically reduced the complexity of building new screenings",
+          "Created a platform that dramatically reduced the complexity of building new screenings (ruby)",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
-          "Created scripts to set up and run multiple services in local dev environment",
+          "Created scripts to set up and run multiple services in local dev environment (ansible, bash)",
           "Ensured a smooth transition from Intel to ARM based macbook architecture",
-          "Created scripts automating workflows that required manual interactions",
-          "Created scripts to ease the administration of our Kubernetes clusters",
-          "Created Thor scripts that automated various on-call support tasks"
+          "Created scripts automating workflows that required manual interactions (ruby)",
+          "Created scripts to ease the administration of our Kubernetes clusters (bash)",
+          "Created Thor scripts that automated various on-call support tasks (ruby)"
         ],
         "Major Product Enhancements": [
-          "Implemented Amplitude analytics to significantly improve product insights",
-          "Led the creation of multiple new screenings that expanded our product capabilities",
-          "Reduced developer frustration and product complexity by unifying two products into one",
-          "Improved candidate experience by removing the need to print and fill out PDF documents",
-          "Improved screening TAT by creating a job that monitored and resolved stuck workflows",
+          "Implemented Amplitude analytics to significantly improve product insights (react, typescript)",
+          "Led the creation of multiple new screenings that expanded our product capabilities (ruby, go, temporal)",
+          "Reduced developer frustration and product complexity by unifying two products into one (react, typescript)",
+          "Improved candidate experience by removing the need to print and fill out PDF documents (react, typescript)",
+          "Improved screening TAT by creating jobs that monitored and resolved stuck workflows (ruby, go, temporal)",
           "Created Datadog monitors and Snowflake dashboards to improve observability",
-          "Mentored our summer interns and helped lead their project to completion"
+          "Mentored our summer interns and helped lead their project to completion (react, typescript)"
         ]
       }
     },
@@ -366,14 +367,14 @@
       "endDate": "April 2020",
       "highlights": {
         "Modernized Architecture": [
-          "Led the creation of a platform enabling integrations with our public API",
-          "Migrated our legacy monolith system to microservices using AWS Lambda",
-          "Migrated our web apps to React and our iOS apps to Swift",
+          "Led the creation of a platform enabling integrations with our public API (node, typescript)",
+          "Migrated our legacy php monolith system to node microservices using AWS Lambda",
+          "Migrated our web apps to React / TypeScript and our iOS apps to Swift",
           "Migrated our databases from MySQL to DynamoDB"
         ],
         "Promoted A High-Performance Culture": [
           "Interviewed candidates for roles up to VP of Engineering",
-          "Streamlined our onboarding process via documentation and automation",
+          "Streamlined our onboarding process via documentation and automation (ansible)",
           "Mentored peers and was a highly available, trusted source for advice",
           "Created many tools enabling new ways for engineers to work more efficiently"
         ],
@@ -382,7 +383,7 @@
           "Built custom mobile and web apps for 20+ of our high-volume clients in a scalable way",
           "Implemented third-party integrations to satisfy RFP requirements to win new clients",
           "Added i18n support in our apps so that we could expand to markets internationally",
-          "Built integrations with our in-house PCI-compliant payment gateway service"
+          "Built integrations with our in-house PCI-compliant payment gateway service (php)"
         ]
       }
     },
