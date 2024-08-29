@@ -338,7 +338,7 @@
           "Created a Ruby on Rails platform that dramatically reduced the complexity of building new screenings",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
           "Created scripts to set up and run multiple services in local dev environment",
-          "Ensured a smooth transition from Intel to ARM based macbook architecture",
+          "Ensured a smooth transition from Intel to ARM based MacBook architecture",
           "Created scripts automating workflows that required manual interactions",
           "Created scripts to ease the administration of our Kubernetes clusters",
           "Created Ruby Thor scripts that automated various on-call support tasks"
