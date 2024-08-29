@@ -185,8 +185,8 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 	var html = [];
 	html.push('<div id="skillsModule" class="resumemodule clear">');
 	html.push('<div class="leftcol"><div>Skills</div></div>');
-	var isSkillsAnArray = this.data.skills && this.data.skills.length;
-	var isSkillsAnArrayOfObjects = isSkillsAnArray && typeof this.data.skills === 'object';
+	var isSkillsAnArray = this.data.skills && Array.isArray(this.data.skills);
+	var isSkillsAnArrayOfObjects = isSkillsAnArray && this.data.skills.find(skill => skill.show || skill.full);
 	if (isSkillsAnArrayOfObjects) {
 		var hasFullSkillsList = !!this.data.skills.find(skill => skill.show === false && skill.full === true);
 		this.data.skills.filter(skill => skill.show).forEach(skill => {
@@ -204,7 +204,7 @@ ResumeBuilder.prototype.addSkillsModule = function(){
 			html.push(this.data.main_skills.join(', '));
 			html.push('</div>');
 		}
-		if (isSkillsAnArray) {
+		if (isSkillsAnArray && this.data.skills.length) {
 			if (hasMainSkills) {
 				html.push('<br>');
 			}
