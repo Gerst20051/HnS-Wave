@@ -8,7 +8,7 @@
     "[url]https://linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
-    "I am endorsed for Getting Shit Done on LinkedIn and I'm looking for an opportunity to do that!",
+    "I am looking for an opportunity that provides a lot of ownership and tough challenges to solve!",
     "I was Passport's 12th employee (5th engineer) and we grew to 300+ and acquired 3 companies!",
     "I was the 5th member of Checkr's International team and helped our team scale to 30 strong!"
   ],
@@ -19,6 +19,7 @@
         "list": [
             "Ruby",
             "Node",
+            "JavaScript",
             "TypeScript",
             "React",
             "Python",
@@ -28,7 +29,8 @@
             "Postgres",
             "Mongo",
             "Redis",
-            "AWS"
+            "AWS",
+            "Swift"
         ]
     },
     {
@@ -333,20 +335,20 @@
       "endDate": "April 2024",
       "highlights": {
         "Improved Developer Productivity": [
-          "Created a platform that dramatically reduced the complexity of building new screenings",
+          "Created a Ruby on Rails platform that dramatically reduced the complexity of building new screenings",
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
           "Created scripts to set up and run multiple services in local dev environment",
           "Ensured a smooth transition from Intel to ARM based macbook architecture",
           "Created scripts automating workflows that required manual interactions",
           "Created scripts to ease the administration of our Kubernetes clusters",
-          "Created Thor scripts that automated various on-call support tasks"
+          "Created Ruby Thor scripts that automated various on-call support tasks"
         ],
         "Major Product Enhancements": [
           "Implemented Amplitude analytics to significantly improve product insights",
           "Led the creation of multiple new screenings that expanded our product capabilities",
           "Reduced developer frustration and product complexity by unifying two products into one",
           "Improved candidate experience by removing the need to print and fill out PDF documents",
-          "Improved screening TAT by creating a job that monitored and resolved stuck workflows",
+          "Improved screening TAT by creating jobs that monitored and resolved stuck workflows",
           "Created Datadog monitors and Snowflake dashboards to improve observability",
           "Mentored our summer interns and helped lead their project to completion"
         ]
@@ -367,7 +369,7 @@
       "highlights": {
         "Modernized Architecture": [
           "Led the creation of a platform enabling integrations with our public API",
-          "Migrated our legacy monolith system to microservices using AWS Lambda",
+          "Migrated our legacy PHP monolith to microservices using AWS Lambda and Node/TypeScript",
           "Migrated our web apps to React and our iOS apps to Swift",
           "Migrated our databases from MySQL to DynamoDB"
         ],
