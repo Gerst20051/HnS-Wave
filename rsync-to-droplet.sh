@@ -30,6 +30,10 @@ rsync -zarvh src/quotes/index.html droplet:www/quotes
 
 rsync -zarvh src/resume/ droplet:www/resume
 
+# update the skills directory
+
+rsync -zarvh src/skills/ droplet:www/skills
+
 # update stations
 
 rsync -zarvh src/stations/index.html droplet:www/stations
