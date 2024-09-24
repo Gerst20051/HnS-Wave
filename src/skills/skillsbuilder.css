@@ -1,0 +1,110 @@
+body {
+	background-color:#dfdfdf;
+	color:#2f2f2f;
+	font-family:helvetica;
+	font-size:13px;
+	padding:20px;
+	text-align:center;
+}
+
+.clear:before,
+.clear:after {
+	content:"\0020";
+	display:block;
+	height:0;
+	overflow:hidden;
+}
+
+.clear:after {
+	clear:both;
+}
+
+.skillsdoc {
+	background-color:#fff;
+	margin:auto;
+	padding:45px 10px 35px;
+	text-align:left;
+	width:900px;
+}
+
+@media screen {
+	.skillsdoc {
+		-moz-box-shadow:1px 1px 6px rgba(0, 0, 0, 6);
+		-webkit-box-shadow:1px 1px 5px rgba(0, 0, 0, 6);
+	}
+}
+
+@media print {
+	body {
+		background-color:#fff;
+		padding:0;
+	}
+
+	a:link,
+	a:visited {
+		color:#00f;
+	}
+
+	.skillsdoc {
+		padding:0;
+	}
+
+	#headerModule {
+		margin-top:0;
+	}
+
+	#fullSkillsList {
+		display:none;
+	}
+}
+
+.skillsmodule {
+	margin:0 30px;
+	padding:10px 0;
+}
+
+.skillsmodule:not(#headerModule) {
+	border-top:1px #6fa0db solid;
+	min-height:18px;
+}
+
+.skillsmodule .leftcol {
+	float:left;
+	width:160px;
+}
+
+.skillsmodule .rightcol {
+	clear:right;
+	margin:0 0 0 160px;
+}
+
+.skillsmodule .leftcol > div {
+	color:#6fa0db;
+	font-size:18px;
+	font-weight:bold;
+}
+
+#headerModule #titlehead {
+	padding-bottom:10px;
+	text-align:center;
+}
+
+#headerModule #name {
+	color:#2b67af;
+	font-size:46px;
+	font-weight:bold;
+}
+
+#headerModule #title {
+	color:#000;
+	font-size:18px;
+	font-weight:bold;
+	margin-top:16px;
+}
+
+#headerModule #location {
+	color:#888;
+	font-size:14px;
+	font-weight:bold;
+	margin-top:16px;
+}
