@@ -90,6 +90,7 @@ SkillsBuilder.prototype.updateData = function(data){
 
 SkillsBuilder.prototype.buildHeader = function(){
 	var html = [];
+	document.title = ['Skills', this.data.info.name, this.data.info.title].join(' - ');
 	html.push('<div id="headerModule" class="skillsmodule clear">');
 	html.push('<div id="titlehead" class="clear">');
 	html.push('<div id="nametitle">');
