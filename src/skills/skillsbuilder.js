@@ -30,6 +30,7 @@ SkillsBuilder.prototype.skillMap = {
 	'javascript': 'JavaScript',
 	'mysql': 'MySQL',
 	'php': 'PHP',
+	'sqlite': 'SQLite',
 };
 
 SkillsBuilder.prototype.toTitleCase = function(str){
