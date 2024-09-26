@@ -56,7 +56,7 @@
           "Created scripts to set up and run multiple services in local dev environment",
           "Ensured a smooth transition from Intel to ARM based MacBook architecture",
           "Created scripts automating workflows that required manual interactions",
-          "Created scripts to ease the administration of our Kubernetes clusters",
+          "Created Bash shell scripts to ease the administration of our Kubernetes clusters",
           "Created Ruby Thor scripts that automated various on-call support tasks"
         ]
       }
@@ -66,7 +66,7 @@
       "organization": "[url=https://www.brainbase.com]Brainbase[/url] | Intellectual Property Platform",
       "startDate": "May 2020",
       "endDate": "September 2020",
-      "responsibilities": "Created a docker environment for local development and fixed various frontend and backend bugs"
+      "responsibilities": "Containerized services for Docker and made improvements to both our frontend (Angular) and backend (PHP/Laravel)"
     },
     {
       "title": "Senior Software Engineer",
@@ -75,9 +75,9 @@
       "endDate": "April 2020",
       "highlights": {
         "Modernized & Scaled Architecture": [
-          "Led the creation of a platform enabling integrations with our public API",
+          "Led the creation of a Node/TypeScript platform enabling integrations with our public API",
           "Migrated our legacy PHP monolith to microservices using AWS Lambda and Node/TypeScript",
-          "Migrated our web apps to React and our iOS apps to Swift",
+          "Migrated our web apps to React/TypeScript and our iOS apps to Swift",
           "Migrated our databases from MySQL to DynamoDB"
         ],
         "Promoted A High-Performance Culture": [
@@ -105,7 +105,7 @@
           "Created the Vagrant dev environment using Ansible which helped automate the configuration for production",
           "Created the whitelabel apps on Android, Titanium, Swift, and Web platforms",
           "Created an Ansible playbook to make setting up and maintaining MacBooks more efficient",
-          "Created the modern rate engine on AWS Lambda using Node and DynamoDB",
+          "Created the modern rate engine on AWS Lambda using Node/TypeScript and DynamoDB",
           "Evaluated candidate programming challenge submissions",
           "Created database Migrations repo, process, and scripts",
           "Automated the build and archive process for iOS App Store releases",
