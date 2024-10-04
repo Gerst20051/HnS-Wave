@@ -49,7 +49,8 @@
           "Improved candidate experience by removing the need to print and fill out PDF documents",
           "Improved screening TAT by creating jobs that monitored and resolved stuck workflows",
           "Created Datadog monitors and Snowflake dashboards to improve observability",
-          "Mentored our summer interns and helped lead their project to completion"
+          "Mentored our summer interns and helped lead their project to completion",
+          "Many other things including React/TypeScript front-end projects..."
         ],
         "Improved Developer Productivity (Above & Beyond My Role Responsibilities)": [
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
@@ -113,7 +114,7 @@
           "Transformed and imported the zone, rate, and restriction data for multiple operators",
           "Created the Swagger API Schema repo",
           "Created various shared NPM packages to use in multiple microservices",
-          "Created the fleet admin portal in React/TypeScript",
+          "Led the creation of the React/TypeScript fleet admin portal for UPS/FedEx",
           "Load and stress tested the APIs to measure performance metrics",
           "Created various comparison scripts to ensure backwards compatibility when updating services",
           "Created the API integration testing scripts that are used to verify things are working after deployments",
