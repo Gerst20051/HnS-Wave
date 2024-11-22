@@ -8,9 +8,9 @@
     "[url]https://linkedin.com/in/andrewgerst[/url]"
   ],
   "statement": [
-    "I promise to whoever saves me from being homeless that you won't regret giving me a chance!",
-    "I was Passport's 12th employee (5th engineer) and we grew to 300+ and acquired 3 companies!",
-    "I was the 5th member of Checkr's International team and helped our team scale to 30 strong!"
+    "I am extremely self-motivated and eager to work and you won't regret giving me a chance!",
+    "I was Checkr's 4th engineer working on international expansion and rapidly scaling our team!",
+    "I was Passport's 5th engineer contributing to every single functionality of the platform imaginable!"
   ],
   "skills": [
     {
@@ -23,12 +23,12 @@
         "TypeScript",
         "React",
         "Python",
-        "PHP",
         "Go",
         "MySQL",
         "Postgres",
         "Mongo",
         "Redis",
+        "Kafka",
         "AWS",
         "Swift"
       ]
@@ -42,18 +42,19 @@
       "endDate": "April 2024",
       "highlights": {
         "Major Product Enhancements": [
-          "Created a Ruby on Rails platform that dramatically reduced the complexity of building new screenings",
-          "Led the implementation of Amplitude analytics that significantly improved our product insights",
           "Led the creation of multiple new screenings that expanded our product capabilities",
+          "Led the implementation of Amplitude analytics that significantly improved our product insights",
+          "Created a Ruby on Rails platform that dramatically reduced the complexity of building new screenings",
           "Reduced developer frustration and technical debt by unifying multiple divergent products",
           "Improved candidate experience by removing the need to print and fill out PDF documents",
           "Improved screening TAT by creating jobs that monitored and resolved stuck workflows",
           "Created Datadog monitors and Snowflake dashboards to improve observability",
-          "Mentored our summer interns and helped lead their project to completion"
+          "Mentored our summer interns and helped lead their project to completion",
+          "Many other things including React/TypeScript front-end projects..."
         ],
         "Improved Developer Productivity (Above & Beyond My Role Responsibilities)": [
           "Reduced the time 50+ engineers spent onboarding from weeks down to hours",
-          "Created scripts to set up and run multiple services in local dev environment",
+          "Created scripts to set up and run multiple services in a local dev environment",
           "Ensured a smooth transition from Intel to ARM based MacBook architecture",
           "Created scripts automating workflows that required manual interactions",
           "Created Bash shell scripts to ease the administration of our Kubernetes clusters",
@@ -77,14 +78,15 @@
         "Modernized & Scaled Architecture": [
           "Led the creation of a Node/TypeScript platform enabling integrations with our public API",
           "Migrated our legacy PHP monolith to microservices using AWS Lambda and Node/TypeScript",
-          "Migrated our web apps to React/TypeScript and our iOS apps to Swift",
-          "Migrated our databases from MySQL to DynamoDB"
+          "Migrated our databases from MySQL to DynamoDB for improved performance",
+          "Migrated our web apps to React/TypeScript and our iOS apps to Swift"
         ],
         "Promoted A High-Performance Culture": [
           "Interviewed candidates for roles up to VP of Engineering",
+          "Evaluated programming challenge submissions from candidates",
           "Streamlined our onboarding process via documentation and automation",
-          "Mentored peers and was a highly available, trusted source for advice",
-          "Created many tools enabling new ways for engineers to work more efficiently"
+          "Created many tools enabling new ways for engineers to work more efficiently",
+          "Mentored peers and was a highly available, trusted source for advice and pair programming"
         ],
         "Core Business Expertise": [
           "Lead maintainer of our Python rate engine, a critical component for facilitating payments",
@@ -98,25 +100,24 @@
           "Developed the legacy mobile apps using Titanium and Java",
           "Developed the legacy web apps using jQuery and GWT/Java",
           "Developed the legacy strings system to handle internationalization",
-          "Rewrote the iOS parking app in native Swift",
-          "Created the iOS transit app in native Swift",
           "Maintained the iOS Swift apps through multiple Swift versions",
-          "Created the legacy local dev environment Makefile",
-          "Created the Vagrant dev environment using Ansible which helped automate the configuration for production",
-          "Created the whitelabel apps on Android, Titanium, Swift, and Web platforms",
-          "Created an Ansible playbook to make setting up and maintaining MacBooks more efficient",
-          "Created the modern rate engine on AWS Lambda using Node/TypeScript and DynamoDB",
-          "Evaluated candidate programming challenge submissions",
-          "Created database Migrations repo, process, and scripts",
           "Automated the build and archive process for iOS App Store releases",
-          "Analyzed data and created visualizations for various metrics",
-          "Transformed and imported the zone, rate, and restriction data for multiple operators",
-          "Created the Swagger API Schema repo",
+          "Created the white label apps on Android, Titanium, Swift, and Web platforms",
+          "Created the Vagrant dev environment influencing our shift towards infrastructure as code (IaC)",
+          "Created the Ansible playbook for efficiently configuring and maintaining engineer MacBooks",
+          "Created the modern rate engine on AWS Lambda using Node/TypeScript and DynamoDB",
+          "Analyzed data and created visualizations for various metrics using Snowflake",
           "Created various shared NPM packages to use in multiple microservices",
-          "Created the fleet admin portal in React/TypeScript",
-          "Load and stress tested the APIs to measure performance metrics",
-          "Created various comparison scripts to ensure backwards compatibility when updating services",
-          "Created the API integration testing scripts that are used to verify things are working after deployments",
+          "Transformed and imported the zone, rate, and restriction data for multiple cities",
+          "Created comparison scripts to ensure backwards compatibility when versioning APIs",
+          "Created API integration testing scripts to verify services are deployed and running correctly",
+          "Led the creation of the wallet payment system for fleets of vehicles used by UPS and FedEx",
+          "Load and stress-tested the APIs to measure and improve performance metrics",
+          "Implemented the process and scripts for safely handling database migrations",
+          "Created the Makefile that automated our legacy local dev environment",
+          "Created the Swagger OpenAPI Schema to document our APIs",
+          "Rewrote the iOS parking app from Titanium to Swift",
+          "Created the iOS transit app in Swift",
           "Various other things..."
         ]
       }
