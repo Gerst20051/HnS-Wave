@@ -75,6 +75,8 @@ body {
 
 .skillsmodule .rightcol {
 	clear:right;
+	font-family:Hack, 'Comic Mono', monospace;
+	line-height:1.5;
 	margin:0 0 0 160px;
 }
 
@@ -85,6 +87,7 @@ body {
 }
 
 #headerModule #titlehead {
+	font-family:Hack, 'Comic Mono', monospace;
 	padding-bottom:10px;
 	text-align:center;
 }

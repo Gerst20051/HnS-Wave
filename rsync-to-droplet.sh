@@ -33,6 +33,7 @@ rsync -zarvh src/resume/ droplet:www/resume
 # update the skills directory
 
 rsync -zarvh src/skills/ droplet:www/skills
+ssh droplet ln -s ../favicon.ico www/skills/favicon.ico
 
 # update stations
 

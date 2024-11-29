@@ -40,6 +40,9 @@ SkillsBuilder.prototype.toTitleCase = function(str){
 };
 
 SkillsBuilder.prototype.capitalizeSkill = function(skill){
+	if (this.data.settings.skills_labels[skill]) {
+		return this.data.settings.skills_labels[skill];
+	}
 	if (this.skillMap[skill]) {
 		return this.skillMap[skill];
 	}
@@ -102,21 +105,27 @@ SkillsBuilder.prototype.buildHeader = function(){
 	html.push('</div>');
 	this.output.push(html.join(''));
 };
+
+SkillsBuilder.prototype.convertRankToLabel = function(rank){
+	if (this.data.settings.ranking_labels[rank]) return this.data.settings.ranking_labels[rank];
+	return 'Rank ' + rank;
+};
+
 SkillsBuilder.prototype.buildSkills = function(){
 	var html = [];
-	html.push('<div id="skillsModule" class="skillsmodule clear">');
-	html.push('<div class="leftcol"><div>Skills</div></div>');
 	this.rankedSkills.forEach((rankSkills, rank) => {
-		html.push('<div class="rightcol"><b>Rank ' + rank + ': </b>');
-		html.push(rankSkills.join(', '));
+		if (rank === 0 && this.data.settings.skip_zero_rank) return;
+		html.push('<div id="skillsModule" class="skillsmodule clear">');
+		html.push('<div class="leftcol"><div>' + this.convertRankToLabel(rank) + '</div></div>');
+		html.push('<div class="rightcol">' + rankSkills.join(', ') + '</div>');
 		html.push('</div>');
 	});
 	Object.keys(this.taggedSkills).forEach(taggedSkill => {
-		html.push('<div class="rightcol"><b>' + this.toTitleCase(taggedSkill) + ': </b>');
-		html.push(this.taggedSkills[taggedSkill].join(', '));
+		html.push('<div id="skillsModule" class="skillsmodule clear">');
+		html.push('<div class="leftcol"><div>' + this.toTitleCase(taggedSkill) + '</div></div>');
+		html.push('<div class="rightcol">' + this.taggedSkills[taggedSkill].join(', ') + '</div>');
 		html.push('</div>');
 	});
-	html.push('</div>');
 	this.output.push(html.join(''));
 };
 
@@ -126,3 +135,39 @@ SkillsBuilder.prototype.printSkills = function(){
 		return _this.output.join('');
 	});
 };
+
+// Reference Skills Builder Notes In Google Doc "Weekly Reports 2024 (Q3)"
+// https://docs.google.com/document/d/1hPwo5w2lj39YjRXR-zct8d75jxMXYbleN4KWhopPbrY/edit?tab=t.0#heading=h.j7l4wd1x4eh
+
+// Ranking Labels
+// Advisory (5 Stars)
+// Distinguished (5 Stars)
+// Superior (5 Stars)
+// Expert (5 Stars)
+// Excellent (5 Stars)
+// Professional (5 Stars)
+// Outstanding (5 Stars)
+// Very Good (4 Stars)
+// Advanced (4 Stars)
+// Specialist (4 Stars)
+// Enriched Proficient (4 Stars)
+// Skilled (4 Stars)
+// Intermediate (3 Stars)
+// Proficient (3 Stars)
+// Competent (3 Stars)
+// Good (3 Stars)
+// Average (3 Stars)
+// Advanced Beginner (2 Stars)
+// Developing (2 Stars)
+// Developer (2 Stars)
+// Awareness (1 Star)
+// Emerging (1 Star)
+// Beginner (1 Star)
+// Junior (1 Star)
+// Novice (1 Star)
+// Newbie (1 Star)
+// Basic (1 Star)
+// Entry (1 Star)
+// Weak (1 Star)
+// Fair (1 Star)
+// No Knowledge (0 Stars)
