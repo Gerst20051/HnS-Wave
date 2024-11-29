@@ -34,7 +34,7 @@ SkillsBuilder.prototype.skillMap = {
 };
 
 SkillsBuilder.prototype.toTitleCase = function(str){
-	return str.replace(/\w\S*/g, function(txt){
+	return str.replace(/-/g, ' ').replace(/\w\S*/g, function(txt){
 		return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
 	});
 };
@@ -120,9 +120,9 @@ SkillsBuilder.prototype.buildSkills = function(){
 		html.push('<div class="rightcol">' + rankSkills.join(', ') + '</div>');
 		html.push('</div>');
 	});
-	Object.keys(this.taggedSkills).forEach(taggedSkill => {
+	Object.keys(this.taggedSkills).sort().forEach(taggedSkill => {
 		html.push('<div id="skillsModule" class="skillsmodule clear">');
-		html.push('<div class="leftcol"><div>' + this.toTitleCase(taggedSkill) + '</div></div>');
+		html.push('<div class="leftcol"><div>' + this.capitalizeSkill(taggedSkill) + '</div></div>');
 		html.push('<div class="rightcol">' + this.taggedSkills[taggedSkill].join(', ') + '</div>');
 		html.push('</div>');
 	});
