@@ -70,14 +70,14 @@ body {
 
 .skillsmodule .leftcol {
 	float:left;
-	width:160px;
+	width:180px;
 }
 
 .skillsmodule .rightcol {
 	clear:right;
 	font-family:Hack, 'Comic Mono', monospace;
 	line-height:1.5;
-	margin:0 0 0 160px;
+	margin:0 0 0 180px;
 }
 
 .skillsmodule .leftcol > div {
