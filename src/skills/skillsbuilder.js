@@ -4,11 +4,16 @@
  *********************************************
  */
 
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+
 var SkillsBuilder = function(){
 	this.data = {};
 	this.rankedSkills = [[]];
 	this.taggedSkills = {};
 	this.selector = '';
+	this.search = '';
 	this.output = [];
 
 	this.config = function(selector){
@@ -17,6 +22,12 @@ var SkillsBuilder = function(){
 	};
 
 	this.run = function(){
+		this.reset();
+		this.addClickHandlers();
+	};
+
+	this.reset = function(){
+		this.clearOutput();
 		this.parseData();
 		this.buildHeader();
 		this.buildSkills();
@@ -49,7 +60,24 @@ SkillsBuilder.prototype.capitalizeSkill = function(skill){
 	return this.toTitleCase(skill);
 };
 
+SkillsBuilder.prototype.uncapitalizeSkill = function(skill){
+	if (getKeyByValue(this.data.settings.skills_labels, skill)) {
+		return getKeyByValue(this.data.settings.skills_labels, skill);
+	}
+	if (getKeyByValue(this.skillMap, skill)) {
+		return getKeyByValue(this.skillMap, skill);
+	}
+	return skill.toLowerCase().replace(' ', '-');
+};
+
+SkillsBuilder.prototype.clearOutput = function(){
+	this.output.length = 0;
+};
+
 SkillsBuilder.prototype.parseData = function(){
+	this.rankedSkills = [[]];
+	this.taggedSkills = {};
+
 	var data = this.data;
 
 	var skills = Object.keys(data.skills);
@@ -74,14 +102,14 @@ SkillsBuilder.prototype.parseData = function(){
 					this.taggedSkills[tag].push(capitalizedSkill);
 				});
 			}
-			console.log(skill, metadata);
+			// console.log(skill, metadata);
 		});
 	}
 };
 
 SkillsBuilder.prototype.updateData = function(data){
 	if (data) {
-		this.output.length = 0;
+		this.clearOutput();
 		if (typeof data == 'object') {
 			this.data = data;
 		} else if (typeof data == 'string') {
@@ -111,21 +139,56 @@ SkillsBuilder.prototype.convertRankToLabel = function(rank){
 	return 'Rank ' + rank;
 };
 
+SkillsBuilder.prototype.addSubSkills = function(skills){
+	return skills.map(skill => {
+		const skillKey = this.uncapitalizeSkill(skill);
+		if (this.data.skills[skillKey] && this.data.skills[skillKey].skills) {
+			return `${skill} (${this.data.skills[skillKey].skills.map(this.capitalizeSkill.bind(this)).join(', ')})`;
+		}
+		return skill;
+	});
+};
+
 SkillsBuilder.prototype.buildSkills = function(){
 	var html = [];
+	html.push('<div id="searchContainer">');
+	html.push('<input id="skillsSearch" name="skillsSearch" type="text" spellcheck="false" value="' + this.search + '" />');
+	html.push('</div>');
+	html.push('<div id="rankingsContainer">');
+	html.push('<div class="skillsHeader">' + this.capitalizeSkill('Rankings') + '</div>');
 	this.rankedSkills.forEach((rankSkills, rank) => {
 		if (rank === 0 && this.data.settings.skip_zero_rank) return;
+		let matchingSkills = rankSkills;
+		if (this.search.length) {
+			matchingSkills = rankSkills.filter(skill => skill.toLowerCase().match(this.search));
+		}
+		if (!matchingSkills.length) return;
 		html.push('<div id="skillsModule" class="skillsmodule clear">');
 		html.push('<div class="leftcol"><div>' + this.convertRankToLabel(rank) + '</div></div>');
-		html.push('<div class="rightcol">' + rankSkills.join(', ') + '</div>');
+		html.push('<div class="rightcol">' + this.addSubSkills(matchingSkills).join(', ') + '</div>');
 		html.push('</div>');
 	});
+	html.push('</div>');
+	html.push('<div id="categoriesContainer">');
+	html.push('<div class="skillsHeader">' + this.capitalizeSkill('Categories') + '</div>');
 	Object.keys(this.taggedSkills).sort().forEach(taggedSkill => {
+		let matchingSkills = this.taggedSkills[taggedSkill];
+		if (this.search.length) {
+			matchingSkills = this.taggedSkills[taggedSkill].filter(skill => skill.toLowerCase().match(this.search));
+		}
+		if (!matchingSkills.length) return;
 		html.push('<div id="skillsModule" class="skillsmodule clear">');
 		html.push('<div class="leftcol"><div>' + this.capitalizeSkill(taggedSkill) + '</div></div>');
-		html.push('<div class="rightcol">' + this.taggedSkills[taggedSkill].join(', ') + '</div>');
+		html.push('<div class="rightcol">' + this.addSubSkills(matchingSkills).join(', ') + '</div>');
 		html.push('</div>');
 	});
+	html.push('</div>');
+	html.push('<div id="showCategoriesContainer">');
+	html.push('<a id="showCategoriesLink" href="#">Show Categories</a>');
+	html.push('</div>');
+	html.push('<div id="hideCategoriesContainer">');
+	html.push('<a id="hideCategoriesLink" href="#">Hide Categories</a>');
+	html.push('</div>');
 	this.output.push(html.join(''));
 };
 
@@ -133,6 +196,26 @@ SkillsBuilder.prototype.printSkills = function(){
 	var _this = this;
 	$(this.selector).html(function(){
 		return _this.output.join('');
+	});
+};
+
+SkillsBuilder.prototype.addClickHandlers = function(){
+	var _this = this;
+	$(this.selector).on('click', '#showCategoriesLink', function(e){
+		e.preventDefault();
+		$('#showCategoriesContainer').hide();
+		$('#categoriesContainer').show();
+		$('#hideCategoriesContainer').show();
+	});
+	$(this.selector).on('click', '#hideCategoriesLink', function(e){
+		e.preventDefault();
+		$('#hideCategoriesContainer').hide();
+		$('#categoriesContainer').hide();
+		$('#showCategoriesContainer').show();
+	});
+	$(this.selector).on('input', '#skillsSearch', function(e){
+		_this.search = e.target.value.toLowerCase();
+		_this.reset()
 	});
 };
 
