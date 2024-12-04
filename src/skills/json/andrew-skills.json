@@ -6,6 +6,7 @@
   },
   "skills": {
     "1password": { "tags": ["apps"] },
+    "8x8": { "tags": ["apps"] },
     "a/b testing": { "tags": ["concepts"] },
     "access": { "tags": ["apps"] },
     "activerecord": { "rank": 2, "tags": ["database-tools", "orm"] },
@@ -465,6 +466,7 @@
     "serverless": { "parent_skill": "concepts" },
     "ses": { "parent_skill": "aws" },
     "sftp": { "tags": ["todo"] },
+    "sheets": { "tags": ["apps"] },
     "shellcheck": { "tags": ["cli-tools"] },
     "sidekiq": { "tags": ["todo"] },
     "siege": { "tags": ["testing"] },
