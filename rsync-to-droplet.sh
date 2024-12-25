@@ -26,15 +26,6 @@ rsync -zarvh src/mastery/php.html droplet:www/mastery
 rsync -zarvh src/quotes/functions.js droplet:www/quotes
 rsync -zarvh src/quotes/index.html droplet:www/quotes
 
-# update the resume directory
-
-rsync -zarvh src/resume/ droplet:www/resume
-
-# update the skills directory
-
-rsync -zarvh src/skills/ droplet:www/skills
-ssh droplet ln -s ../favicon.ico www/skills/favicon.ico
-
 # update stations
 
 rsync -zarvh src/stations/index.html droplet:www/stations
