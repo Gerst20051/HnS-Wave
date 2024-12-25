@@ -9,10 +9,6 @@ rsync -zarvh src/index.html droplet:www
 rsync -zarvh src/birthdays/functions.js droplet:www/birthdays
 rsync -zarvh src/birthdays/index.html droplet:www/birthdays
 
-# update the cdn directory
-
-rsync -zarvh src/cdn/ droplet:www/cdn
-
 # update the icebreakers directory
 
 rsync -zarvh src/icebreakers/ droplet:www/icebreakers
